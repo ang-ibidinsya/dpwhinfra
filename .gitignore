@@ -1,0 +1,5 @@
+
+*.html
+/DataFetcher/DataFetcher/bin
+/DataFetcher/DataFetcher/obj
+*.zip
