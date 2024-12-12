@@ -3,3 +3,7 @@
 /DataFetcher/DataFetcher/bin
 /DataFetcher/DataFetcher/obj
 *.zip
+/DataParser/HtmlDataParser/bin
+/DataParser/HtmlDataParser/obj
+DataParser/.vscode/settings.json
+DataParser/Data.7z
