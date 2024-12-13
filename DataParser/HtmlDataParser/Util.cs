@@ -39,20 +39,6 @@ public class Util
         }
     }
 
-    public static string GrabAllTextNg(HtmlNode node)
-    {
-        StringBuilder sb = new StringBuilder();
-        var textNodes = node.SelectNodes("//text()");
-        ThrowIfNull(textNodes, "[GrabAllText] textNodes is null");
-
-        foreach(HtmlNode currNode in textNodes)
-        {
-            sb.AppendLine(currNode.InnerText);
-        }
-
-        return sb.ToString();
-    }
-
     public static List<string> GrabAllText(HtmlNode root)
     {
         List<string> retList = new List<string>();

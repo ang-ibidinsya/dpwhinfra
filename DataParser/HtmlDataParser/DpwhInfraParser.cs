@@ -1,6 +1,6 @@
 namespace HtmlDataParser;
 
-using System.Linq.Expressions;
+using System.Text.Json;
 using HtmlAgilityPack;
 
 public class DpwhInfraParser
@@ -8,6 +8,7 @@ public class DpwhInfraParser
     private List<Contract> allContracts = new List<Contract>();
     public void ParseAllData(string pathDir)
     {
+        allContracts.Clear();
         if (!Directory.Exists(pathDir))
         {
             Console.WriteLine("Path does not exist");
@@ -16,9 +17,13 @@ public class DpwhInfraParser
         string[] files = Directory.GetFiles(pathDir);
         foreach(string file in files)
         {
-            Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] Parsing file: {file}");
+            Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] Parsing file: {file}");
             ParseFile(file);
         }
+        Console.WriteLine($"Finished Parsing, found {allContracts.Count()} contracts");
+
+        File.WriteAllText("AllContracts.json", JsonSerializer.Serialize(allContracts));
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] Finished Writing!");
     }
 
     public void ParseFile(string filePath)
@@ -175,7 +180,7 @@ public class DpwhInfraParser
                 }
                 else
                 {
-                    ret.StartDate = Util.ConvertToDate(strList[idxB+1]);
+                    ret.EndDate = Util.ConvertToDate(strList[idxB+1]);
                 }
             }
             else if (iCol == 3)
@@ -203,52 +208,5 @@ public class DpwhInfraParser
         }
 
         return ret;
-    }
-
-    // Does not work...too many blank values
-    private Contract ParseTableShortCutNg(HtmlNode tableNode, string fileName, ushort year, string region)
-    {
-        List<string> strList = Util.GrabAllText(tableNode);
-        if (strList.Count != 19 && strList.Count != 18)
-        {
-            // If too many special cases, just parse column per column
-            throw new Exception("Unexpected number of nodes");
-        }
-
-        if (strList.Count == 19)
-        {
-            return new Contract() {
-                ContractId = strList[1],
-                Desc = strList[3],
-                Contractor = strList[5],
-                DistrictOffice = strList[7],
-                SourceOfFunds = strList[9],
-                Cost = Util.ConvertMoneyStrToDec(strList[10]),
-                StartDate = Util.ConvertToDate(strList[12]),
-                EndDate = Util.ConvertToDate(strList[14]),
-                Status = strList[16],
-                Percent = float.Parse(strList[18]),
-                Year = year,
-                Region = region,
-                HtmlFile = fileName
-            };
-        }
-        //else: strList.Count == 18
-    
-        return new Contract() {
-            ContractId = strList[1],
-            Desc = strList[3],
-            Contractor = strList[5],
-            DistrictOffice = strList[7],
-            SourceOfFunds = strList[9],
-            Cost = 0,
-            StartDate = Util.ConvertToDate(strList[11]),
-            EndDate = Util.ConvertToDate(strList[13]),
-            Status = strList[15],
-            Percent = float.Parse(strList[17]),
-            Year = year,
-            Region = region,
-            HtmlFile = fileName
-        };
     }
 }   
