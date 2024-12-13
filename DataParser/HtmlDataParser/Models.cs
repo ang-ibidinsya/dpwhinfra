@@ -6,29 +6,34 @@ public class Contract
 {
     [JsonPropertyName("cId")]
     public string ContractId { get; set; }
-    [JsonPropertyName("desc")]
+    [JsonPropertyName("dsc")]
     public string Desc { get; set; }
-    [JsonPropertyName("ctor")]
-    public string Contractor { get; set; }
-    [JsonPropertyName("dist")]
-    public string DistrictOffice { get; set; }
+    [JsonPropertyName("ctr")]
+    public uint ContractorId { get; set; }
+    public string Contractor;
+    [JsonPropertyName("dst")]
+    public ushort DistrictOfficeId { get; set; }
+    public string DistrictOffice;
     [JsonPropertyName("src")]
-    public string SourceOfFunds { get; set; }
+    public ushort SourceOfFundsId { get; set; }
+    public string SourceOfFunds;
 
-    [JsonPropertyName("cost")]
+    [JsonPropertyName("p")] // pesos
     public decimal Cost { get; set; }
-    [JsonPropertyName("st")]
+    [JsonPropertyName("frm")]
     public DateTime StartDate { get; set; }
-    [JsonPropertyName("end")]
+    [JsonPropertyName("to")]
     public DateTime EndDate { get; set; }
-    [JsonPropertyName("status")]
-    public string Status { get; set; }
+    [JsonPropertyName("sts")]
+    public ushort StatusId { get; set; }
+    public string Status;
     [JsonPropertyName("pct")]
     public float Percent { get; set; }
     [JsonPropertyName("yr")]
     public ushort Year { get; set; }
     [JsonPropertyName("rgn")]
-    public string Region { get; set; }
+    public ushort RegionId { get; set; }
+    public string Region;
 
     // For debugging only; do not serialize
     public string HtmlFile;

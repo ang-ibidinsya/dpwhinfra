@@ -6,6 +6,7 @@ using HtmlAgilityPack;
 public class DpwhInfraParser
 {
     private List<Contract> allContracts = new List<Contract>();
+    private MasterData masterData = new MasterData();
     public void ParseAllData(string pathDir)
     {
         allContracts.Clear();
@@ -23,6 +24,7 @@ public class DpwhInfraParser
         Console.WriteLine($"Finished Parsing, found {allContracts.Count()} contracts");
 
         File.WriteAllText("AllContracts.json", JsonSerializer.Serialize(allContracts));
+        File.WriteAllText("MasterData.json", JsonSerializer.Serialize(masterData));
         Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] Finished Writing!");
     }
 
@@ -73,7 +75,9 @@ public class DpwhInfraParser
         
         foreach(HtmlNode tableNode in allTables)
         {
-            allContracts.Add(ParseTable(tableNode, fileName, iYear, selectedRegion));
+            Contract contract = ParseTable(tableNode, fileName, iYear, selectedRegion);
+            ExtractContractMasterData(contract);
+            allContracts.Add(contract);
         }
         
     }
@@ -208,5 +212,41 @@ public class DpwhInfraParser
         }
 
         return ret;
+    }
+
+    private void ExtractContractMasterData(Contract contract)
+    {
+        if (!masterData.RegionMap.ContainsKey(contract.Region))
+        {
+            masterData.RegionMap.Add(contract.Region, (ushort)masterData.RegionMap.Count);
+        }
+        contract.RegionId = masterData.RegionMap[contract.Region];
+
+        if (!masterData.DistrictMap.ContainsKey(contract.DistrictOffice))
+        {
+            masterData.DistrictMap.Add(contract.DistrictOffice, (ushort)masterData.DistrictMap.Count);
+        }
+        contract.DistrictOfficeId = masterData.DistrictMap[contract.DistrictOffice];
+
+        if (!masterData.StatusMap.ContainsKey(contract.Status))
+        {
+            masterData.StatusMap.Add(contract.Status, (ushort)masterData.StatusMap.Count);
+        }
+        contract.StatusId = masterData.StatusMap[contract.Status];
+
+        if (contract.Contractor != null)
+        {
+            if (!masterData.ContractorMap.ContainsKey(contract.Contractor))
+            {
+                masterData.ContractorMap.Add(contract.Contractor, (ushort)masterData.ContractorMap.Count);
+            }
+            contract.ContractorId = masterData.ContractorMap[contract.Contractor];
+        }
+
+        if (!masterData.SourceMap.ContainsKey(contract.SourceOfFunds))
+        {
+            masterData.SourceMap.Add(contract.SourceOfFunds, (ushort)masterData.SourceMap.Count);
+        }
+        contract.SourceOfFundsId = masterData.SourceMap[contract.SourceOfFunds];          
     }
 }   
