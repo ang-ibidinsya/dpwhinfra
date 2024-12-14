@@ -21,9 +21,11 @@ public class Contract
     [JsonPropertyName("p")] // pesos
     public decimal Cost { get; set; }
     [JsonPropertyName("frm")]
-    public DateTime StartDate { get; set; }
+    public string StartDateStr { get { return StartDate.ToString("yy-MM-dd"); }}
+    public DateTime StartDate;
     [JsonPropertyName("to")]
-    public DateTime EndDate { get; set; }
+    public string EndDateStr { get { return EndDate.ToString("yy-MM-dd"); }}
+    public DateTime EndDate;
     [JsonPropertyName("sts")]
     public ushort StatusId { get; set; }
     public string Status;
