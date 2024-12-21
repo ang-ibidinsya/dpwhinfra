@@ -12,6 +12,8 @@ public class MasterData
     // For Serializing
     public Dictionary<ushort, string> RegionMaster {get {
         return RegionMap.ToDictionary(x => x.Value, x=> x.Key);
+
+        // TODO: Sort values alphabetically so that front end would not have to sort the values
     }}
 
     public Dictionary<ushort, string> DistrictMaster {get {
