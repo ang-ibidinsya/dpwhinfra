@@ -1,7 +1,8 @@
 import './App.css';
-import { LoadingIndicator } from './components/loadingIndicator';
 import { useEffect, useState } from 'react';
 import JSZip from 'jszip';
+import { LoadingIndicator } from './components/loadingIndicator';
+import {AppHeader} from './components/appHeader';
 
 function App() {
   console.log('App Render...');
@@ -36,18 +37,13 @@ function App() {
     fetchAndLoadData();
   }, []) // Run once only when the component mounts
 
-  // 
-  // const contractsZip = await fetch('AllContracts.json.zip');
-  // console.log('Finished fetching zip file..');
-  // 
-  // console.log('App Prep Finished...');
   if (!finishedLoading) {
     return <LoadingIndicator/>;
   }
   return (
-    <div>
-      Finished Loading: {finishedLoading ? 'Yes' : 'No'}
-    </div>
+    <>
+      <AppHeader/>
+    </>
   )
 }
 

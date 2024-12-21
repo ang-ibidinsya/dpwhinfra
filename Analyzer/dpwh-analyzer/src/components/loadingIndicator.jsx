@@ -7,6 +7,4 @@ export const LoadingIndicator = () => {
             <div className="loaderLabel">Loading...</div>
         </div>
     </div>
-    //return <div className="loader"/>;
-
 }
