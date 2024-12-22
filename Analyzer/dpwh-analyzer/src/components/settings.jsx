@@ -2,9 +2,13 @@ import './settings.css';
 import { useForm, Controller } from 'react-hook-form';
 import { useEffect } from 'react';
 import { useDispatch, useSelector} from 'react-redux';
-import Select from 'react-select';
+import Select, {createFilter} from 'react-select';
+import AsyncSelect from 'react-select/async';
 import {setSettings} from '../state/data/dataSlice';
 import {uniqueYears} from './filterItems';
+import {CustomOption} from './customOption';
+import { filterOptions } from '../util';
+
 
 // Needed by React Select
 const formatComboOptions = (uniqValues) => {
@@ -39,6 +43,8 @@ export const Settings = () => {
     const uniqueRegions = dataState?.MasterData?.RegionMaster;
     const uniqueDistricts = dataState?.MasterData?.DistrictMaster;
     const uniqueContractors = dataState?.MasterData?.ContractorMaster;
+    const uniqueStatuses = dataState?.MasterData?.StatusMaster;
+    const uniqueSourceOfFunds = dataState?.MasterData?.SourceMaster;
 
     //debugger
 
@@ -46,10 +52,12 @@ export const Settings = () => {
         Year: formatComboOptions(uniqueYears),
         Region: formatMasterDataComboOptions(uniqueRegions),
         District: formatMasterDataComboOptions(uniqueDistricts),
-        Contractor: formatMasterDataComboOptions(uniqueContractors)
+        Contractor: formatMasterDataComboOptions(uniqueContractors),
+        Status: formatMasterDataComboOptions(uniqueStatuses),
+        "Fund Source": formatMasterDataComboOptions(uniqueSourceOfFunds)
     }
 
-    const createFilterField = (fieldName, fieldType) => {
+    const createFilterField = (fieldName, fieldType, options) => {
         const customStylesSelect = {
             container: provided => ({
               ...provided,
@@ -72,28 +80,79 @@ export const Settings = () => {
             }
         };
 
-        const inputElem = fieldType === 'text' ? 
-            <input {...register(fieldName)} type="text" className="fieldText"></input> :
-            <Controller
-                name={fieldName}
-                control={control}
-                defaultValue=""
-                render = {({ field}) => (
-                    <Select {...field} 
-                        className="fieldSelect"
-                        options={comboOptions[fieldName]}
-                        styles={customStylesSelect}
-                        isMulti={true}
-                        closeMenuOnSelect={false}
-                        placeholder={`Select ${fieldName}...`}
-                    />
-                )}
-            />
+        const customComponents = {};
+        if (options?.largeCombo) {
+            //customComponents.MenuList = CustomMenuList;
+            //customComponents.Option = CustomOption;
+        }
+        let inputElem = null;
+        if (fieldType === 'text') {
+            inputElem = <input {...register(fieldName)} type="text" className="fieldText"></input>;
+        }
+        else if (options?.largeCombo) {
+            const allOptions = comboOptions[fieldName];
+            const defaultOptions = allOptions.slice(0, 100);
+            defaultOptions.push({label: `Only 100 out of ${allOptions.length} contractors shown. Type a filter to find more contractors.`, value: null, isDisabled: true});
+            const loadOptions = (inputValue) => {
+                return new Promise((resolve) => {
+                    setTimeout(() => {                        
+                        // Filter options based on the input value (case-insensitive)
+                        const filteredOptions = filterOptions(allOptions, inputValue, 100); // Show a max of 100 items
+                        filteredOptions.push({label: 'Max of 100 contractors shown. Type a more specific filter to find more contractors.', value: null, isDisabled: true});
+                        resolve(filteredOptions);
+                    }, 0);
+                });
+            };              
+
+            // filter options asynchronously because the list is really big. Did not work/not feasible: use of react-window because item height is 
+            inputElem = <Controller
+            name={fieldName}
+            control={control}
+            defaultValue=""
+            render = {({ field}) => (
+                <AsyncSelect {...field} 
+                    className="fieldSelect"
+                    loadOptions={loadOptions}
+                    defaultOptions={defaultOptions}
+                    styles={customStylesSelect}
+                    isMulti={true}
+                    closeMenuOnSelect={false}
+                    placeholder={`Select ${fieldName}...`}
+                    components={customComponents}
+                />
+            )}
+            />;
+        }
+        else
+        {
+            inputElem = <Controller
+            name={fieldName}
+            control={control}
+            defaultValue=""
+            render = {({ field}) => (
+                <Select {...field} 
+                    className="fieldSelect"
+                    options={comboOptions[fieldName]}
+                    styles={customStylesSelect}
+                    isMulti={true}
+                    closeMenuOnSelect={false}
+                    placeholder={`Select ${fieldName}...`}
+                    components={customComponents}
+                />
+            )}
+            />;
+        }
+            
+        let fieldInputClassName = 'fieldInput';
+        if (options?.largeCombo) {
+            fieldInputClassName += ' fieldInput-large';
+        }
+
         return <>
             <div className="fieldLabel">
                 {fieldName}:
             </div>
-            <div className="fieldInput">                
+            <div className={fieldInputClassName}>                
                 {inputElem}
             </div>
         </>
@@ -113,8 +172,10 @@ export const Settings = () => {
             {createFilterField('Year', 'combo')}
             {createFilterField('Region', 'combo')}
             {createFilterField('District', 'combo')}
-            {createFilterField('Contractor', 'combo')}
             {createFilterField('Project', 'text')}
+            {createFilterField('Status', 'combo')}
+            {createFilterField('Fund Source', 'combo')}
+            {createFilterField('Contractor', 'combo', {largeCombo: true})}
             </div>
         </div>
     {/* Gouping */}

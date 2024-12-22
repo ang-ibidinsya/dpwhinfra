@@ -43,6 +43,10 @@
     width: 100%;    
 }
 
+.fieldInput-large {
+    grid-column: span 5;
+}
+
 .fieldText {
     font-family: inherit;
     font-size: inherit;
