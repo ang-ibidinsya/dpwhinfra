@@ -46,7 +46,52 @@ export const Settings = () => {
     const uniqueStatuses = dataState?.MasterData?.StatusMaster;
     const uniqueSourceOfFunds = dataState?.MasterData?.SourceMaster;
 
-    //debugger
+    const createGroupingFields = () => {
+        return <div className="groupingFieldsContainer">
+            <label className="groupingField">
+                <input type="radio" name="groupingFields" value="Year"
+                    {...register("Grouping", { required: true })}
+                >
+                </input>
+                <span>Year</span>
+            </label>
+            <label className="groupingField">
+                <input type="radio" name="groupingFields" value="Region"
+                    {...register("Grouping", { required: true })}
+                >
+                </input>
+                <span>Region</span>
+            </label>
+            <label className="groupingField">
+                <input type="radio" name="groupingFields" value="District"
+                    {...register("Grouping", { required: true })}
+                >                    
+                </input>
+                <span>District</span>
+            </label>
+            <label className="groupingField">
+                <input type="radio" name="groupingFields" value="Fund Source"
+                    {...register("Grouping", { required: true })}
+                >                    
+                </input>
+                <span>Fund Source</span>
+            </label>            
+            <label className="groupingField">
+                <input type="radio" name="groupingFields" value="Contractor"
+                    {...register("Grouping", { required: true })}
+                >                    
+                </input>
+                <span>Contractor</span>
+            </label>
+            <label className="groupingField">
+                <input type="radio" name="groupingFields" value="Project" defaultChecked 
+                    {...register("Grouping", { required: true })}
+                >                    
+                </input>
+                <span>Project</span>
+            </label>
+        </div>;
+    }
 
     const comboOptions = {
         Year: formatComboOptions(uniqueYears),
@@ -98,7 +143,9 @@ export const Settings = () => {
                     setTimeout(() => {                        
                         // Filter options based on the input value (case-insensitive)
                         const filteredOptions = filterOptions(allOptions, inputValue, 100); // Show a max of 100 items
-                        filteredOptions.push({label: 'Max of 100 contractors shown. Type a more specific filter to find more contractors.', value: null, isDisabled: true});
+                        if (filteredOptions.length >= 100) {
+                            filteredOptions.push({label: 'Max of 100 contractors shown. Type a more specific filter to find more contractors.', value: null, isDisabled: true});
+                        }
                         resolve(filteredOptions);
                     }, 0);
                 });
@@ -184,7 +231,7 @@ export const Settings = () => {
                 <i className="bx bx-merge"></i> View By / Grouping
             </div>
         </div>
-        
+        {createGroupingFields()}
     </form>
     return formMain;
 }
