@@ -25,7 +25,7 @@ const columnDefs = [
     },
     {
         accessorKey: "frm",
-        header: " Contract Start",
+        header: " Contract Effectivity",
         cell: ({ getValue, row, column, table }) => {
                 let val = getValue();
                 if (val && val.length > 0) val = '20' + val;

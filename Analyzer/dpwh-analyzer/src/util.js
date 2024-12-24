@@ -41,7 +41,7 @@ export const getMasterDataValue = (masterData, masterDataType, value) => {
     }
     
     if (masterDataType === EntityTypes.district) {
-        let districtOrig = masterData.DistrictMaster[value];
+        let districtOrig = masterData.DistrictMaster[value].replace('District Engineering Office', 'DEO');        
         let indexOfDash = districtOrig.indexOf(' - ');
         if (indexOfDash >= 0) {
             return districtOrig.substring(indexOfDash + 3);
@@ -65,8 +65,8 @@ export const getMasterDataValue = (masterData, masterDataType, value) => {
 }
 
 export const statusColorMap = {
-    Completed: '#e8f4ea',
+    Completed: '#C2E9BF',
     Terminated: '#fde0e0',
     ['On-Going']: '#fffec8',
-    'Not Yet Started': '#ccc'
+    'Not Yet Started': '#eee'
 }
