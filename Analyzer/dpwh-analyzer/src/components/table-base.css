@@ -1,0 +1,200 @@
+.tableContainer {
+    width: 100%;
+}
+
+.tableBase {
+    width: 100%;
+    border: 1px solid lightgrey;
+    border-collapse: collapse;
+}
+
+.thTable, .tdTable {    
+    border: 2px solid lightgrey;
+    padding: 5px 10px 5px 10px;    
+}
+
+
+.tdSummary {
+    white-space: nowrap;
+}
+
+.tdCost {
+    border-left: 2px 0px 2px 2px solid lightgrey;
+    border-top: 2px solid lightgrey;
+    border-bottom: 2px solid lightgrey;
+    padding: 5px 10px 5px 10px;
+}
+
+.tdCostBar {
+    border-right: 2px solid lightgrey;
+    border-top: 2px solid lightgrey;
+    border-bottom: 2px solid lightgrey;        
+}
+
+.tdCostBarFullWidth {
+    width: 100%;
+}
+
+.thTable {
+    background-color: beige;
+}
+
+.thTable .sortable{
+    cursor: pointer;
+}
+
+.thSortable {
+    cursor: pointer;
+}
+
+.divCost {
+    text-align: end;
+    font-family: "Courier Prime";
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.divCenter {
+    text-align: center;
+}
+
+.itemDesc {
+    font-size: 0.95rem;
+}
+
+.table-icon {
+    display: inline;
+    margin-left: 5px;
+}
+
+.table-icon-disabled {
+    color: #aaa;
+}
+
+.table-icon-enabled {
+    color: rgb(31, 140, 243);
+}
+
+/* Pagination*/
+.paginator {    
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    background-color: aliceblue;
+    border-top: 2px solid lightgrey;
+    border-left: 2px solid lightgrey;
+    border-right: 2px solid lightgrey;
+    font-weight: 600;
+}
+
+.pageNavBtns {
+    display: flex;
+    gap: 10px;    
+}
+
+.navBtn {
+    margin: auto;
+    font-size: 1.2rem;
+    font-weight: 800;
+    background-color: #ccc;
+    padding: 3px 5px 3px 5px;
+    border-radius: 3px;
+}
+
+.btnEnabled {
+    cursor: pointer;
+}
+
+.btnDisabled {
+    cursor: default;
+    color: gray;
+    pointer-events: none;
+}
+
+.grandTotalContainer {
+    border-left: 2px solid lightgrey;
+    border-right: 2px solid lightgrey;
+    border-top: 2px solid lightgrey;
+    display: flex;
+    justify-content: flex-end;    
+    background: aliceblue;
+    gap: 10px;
+    padding: 3px 10px 3px 10px;
+    align-items: center;
+}
+
+.grandTotalLabel {
+    font-family: 'Courier Prime', monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.grandTotalValue {
+    font-size: 1.45rem;
+    font-weight: 700;
+    font-family: 'Courier Prime', monospace;
+    background: #d2bafa;
+    border-radius: 5px;
+    padding: 3px 10px 1px 10px;
+}
+
+.pageSizeSelector {
+    font-family: inherit;
+    font-weight: 600;
+    padding: 2px;
+    border-radius: 5px;
+}
+
+.legendsContainer {
+    border-top: 2px solid lightgrey;
+    border-left: 2px solid lightgrey;
+    border-right: 2px solid lightgrey;
+    background: white;
+    display: flex;
+}
+
+.legendItem {
+    display: flex;
+    gap: 5px;
+    padding: 5px;
+    margin-right: 5px;
+}
+
+.legendSquare {
+    font-size: 1rem;
+    width: 1.2rem;
+    border-radius: 3px;
+}
+
+/* grid-template-columns: fit-content(8ch) fit-content(8ch) fit-content(8ch); */
+.tooltipItemContainer {
+    display: grid;
+    grid-template-columns: minmax(1rem, 1rem) minmax(1rem, 2rem) auto;
+    column-gap: 8px;
+}
+
+.tooltipCost {
+    font-family: 'Courier Prime', monospace;
+    font-size: 1rem;
+    padding-top: 1px;
+    margin-left: 5px;
+    text-align: right;
+    width: 100%;
+}
+
+.tooltipYear {
+    font-weight: 600;
+    width: 100%;
+    text-align: right;
+}
+
+.tooltipYearColor {
+    height: 1rem;
+    width: 1rem;
+    border-radius: 3px;
+    padding-top: 0px;    
+}
+
+.tooltipCell {
+    margin-top: 2px;
+}

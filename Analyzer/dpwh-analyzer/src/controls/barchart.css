@@ -1,0 +1,16 @@
+.barChart {    
+    min-width: 10rem;
+    margin-left: 5px;
+    margin-right: 5px;
+    display: flex;
+}
+
+.barFilled {
+    background-color: rgb(52, 129, 231);
+    height: 1rem;
+}
+
+.barEmpty {
+    background-color: #eee;
+    height: 1rem;
+}

@@ -6,6 +6,7 @@ import { setInitialData } from './state/data/dataSlice';
 import { LoadingIndicator } from './components/loadingIndicator';
 import {AppHeader} from './components/appHeader';
 import {Settings} from './components/settings';
+import { TableBase } from './components/table-base';
 
 function App() {
     console.log('App Render...');
@@ -54,6 +55,7 @@ function App() {
     <>
         <AppHeader/>
         <Settings/>
+        <TableBase/>
     </>
     )
 }

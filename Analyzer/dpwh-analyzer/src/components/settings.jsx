@@ -164,7 +164,7 @@ export const Settings = () => {
                     styles={customStylesSelect}
                     isMulti={true}
                     closeMenuOnSelect={false}
-                    placeholder={`Select ${fieldName}...`}
+                    placeholder={`Select or type in ${fieldName} Name...`}
                     components={customComponents}
                 />
             )}

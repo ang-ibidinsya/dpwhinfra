@@ -1,0 +1,16 @@
+.stackedBarChart {    
+    min-width: 10rem;
+    margin-left: 5px;
+    margin-right: 5px;
+    display: flex;
+    cursor: pointer;
+}
+
+.bar {
+    height: 1rem;
+}
+
+.barEmpty {
+    height: 1rem;
+    background-color: #eee;
+}

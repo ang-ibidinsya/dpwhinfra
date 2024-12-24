@@ -152,13 +152,13 @@ const dataSlice = createSlice({
     initialState,
     reducers: {
         setSettings: (state, action) => {
-            console.log('[settings reducer][setSettings] state:', state, 'action:', action);
+            console.log('[settings reducer][setSettings] action:', action);
             Object.assign(state, action.payload);
             Object.assign(state.Filters, action.payload.Filters);
             Object.assign(state.FilteredData, mapAndFilterData(action.payload.Filters))
         },
         setInitialData: (state, action) => {
-            console.log('[settings reducer][setInitialData] state:', state, 'action:', action);
+            console.log('[settings reducer][setInitialData] action:', action);
             Object.assign(state.AllData, action.payload.constractsJson);
             Object.assign(state.MasterData, action.payload.masterDataJson);
         }
