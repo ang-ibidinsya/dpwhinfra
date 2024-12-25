@@ -1,6 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const mapAndFilterData = (filters) => {
+const satisfiesFilter = (currData, filters) => {
+    if (!filters) {
+        return true;
+    }
+
+    // [1] year
+    if (filters.Year?.length > 0 && !filters.Year.includes(currData.Year)) {
+        return false;
+    }
+    // [2] Region
+    if (filters.Region?.length > 0 && !filters.Region.includes(currData.Region)) {
+        return false;
+    }
+    // [3] District
+    if (filters.District?.length > 0 && !filters.District.includes(currData.District)) {
+        return false;
+    }
+    // [4] Item Name (case insensitive)
+    if (filters.Project && currData.Item.toUpperCase().indexOf(filters.Project.toUpperCase()) < 0) {
+        return false;
+    }
+    return true;
+}
+
+const mapAndFilterData = (data, filters) => {
     let mapYearGroups = {};
     let mapRegionGroups = {};
     let mapDistrictGroups = {};
@@ -20,20 +44,23 @@ const mapAndFilterData = (filters) => {
         overallDistrictMaxCost: 0,
         overallDistrictMinCost: Number.MAX_VALUE,
     }
+    if (!data) {
+        return ret;
+    }
 
     // Optimization TODO: Do not re-compute unfiltered items each time
     let unFilteredYearMap = {};
     let unFilteredRegionMap = {};
     let unFilteredDistrictMap = {};
     // use for instead of forEach
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < data.length; i++) {        
         let currData = data[i];
         let currYear = currData.Year;
         let currRegion = currData.Region;
         let currDistrict = currData.District;
 
-        ret.overallProjMaxCost = Math.max(ret.overallProjMaxCost, currData.Cost);
-        ret.overallProjMinCost = Math.min(ret.overallProjMinCost, currData.Cost);
+        ret.overallProjMaxCost = Math.max(ret.overallProjMaxCost, currData.p);
+        ret.overallProjMinCost = Math.min(ret.overallProjMinCost, currData.p);
 
         let bSatisfiesFilter = satisfiesFilter(currData, filters);
         
@@ -50,7 +77,7 @@ const mapAndFilterData = (filters) => {
                 subtotal: 0
             }
         }
-        unFilteredYearMap[currYear].subtotal += currData.Cost;
+        unFilteredYearMap[currYear].subtotal += currData.p;
 
         // [b] region
         if (!mapRegionGroups[currRegion]) {
@@ -66,7 +93,7 @@ const mapAndFilterData = (filters) => {
                 subtotal: 0
             }
         }
-        unFilteredRegionMap[currRegion].subtotal += currData.Cost;
+        unFilteredRegionMap[currRegion].subtotal += currData.p;
 
         // [c] district
         if (!mapDistrictGroups[currDistrict]) {
@@ -82,21 +109,21 @@ const mapAndFilterData = (filters) => {
                 subtotal: 0
             }
         }
-        unFilteredDistrictMap[currDistrict].subtotal += currData.Cost;
+        unFilteredDistrictMap[currDistrict].subtotal += currData.p;
 
         if (bSatisfiesFilter) {
-            mapYearGroups[currYear].items.push(currData);
-            mapYearGroups[currYear].subtotal += currData.Cost;
+            //mapYearGroups[currYear].items.push(currData);
+            mapYearGroups[currYear].subtotal += currData.p;
 
-            mapRegionGroups[currRegion].items.push(currData);
-            mapRegionGroups[currRegion].subtotal += currData.Cost;
-            mapRegionGroups[currRegion].yearSubTotals[currData.Year] = (mapRegionGroups[currRegion].yearSubTotals[currData.Year] || 0 ) + currData.Cost;
+            //mapRegionGroups[currRegion].items.push(currData);
+            mapRegionGroups[currRegion].subtotal += currData.p;
+            mapRegionGroups[currRegion].yearSubTotals[currData.Year] = (mapRegionGroups[currRegion].yearSubTotals[currData.Year] || 0 ) + currData.p;
 
-            mapDistrictGroups[currDistrict].items.push(currData);
-            mapDistrictGroups[currDistrict].subtotal += currData.Cost;
-            mapDistrictGroups[currDistrict].yearSubTotals[currData.Year] = (mapDistrictGroups[currDistrict].yearSubTotals[currData.Year] || 0 ) + currData.Cost;
+            //mapDistrictGroups[currDistrict].items.push(currData);
+            mapDistrictGroups[currDistrict].subtotal += currData.p;
+            mapDistrictGroups[currDistrict].yearSubTotals[currData.Year] = (mapDistrictGroups[currDistrict].yearSubTotals[currData.Year] || 0 ) + currData.p;
 
-            ret.grandTotal += currData.Cost;
+            ret.grandTotal += currData.p;
         }
     }
 
@@ -144,7 +171,7 @@ const initialState = {
         ContractorGroups: {}
     }
     */
-    FilteredData: null
+    FilteredData: mapAndFilterData(null, null)
 };
 
 const dataSlice = createSlice({
@@ -155,12 +182,13 @@ const dataSlice = createSlice({
             console.log('[settings reducer][setSettings] action:', action);
             Object.assign(state, action.payload);
             Object.assign(state.Filters, action.payload.Filters);
-            Object.assign(state.FilteredData, mapAndFilterData(action.payload.Filters))
+            Object.assign(state.FilteredData, mapAndFilterData(state.AllData, action.payload.Filters))
         },
         setInitialData: (state, action) => {
             console.log('[settings reducer][setInitialData] action:', action);
             Object.assign(state.AllData, action.payload.constractsJson);
             Object.assign(state.MasterData, action.payload.masterDataJson);
+            Object.assign(state.FilteredData, mapAndFilterData(state.AllData, null))
         }
     }
 })

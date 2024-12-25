@@ -109,18 +109,17 @@ const columnDefs = [
         header: "Cost",
         sortingFn: 'alphanumeric',
         cell: ({ getValue, row, column, table }) => {                        
-            let {minCost, maxCost} = table.getState();
             return <div className="divCost">{formatMoney(getValue())}</div>;
         },
     },
-    // {
-    //     accessorKey: "CostBar",
-    //     header: "CostBar",
-    //     cell: ({ getValue, row, column, table }) => {
-    //         let {minCost, maxCost} = table.getState();
-    //         return <BarChart cost={row.getValue('Cost')} minCost={minCost} maxCost={maxCost}/>;
-    //     },
-    // },
+    {
+        accessorKey: "CostBar",
+        header: "CostBar",
+        cell: ({ getValue, row, column, table }) => {
+            let {minCost, maxCost} = table.getState();
+            return <BarChart cost={row.getValue('p')} minCost={minCost} maxCost={maxCost}/>;
+        },
+    },
 
 ];
 
@@ -150,9 +149,9 @@ export const TableByProject = (props) => {
         },
         state: {
             columnFilters: columnFilters,
-            masterData: dataState.MasterData
-            // maxCost: dataState.FilteredData.overallProjMaxCost,
-            // minCost: dataState.FilteredData.overallProjMinCost,
+            masterData: dataState.MasterData,
+            maxCost: dataState.FilteredData.overallProjMaxCost,
+            minCost: dataState.FilteredData.overallProjMinCost,
         },
         onColumnFiltersChange: setColumnFilters,
         filterFns: {
