@@ -71,20 +71,34 @@ export const createToolTip = (tooltipId) => {
 export const convertStateToTableFilter= (settingsState) => {
     let ret = [];
     if (settingsState.Filters.Project) {
-        ret.push({id: 'Item', value: settingsState.Filters.Project});
+        ret.push({id: 'dsc', value: settingsState.Filters.Project});
     }
     
     if (settingsState.Filters.Year?.length > 0) {
-        ret.push({id: 'Year', value: settingsState.Filters.Year});
+        ret.push({id: 'yr', value: settingsState.Filters.Year});
     }
 
     if (settingsState.Filters.Region?.length > 0) {
-        ret.push({id: 'Region', value: settingsState.Filters.Region});
+        ret.push({id: 'rgn', value: settingsState.Filters.Region});
     }
 
     if (settingsState.Filters.District?.length > 0) {
-        ret.push({id: 'District', value: settingsState.Filters.District});
+        ret.push({id: 'dst', value: settingsState.Filters.District});
     }
+
+    if (settingsState.Filters.Status?.length > 0) {
+        ret.push({id: 'sts', value: settingsState.Filters.Status});
+    }
+
+    if (settingsState.Filters.FundSource?.length > 0) {
+        ret.push({id: 'src', value: settingsState.Filters.FundSource});
+    }
+
+    if (settingsState.Filters.Contractor?.length > 0) {
+        ret.push({id: 'ctr', value: settingsState.Filters.Contractor});
+    }
+
+    console.log('[convertStateToTableFilter]', ret);
 
     return ret;
 }
@@ -285,7 +299,7 @@ export const TableBase = () => {
     // Redux values (global-values)
     const dataState = useSelector(state => state.dataReducer);
     
-    //console.log('[TableBase] render, dataState:', dataState, 'New Table Filter', tableFilter);
+    console.log('[TableBase] render, dataState:', dataState);
     
     // Choose table to return
     return <TableByProject dataState={dataState}/>;

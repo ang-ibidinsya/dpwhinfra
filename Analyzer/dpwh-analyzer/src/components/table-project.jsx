@@ -13,6 +13,7 @@ import {formatMoney} from '../util';
 import {BarChart} from '../controls/barchart';
 import {EntityTypes} from '../enums';
 import {getMasterDataValue, statusColorMap} from '../util';
+import { filter } from 'jszip';
 
 const columnDefs = [
     {
@@ -77,6 +78,7 @@ const columnDefs = [
     {
         accessorKey: "ctr",
         header: "Contractor(s)",
+        filterFn: 'multiValueFilter',
         cell: ({ getValue, row, column, table }) => {
             let {masterData} = table.getState();
             return <div className="itemDesc">{getMasterDataValue(masterData, EntityTypes.contractor, getValue())}</div>
@@ -85,6 +87,7 @@ const columnDefs = [
     {
         accessorKey: "src",
         header: "Fund Source",
+        filterFn: 'multiValueFilter',
         cell: ({ getValue, row, column, table }) => {
             let {masterData} = table.getState();
             return <div className="itemDesc">{getMasterDataValue(masterData, EntityTypes.fundSource, getValue())}</div>
@@ -156,6 +159,9 @@ export const TableByProject = (props) => {
         onColumnFiltersChange: setColumnFilters,
         filterFns: {
             multiValueFilter: (row, columnId, filterValue) => {
+                if (row.getValue('cId')  === '16CE0155') {
+                    console.log('[multiValueFilter] 16CE0155 filter:', filterValue);
+                }
                 let ret = filterValue.includes(row.getValue(columnId));
                 return ret;
             }
@@ -165,7 +171,8 @@ export const TableByProject = (props) => {
     useEffect(() => {
         console.log('[Project Table UseEffect]');
         table.setColumnFilters(convertStateToTableFilter(dataState))
-    }, [dataState.Filters.Project, dataState.Filters.Year, dataState.Filters.District, dataState.Filters.Region])
+    }, [dataState.Filters.Project, dataState.Filters.Year, dataState.Filters.District, dataState.Filters.Region, 
+        dataState.Filters.Status, dataState.Filters.FundSource, dataState.Filters.Contractor])
 
 
     return <div className="tableContainer">

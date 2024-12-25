@@ -33,18 +33,48 @@ const formatMasterDataComboOptions = (uniqValues) => {
 export const Settings = () => {
     // Note: calling watch here (not inside useEffect) will cause this for to re-render each time a watched value changes (not good)
     console.log('[Settings render]');
-    const {register, handleSubmit, watch, control} = useForm();
+    const {register, watch, control} = useForm();
 
-    // redux values
-    
-    const dispatch = useDispatch();
-    const dataState = useSelector(state => state.dataReducer);
-
+    // redux values    
+    const dataState = useSelector(state => state.dataReducer);    
     const uniqueRegions = dataState?.MasterData?.RegionMaster;
     const uniqueDistricts = dataState?.MasterData?.DistrictMaster;
     const uniqueContractors = dataState?.MasterData?.ContractorMaster;
     const uniqueStatuses = dataState?.MasterData?.StatusMaster;
     const uniqueSourceOfFunds = dataState?.MasterData?.SourceMaster;
+    
+    // redux dispatch-related
+    const dispatch = useDispatch();
+
+    // Purpose: for firing redux action
+    useEffect(() => {
+        console.log('[Settings] useEffect')
+        const subscription = watch( data => {
+            // Will be called on each input change of any of the controls
+            // At least, no re-render happens
+            console.log('[watch subscription]', data);
+            const actionPayload = {
+                // Filters
+                Filters: {
+                    Project: data.Project,
+                    Year: data.Year ? data.Year.map(x => x.value): [],
+                    Region: data.Region ? data.Region.map(x => parseInt(x.value)): [],
+                    District: data.District ? data.District.map(x => parseInt(x.value)): [],
+                    Status: data.Status ? data.Status.map(x => parseInt(x.value)): [],
+                    FundSource: data['Fund Source'] ? data['Fund Source'].map(x => parseInt(x.value)): [],
+                    Contractor: data.Contractor ? data.Contractor.map(x => parseInt(x.value)): [],
+                },
+                // Grouping
+                Grouping: data.Grouping
+            }
+            dispatch(setSettings(actionPayload));
+        });
+
+        return () => {
+            // Need to unsubscribe, otherwise the subscription function will be called 1 time each per registerd control, for each keystroke
+            subscription.unsubscribe();
+        }
+    }, [watch]);
 
     const createGroupingFields = () => {
         return <div className="groupingFieldsContainer">
@@ -126,10 +156,6 @@ export const Settings = () => {
         };
 
         const customComponents = {};
-        if (options?.largeCombo) {
-            //customComponents.MenuList = CustomMenuList;
-            //customComponents.Option = CustomOption;
-        }
         let inputElem = null;
         if (fieldType === 'text') {
             inputElem = <input {...register(fieldName)} type="text" className="fieldText"></input>;

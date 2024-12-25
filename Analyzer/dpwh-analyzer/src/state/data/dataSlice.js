@@ -6,21 +6,37 @@ const satisfiesFilter = (currData, filters) => {
     }
 
     // [1] year
-    if (filters.Year?.length > 0 && !filters.Year.includes(currData.Year)) {
+    if (filters.Year?.length > 0 && !filters.Year.includes(currData.yr)) {
         return false;
     }
     // [2] Region
-    if (filters.Region?.length > 0 && !filters.Region.includes(currData.Region)) {
+    if (filters.Region?.length > 0 && !filters.Region.includes(currData.rgn)) {
         return false;
     }
     // [3] District
-    if (filters.District?.length > 0 && !filters.District.includes(currData.District)) {
+    if (filters.District?.length > 0 && !filters.District.includes(currData.dst)) {
         return false;
     }
     // [4] Item Name (case insensitive)
-    if (filters.Project && currData.Item.toUpperCase().indexOf(filters.Project.toUpperCase()) < 0) {
+    if (filters.Project && currData.dsc.toUpperCase().indexOf(filters.Project.toUpperCase()) < 0) {
         return false;
     }
+
+    // [5] Status
+    if (filters.Status?.length > 0 && !filters.Status.includes(currData.sts)) {
+        return false;
+    }
+
+    // [6] Fund Source
+    if (filters.FundSource?.length > 0 && !filters.FundSource.includes(currData.src)) {
+        return false;
+    }
+
+    // [7] Contractor
+    if (filters.Contractor?.length > 0 && !filters.Contractor.includes(currData.src)) {
+        return false;
+    }
+
     return true;
 }
 
@@ -179,10 +195,11 @@ const dataSlice = createSlice({
     initialState,
     reducers: {
         setSettings: (state, action) => {
-            console.log('[settings reducer][setSettings] action:', action);
+            console.log('[settings reducer][setSettings] Start action:', action);
             Object.assign(state, action.payload);
             Object.assign(state.Filters, action.payload.Filters);
             Object.assign(state.FilteredData, mapAndFilterData(state.AllData, action.payload.Filters))
+            console.log('[settings reducer][setSettings] Finished action:', action);
         },
         setInitialData: (state, action) => {
             console.log('[settings reducer][setInitialData] action:', action);
