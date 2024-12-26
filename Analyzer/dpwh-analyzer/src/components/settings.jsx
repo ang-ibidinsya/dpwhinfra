@@ -8,6 +8,7 @@ import {setSettings} from '../state/data/dataSlice';
 import {uniqueYears} from './filterItems';
 import {CustomOption} from './customOption';
 import { filterOptions } from '../util';
+import {DebouncedTextField} from '../controls/debouncedTextField';
 
 
 // Needed by React Select
@@ -158,7 +159,15 @@ export const Settings = () => {
         const customComponents = {};
         let inputElem = null;
         if (fieldType === 'text') {
-            inputElem = <input {...register(fieldName)} type="text" className="fieldText"></input>;
+            inputElem = <Controller
+            name={fieldName}
+            control={control}
+            defaultValue=""
+            render = {(props) => {                    
+                    return <DebouncedTextField controllerProps={props}></DebouncedTextField>
+                }
+            }
+            />
         }
         else if (options?.largeCombo) {
             const allOptions = comboOptions[fieldName];
