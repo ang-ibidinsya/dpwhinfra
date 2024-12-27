@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 const satisfiesFilter = (currData, filters) => {
     if (!filters) {
@@ -187,7 +187,9 @@ const initialState = {
         ContractorGroups: {}
     }
     */
-    FilteredData: mapAndFilterData(null, null)
+    FilteredData: mapAndFilterData(null, null),
+    FilterLoadingMsg: null,
+    dummy: null
 };
 
 const dataSlice = createSlice({
@@ -207,8 +209,57 @@ const dataSlice = createSlice({
             Object.assign(state.MasterData, action.payload.masterDataJson);
             Object.assign(state.FilteredData, mapAndFilterData(state.AllData, null))
         }
+    },
+    // For handling async actions
+    extraReducers: (builder) => {
+        builder
+        .addCase(doHeavTaskAsync.pending, (state) => {
+            console.log('doHeavTaskAsync.pending');
+            state.FilterLoadingMsg = 'Applying Filter...';
+        })
+        .addCase(doHeavTaskAsync.fulfilled, (state,action) => {            
+            console.log('doHeavTaskAsync.fulfilled');
+            state.FilterLoadingMsg = null;
+        })
+        .addCase(setSettingsAsync.pending, (state) => {
+            console.log('setSettingsAsync.pending');                        
+            //state.FilterLoadingMsg = 'Applying Filter...'; // Uncomment to show spinner (we hide it now because filtering seems very fast done asynchronously)
+            // TODO: Overall, it becomes slow if there is column sorting applied. This async function finishes fast, so spinner is gone quickly.
+            // But the table rendering is slow because it still needs to sort data. Need to move the spinner to somewhere else.
+        })
+        .addCase(setSettingsAsync.fulfilled, (state, action) => {            
+            console.log('setSettingsAsync.fulfilled');
+            state.Filters = action.payload.Filters;
+            state.FilteredData = action.payload.FilteredData;
+            //state.FilterLoadingMsg = null;// Uncomment to show spinner (we hide it now because filtering seems very fast done asynchronously)
+        })
     }
-})
+});
+
+// For studying  only
+export const doHeavTaskAsync = createAsyncThunk(
+    'data/doHeavTaskAsync',
+    async(payload, thunkAPI) => {
+        let origState = thunkAPI.getState();
+        await new Promise((resolve => setTimeout(resolve, 2000)));
+        return 123;
+    }
+);
+
+export const setSettingsAsync = createAsyncThunk(
+    'data/setSettingsAsync',
+    async(payload, thunkAPI) => {
+        let origState = thunkAPI.getState();
+        const updatedState = await new Promise((resolve => {
+            const updatedFilteredData = mapAndFilterData(origState.dataReducer.AllData, payload.Filters);
+            resolve({
+                Filters: payload.Filters,
+                FilteredData: updatedFilteredData
+            });
+        }));
+        return updatedState;
+    }
+);
 
 export const {setSettings, setInitialData} = dataSlice.actions;
 export const dataReducer = dataSlice.reducer;

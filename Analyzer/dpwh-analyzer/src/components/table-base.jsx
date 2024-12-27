@@ -1,5 +1,5 @@
 import './table-base.css';
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import {
     flexRender,
     getCoreRowModel,
@@ -12,6 +12,7 @@ import { formatMoney, formatNumber, getMasterDataValue, statusColorMap } from '.
 import {useSelector} from 'react-redux';
 import 'react-tooltip/dist/react-tooltip.css';
 import {EntityTypes} from '../enums';
+import {LoadingIndicator} from './loadingIndicator';
 import { TableByProject } from './table-project';
 
 const iconSortLookup = {
@@ -67,41 +68,7 @@ export const createToolTip = (tooltipId) => {
   />
 }
 
-// Returns Table filter required by react-table
-export const convertStateToTableFilter= (settingsState) => {
-    let ret = [];
-    if (settingsState.Filters.Project) {
-        ret.push({id: 'dsc', value: settingsState.Filters.Project});
-    }
-    
-    if (settingsState.Filters.Year?.length > 0) {
-        ret.push({id: 'yr', value: settingsState.Filters.Year});
-    }
 
-    if (settingsState.Filters.Region?.length > 0) {
-        ret.push({id: 'rgn', value: settingsState.Filters.Region});
-    }
-
-    if (settingsState.Filters.District?.length > 0) {
-        ret.push({id: 'dst', value: settingsState.Filters.District});
-    }
-
-    if (settingsState.Filters.Status?.length > 0) {
-        ret.push({id: 'sts', value: settingsState.Filters.Status});
-    }
-
-    if (settingsState.Filters.FundSource?.length > 0) {
-        ret.push({id: 'src', value: settingsState.Filters.FundSource});
-    }
-
-    if (settingsState.Filters.Contractor?.length > 0) {
-        ret.push({id: 'ctr', value: settingsState.Filters.Contractor});
-    }
-
-    console.log('[convertStateToTableFilter]', ret);
-
-    return ret;
-}
 
 export const prepareBody = (table, entityType) => {
 
@@ -202,6 +169,7 @@ const getSortingIcon = (isSorted) => {
 
 export const prepareHeader = (table) => {
     const headerGroups = table.getHeaderGroups();
+    const setLoadingMsg = table.getState()?.setLoadingMsg;
     let headerColumns = [];
     
     headerGroups.forEach(hdrGrp => {
@@ -215,9 +183,20 @@ export const prepareHeader = (table) => {
             if (isSortable) {
                 thClassNames += ' thSortable'
             }
-            let colSpan = colHeader === 'Cost' ? 2 : 1;
-
-            headerColumns.push(<th key={header.id} className={thClassNames} onClick={header.column.getToggleSortingHandler()} colSpan={colSpan}>
+            let colSpan = colHeader === 'Cost' ? 2 : 1;            
+            headerColumns.push(<th key={header.id} className={thClassNames} 
+                onClick={ () => {
+                    if (!isSortable) {
+                        return;
+                    }
+                    setLoadingMsg(`Sorting Table by ${colHeader}...`);
+                        setTimeout(() => {                            
+                            header.column.toggleSorting();             
+                            setLoadingMsg(null);
+                          }, 0);
+                    }                   
+                } 
+                colSpan={colSpan}>
                 {colHeader}
                 {isSortable && getSortingIcon(header.column.getIsSorted())}                
             </th>);
@@ -297,11 +276,20 @@ export const preparePagninator = (table) => {
 
 export const TableBase = () => {
     // Redux values (global-values)
+    // TODO: Do not select entire reducer to avoid unnecessary re-render while simply showing loader icon.
     const dataState = useSelector(state => state.dataReducer);
+    const [loadingMsg, setLoadingMsg] = useState(null);
+    const tableRef = useRef();
     
-    console.log('[TableBase] render, dataState:', dataState);
+    console.log('[TableBase] render, dataState:', dataState);    
     
     // Choose table to return
-    return <TableByProject dataState={dataState}/>;
+    return <>
+        {loadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={loadingMsg}/>}
+        {/* {dataState.FilterLoadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={dataState.FilterLoadingMsg}/>} */}
+        <div className="tableContainer" ref={tableRef}>
+            <TableByProject dataState={dataState} setLoadingMsg={setLoadingMsg}/>
+        </div>
+    </>
 
 }

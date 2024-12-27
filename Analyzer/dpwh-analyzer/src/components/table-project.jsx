@@ -8,12 +8,12 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
-import {prepareBody, prepareHeader, preparePagninator, showGrandTotal, convertStateToTableFilter} from './table-base';
-import {formatMoney} from '../util';
+import {prepareBody, prepareHeader, preparePagninator, showGrandTotal} from './table-base';
+import {formatMoney, convertStateToTableFilter} from '../util';
 import {BarChart} from '../controls/barchart';
 import {EntityTypes} from '../enums';
 import {getMasterDataValue, statusColorMap} from '../util';
-import { filter } from 'jszip';
+import {LoadingIndicator} from './loadingIndicator';
 
 const columnDefs = [
     {
@@ -130,7 +130,7 @@ export const TableByProject = (props) => {
     console.log('[TableByProject] render');
 
     const [columnFilters, setColumnFilters] = useState([]);
-    const {dataState} = props;
+    const {dataState, setLoadingMsg} = props;
 
     const table = useReactTable({
         data: dataState.AllData,
@@ -155,6 +155,7 @@ export const TableByProject = (props) => {
             masterData: dataState.MasterData,
             maxCost: dataState.FilteredData.overallProjMaxCost,
             minCost: dataState.FilteredData.overallProjMinCost,
+            setLoadingMsg: setLoadingMsg
         },
         onColumnFiltersChange: setColumnFilters,
         filterFns: {
@@ -175,7 +176,8 @@ export const TableByProject = (props) => {
         dataState.Filters.Status, dataState.Filters.FundSource, dataState.Filters.Contractor])
 
 
-    return <div className="tableContainer">
+    return <>     
+        {/* <LoadingIndicator isOverlay={true}/> */}
         {showGrandTotal(table, 'p')}
         {preparePagninator(table)}
         <table className="tableBase">
@@ -187,5 +189,5 @@ export const TableByProject = (props) => {
             </tbody>
         </table>
         
-    </div>;
+    </>;
 }

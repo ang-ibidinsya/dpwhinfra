@@ -1,10 +1,10 @@
 import './settings.css';
 import { useForm, Controller } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector} from 'react-redux';
 import Select, {createFilter} from 'react-select';
 import AsyncSelect from 'react-select/async';
-import {setSettings} from '../state/data/dataSlice';
+import {setSettings, doHeavTaskAsync, setSettingsAsync} from '../state/data/dataSlice';
 import {uniqueYears} from './filterItems';
 import {CustomOption} from './customOption';
 import { filterOptions } from '../util';
@@ -37,12 +37,12 @@ export const Settings = () => {
     const {register, watch, control} = useForm();
 
     // redux values    
-    const dataState = useSelector(state => state.dataReducer);    
-    const uniqueRegions = dataState?.MasterData?.RegionMaster;
-    const uniqueDistricts = dataState?.MasterData?.DistrictMaster;
-    const uniqueContractors = dataState?.MasterData?.ContractorMaster;
-    const uniqueStatuses = dataState?.MasterData?.StatusMaster;
-    const uniqueSourceOfFunds = dataState?.MasterData?.SourceMaster;
+    const dataStateMasterData = useSelector(state => state.dataReducer?.MasterData);
+    const uniqueRegions = dataStateMasterData?.RegionMaster;
+    const uniqueDistricts = dataStateMasterData?.DistrictMaster;
+    const uniqueContractors = dataStateMasterData?.ContractorMaster;
+    const uniqueStatuses = dataStateMasterData?.StatusMaster;
+    const uniqueSourceOfFunds = dataStateMasterData?.SourceMaster;
     
     // redux dispatch-related
     const dispatch = useDispatch();
@@ -67,8 +67,9 @@ export const Settings = () => {
                 },
                 // Grouping
                 Grouping: data.Grouping
-            }
-            dispatch(setSettings(actionPayload));
+            }            
+            //dispatch(setSettings(actionPayload));
+            dispatch(setSettingsAsync(actionPayload));            
         });
 
         return () => {

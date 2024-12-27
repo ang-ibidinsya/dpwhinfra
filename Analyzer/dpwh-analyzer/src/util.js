@@ -70,3 +70,39 @@ export const statusColorMap = {
     ['On-Going']: '#fffec8',
     'Not Yet Started': '#eee'
 }
+
+// Returns Table filter required by react-table
+export const convertStateToTableFilter= (settingsState) => {
+    let ret = [];
+    if (settingsState.Filters.Project) {
+        ret.push({id: 'dsc', value: settingsState.Filters.Project});
+    }
+    
+    if (settingsState.Filters.Year?.length > 0) {
+        ret.push({id: 'yr', value: settingsState.Filters.Year});
+    }
+
+    if (settingsState.Filters.Region?.length > 0) {
+        ret.push({id: 'rgn', value: settingsState.Filters.Region});
+    }
+
+    if (settingsState.Filters.District?.length > 0) {
+        ret.push({id: 'dst', value: settingsState.Filters.District});
+    }
+
+    if (settingsState.Filters.Status?.length > 0) {
+        ret.push({id: 'sts', value: settingsState.Filters.Status});
+    }
+
+    if (settingsState.Filters.FundSource?.length > 0) {
+        ret.push({id: 'src', value: settingsState.Filters.FundSource});
+    }
+
+    if (settingsState.Filters.Contractor?.length > 0) {
+        ret.push({id: 'ctr', value: settingsState.Filters.Contractor});
+    }
+
+    console.log('[convertStateToTableFilter]', ret);
+
+    return ret;
+}

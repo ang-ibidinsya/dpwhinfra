@@ -1,7 +1,7 @@
 import './App.css';
 import JSZip from 'jszip';
-import { useEffect, useState } from 'react';
-import { useDispatch} from 'react-redux';
+import { useEffect, useState, useRef } from 'react';
+import { useDispatch, useSelector} from 'react-redux';
 import { setInitialData } from './state/data/dataSlice';
 import { LoadingIndicator } from './components/loadingIndicator';
 import {AppHeader} from './components/appHeader';
@@ -47,16 +47,20 @@ function App() {
     fetchAndLoadData();
     }, []) // Run once only when the component mounts
 
+    const tableRef = useRef();
+    const dataSliceFilterLoadingMsg = useSelector(state => state.dataReducer.FilterLoadingMsg);   
+
     if (!finishedLoading) {
         return <LoadingIndicator/>;
     }
-
+    
     return (
-    <>
+    <div ref={tableRef}>
+        {dataSliceFilterLoadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={dataSliceFilterLoadingMsg}/>}
         <AppHeader/>
         <Settings/>
         <TableBase/>
-    </>
+    </div>
     )
 }
 
