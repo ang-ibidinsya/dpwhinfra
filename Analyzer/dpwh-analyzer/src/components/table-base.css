@@ -13,6 +13,9 @@
     padding: 5px 10px 5px 10px;    
 }
 
+.tdTable {
+    word-break: break-word;
+}
 
 .tdSummary {
     white-space: nowrap;
@@ -23,6 +26,11 @@
     border-top: 2px solid lightgrey;
     border-bottom: 2px solid lightgrey;
     padding: 5px 10px 5px 10px;
+}
+
+.tdStatus {
+    word-break: keep-all;
+    font-size: 0.95rem;
 }
 
 .tdCostBar {
@@ -60,6 +68,7 @@
 
 .itemDesc {
     font-size: 0.95rem;
+    word-break: break-word;
 }
 
 .table-icon {

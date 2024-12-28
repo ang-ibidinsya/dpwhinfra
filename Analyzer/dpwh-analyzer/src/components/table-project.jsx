@@ -9,10 +9,9 @@ import {
     useReactTable,
   } from "@tanstack/react-table";
 import {prepareBody, prepareHeader, preparePagninator, showGrandTotal} from './table-base';
-import {formatMoney, convertStateToTableFilter} from '../util';
+import {formatMoney, convertStateToTableFilter, getMasterDataValue} from '../util';
 import {BarChart} from '../controls/barchart';
 import {EntityTypes} from '../enums';
-import {getMasterDataValue, statusColorMap} from '../util';
 import {LoadingIndicator} from './loadingIndicator';
 
 const columnDefs = [
@@ -126,9 +125,7 @@ const columnDefs = [
 
 ];
 
-export const TableByProject = (props) => {
-    console.log('[TableByProject] render');
-
+export const TableByProject = (props) => {    
     const [columnFilters, setColumnFilters] = useState([]);
     const {dataState, setLoadingMsg} = props;
 
@@ -168,6 +165,8 @@ export const TableByProject = (props) => {
             }
         }
     })
+
+    console.log('[TableByProject] render grandTotal', formatMoney(dataState.FilteredData.grandTotal));
 
     useEffect(() => {
         console.log('[Project Table UseEffect]');

@@ -121,7 +121,7 @@ export const prepareBody = (table, entityType) => {
     }
 
     const prepareStatusCell = (cell, row) => {
-        let cellClass = 'tdTable';
+        let cellClass = 'tdTable tdStatus';
         const {masterData} = table.getState();
         const statusVal = row.getValue('sts');
         const statusStr = getMasterDataValue(masterData, EntityTypes.status, statusVal)
