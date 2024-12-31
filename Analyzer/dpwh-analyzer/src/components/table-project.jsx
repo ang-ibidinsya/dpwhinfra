@@ -77,10 +77,15 @@ const columnDefs = [
     {
         accessorKey: "ctr",
         header: "Contractor(s)",
-        filterFn: 'multiValueFilter',
+        filterFn: 'multiValueListFilter',
         cell: ({ getValue, row, column, table }) => {
             let {masterData} = table.getState();
-            return <div className="itemDesc">{getMasterDataValue(masterData, EntityTypes.contractor, getValue())}</div>
+            let contractors = getMasterDataValue(masterData, EntityTypes.contractor, getValue());
+            if (contractors.length == 0) {
+                return null;
+            }
+            return <div className="itemDesc">{contractors.map((contractor, i) => <div key={i}>{`• ${contractor}`}</div>)
+            }</div>
         },
     },
     {
@@ -157,10 +162,12 @@ export const TableByProject = (props) => {
         onColumnFiltersChange: setColumnFilters,
         filterFns: {
             multiValueFilter: (row, columnId, filterValue) => {
-                if (row.getValue('cId')  === '16CE0155') {
-                    console.log('[multiValueFilter] 16CE0155 filter:', filterValue);
-                }
                 let ret = filterValue.includes(row.getValue(columnId));
+                return ret;
+            },
+            multiValueListFilter: (row, columnId, filterValue) => {
+                let cellVals = row.getValue(columnId);
+                let ret = filterValue.some(filter => cellVals.includes(filter));
                 return ret;
             }
         }

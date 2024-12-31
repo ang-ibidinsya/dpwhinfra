@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Net;
 using System.Text;
 using HtmlAgilityPack;
 
@@ -47,10 +48,12 @@ public class Util
             if (!node.HasChildNodes)
             {
                 string text = node.InnerText.Trim();
+                text = WebUtility.HtmlDecode(text);
                 if (string.IsNullOrEmpty(text))
                 {
                     continue;
                 }
+                
                 retList.Add(text);
             }
         }

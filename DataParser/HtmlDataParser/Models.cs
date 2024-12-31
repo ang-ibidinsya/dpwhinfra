@@ -9,8 +9,8 @@ public class Contract
     [JsonPropertyName("dsc")]
     public string Desc { get; set; }
     [JsonPropertyName("ctr")]
-    public uint ContractorId { get; set; }
-    public string Contractor;
+    public List<uint> ContractorIds { get; set; } = new List<uint>();
+    public List<string> Contractors = new List<string>();
     [JsonPropertyName("dst")]
     public ushort DistrictOfficeId { get; set; }
     public string DistrictOffice;
@@ -21,11 +21,11 @@ public class Contract
     [JsonPropertyName("p")] // pesos
     public decimal Cost { get; set; }
     [JsonPropertyName("frm")]
-    public string StartDateStr { get { return StartDate.ToString("yy-MM-dd"); }}
-    public DateTime StartDate;
+    public string StartDateStr { get { return StartDate.HasValue ? StartDate.Value.ToString("yy-MM-dd") : string.Empty; }}
+    public DateTime? StartDate;
     [JsonPropertyName("to")]
-    public string EndDateStr { get { return EndDate.ToString("yy-MM-dd"); }}
-    public DateTime EndDate;
+    public string EndDateStr { get { return EndDate.HasValue ? EndDate.Value.ToString("yy-MM-dd") : string.Empty; }}
+    public DateTime? EndDate;
     [JsonPropertyName("sts")]
     public ushort StatusId { get; set; }
     public string Status;

@@ -5,6 +5,7 @@ using HtmlAgilityPack;
 
 public class DpwhInfraParser
 {
+    private readonly string DELIMIT_CONTRACTOR = ") / ";
     private List<Contract> allContracts = new List<Contract>();
     private MasterData masterData = new MasterData();
     public void ParseAllData(string pathDir)
@@ -23,8 +24,16 @@ public class DpwhInfraParser
         }
         Console.WriteLine($"Finished Parsing, found {allContracts.Count()} contracts");
 
-        File.WriteAllText("AllContracts.json", JsonSerializer.Serialize(allContracts));
-        File.WriteAllText("MasterData.json", JsonSerializer.Serialize(masterData));
+        // Sort in place by cost, to try to improve speed in web
+        var sortedContracts = allContracts.OrderByDescending(c => c.Cost).ThenByDescending(c => c.Year);
+        // To avoid unnecessarily escaping ampersand and + in JSON
+        var options = new JsonSerializerOptions
+        {
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+
+        File.WriteAllText("AllContracts.json", JsonSerializer.Serialize(sortedContracts, options));
+        File.WriteAllText("MasterData.json", JsonSerializer.Serialize(masterData, options));
         Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] Finished Writing!");
     }
 
@@ -78,8 +87,7 @@ public class DpwhInfraParser
             Contract contract = ParseTable(tableNode, fileName, iYear, selectedRegion);
             ExtractContractMasterData(contract);
             allContracts.Add(contract);
-        }
-        
+        }        
     }
 
     /* Expected Schema we are parsing:
@@ -132,7 +140,7 @@ public class DpwhInfraParser
                 }
                 if (strList[idxB+1] != "c)")
                 {
-                    ret.Contractor = strList[idxB+1];
+                    ret.Contractors = ProcessContractor(strList[idxB+1]);
                 }
                 else
                 {
@@ -214,6 +222,29 @@ public class DpwhInfraParser
         return ret;
     }
 
+    // Raw contractor string Usually in this format:
+    // SUPREME ABF CONST. \u0026 CONST. SUPPLY COMPANY INC. (25226) / SILVERROCK CONSTRUCTION \u0026 SUPPLY (38216)
+    // But Sometimes it can also contain slash that does not delimit contractors:
+    // MATT GLASS/ ALUMINUM/ CONSTRUCTION SUPPLY AND ALLIED SERVICES (37092)
+    private List<string> ProcessContractor(string strRawContractors)
+    {        
+        List<string> retList = new List<string>();
+        int currIdx = 0;
+        while(true)
+        {
+            int delimitIdx = strRawContractors.IndexOf(DELIMIT_CONTRACTOR, currIdx);
+            if (delimitIdx < 0)
+            {
+                retList.Add(strRawContractors.Substring(currIdx).Trim());
+                break;
+            }            
+            retList.Add(strRawContractors.Substring(currIdx, delimitIdx - currIdx + 1).Trim());
+            currIdx = delimitIdx + 3; // Because ") / ", we want to advance to the last space
+        }
+
+        return retList;
+    }
+
     private void ExtractContractMasterData(Contract contract)
     {
         if (!masterData.RegionMap.ContainsKey(contract.Region))
@@ -234,13 +265,16 @@ public class DpwhInfraParser
         }
         contract.StatusId = masterData.StatusMap[contract.Status];
 
-        if (contract.Contractor != null)
+        if (contract.Contractors.Any())
         {
-            if (!masterData.ContractorMap.ContainsKey(contract.Contractor))
+            foreach(string contractor in contract.Contractors)
             {
-                masterData.ContractorMap.Add(contract.Contractor, (ushort)masterData.ContractorMap.Count);
+                if (!masterData.ContractorMap.ContainsKey(contractor))
+                {
+                    masterData.ContractorMap.Add(contractor, (ushort)masterData.ContractorMap.Count);
+                }
+                contract.ContractorIds.Add(masterData.ContractorMap[contractor]);
             }
-            contract.ContractorId = masterData.ContractorMap[contract.Contractor];
         }
 
         if (!masterData.SourceMap.ContainsKey(contract.SourceOfFunds))
