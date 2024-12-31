@@ -12,7 +12,7 @@ import {prepareBody, prepareHeader, preparePagninator, showGrandTotal} from './t
 import {formatMoney, convertStateToTableFilter, getMasterDataValue} from '../util';
 import {BarChart} from '../controls/barchart';
 import {EntityTypes} from '../enums';
-import {LoadingIndicator} from './loadingIndicator';
+import {LoadingIndicator} from '../controls/loadingIndicator';
 
 const columnDefs = [
     {

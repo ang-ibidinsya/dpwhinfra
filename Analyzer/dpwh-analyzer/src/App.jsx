@@ -3,7 +3,7 @@ import JSZip from 'jszip';
 import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector} from 'react-redux';
 import { setInitialData } from './state/data/dataSlice';
-import { LoadingIndicator } from './components/loadingIndicator';
+import { LoadingIndicator } from './controls/loadingIndicator';
 import {AppHeader} from './components/appHeader';
 import {Settings} from './components/settings';
 import { TableBase } from './components/table-base';

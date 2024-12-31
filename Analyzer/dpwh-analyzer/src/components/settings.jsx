@@ -6,7 +6,6 @@ import Select, {createFilter} from 'react-select';
 import AsyncSelect from 'react-select/async';
 import {setSettings, doHeavTaskAsync, setSettingsAsync} from '../state/data/dataSlice';
 import {uniqueYears} from './filterItems';
-import {CustomOption} from './customOption';
 import { filterOptions } from '../util';
 import {DebouncedTextField} from '../controls/debouncedTextField';
 

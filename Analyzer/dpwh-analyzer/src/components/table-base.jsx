@@ -12,7 +12,7 @@ import { formatMoney, formatNumber, getMasterDataValue, statusColorMap } from '.
 import {useSelector} from 'react-redux';
 import 'react-tooltip/dist/react-tooltip.css';
 import {EntityTypes} from '../enums';
-import {LoadingIndicator} from './loadingIndicator';
+import {LoadingIndicator} from '../controls/loadingIndicator';
 import { TableByProject } from './table-project';
 
 const iconSortLookup = {
