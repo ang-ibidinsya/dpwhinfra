@@ -4,9 +4,10 @@ import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector} from 'react-redux';
 import { setInitialData } from './state/data/dataSlice';
 import { LoadingIndicator } from './controls/loadingIndicator';
-import {AppHeader} from './components/appHeader';
-import {Settings} from './components/settings';
+import { AppHeader} from './components/appHeader';
+import { Settings} from './components/settings';
 import { TableBase } from './components/table-base';
+import {createToolTip} from './components/table-base';
 
 function App() {
     console.log('App Render...');
@@ -57,6 +58,7 @@ function App() {
     return (
     <div ref={tableRef}>
         {dataSliceFilterLoadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={dataSliceFilterLoadingMsg}/>}
+        {createToolTip('my-tooltip')}
         <AppHeader/>
         <Settings/>
         <TableBase/>

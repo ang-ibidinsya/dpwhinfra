@@ -14,6 +14,9 @@ import {BarChart} from '../controls/barchart';
 import {EntityTypes} from '../enums';
 import {LoadingIndicator} from '../controls/loadingIndicator';
 
+const BARCHART_ADJUSTER_MIN = 10;
+const BARCHART_ADJUSTER_MAX = 10;
+
 const columnDefs = [
     {
         accessorKey: "yr",
@@ -124,7 +127,9 @@ const columnDefs = [
         header: "CostBar",
         cell: ({ getValue, row, column, table }) => {
             let {minCost, maxCost} = table.getState();
-            return <BarChart cost={row.getValue('p')} minCost={minCost} maxCost={maxCost}/>;
+            return <BarChart cost={row.getValue('p')} minCost={minCost} maxCost={maxCost} 
+                        adjusterMin={BARCHART_ADJUSTER_MIN}
+                        adjusterMax={BARCHART_ADJUSTER_MAX}/>;
         },
     },
 

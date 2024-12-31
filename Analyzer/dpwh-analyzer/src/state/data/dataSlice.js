@@ -71,9 +71,9 @@ const mapAndFilterData = (data, filters) => {
     // use for instead of forEach
     for (let i = 0; i < data.length; i++) {        
         let currData = data[i];
-        let currYear = currData.Year;
-        let currRegion = currData.Region;
-        let currDistrict = currData.District;
+        let currYear = currData.yr;
+        let currRegion = currData.rgn;
+        let currDistrict = currData.dst;
 
         ret.overallProjMaxCost = Math.max(ret.overallProjMaxCost, currData.p);
         ret.overallProjMinCost = Math.min(ret.overallProjMinCost, currData.p);
@@ -133,11 +133,11 @@ const mapAndFilterData = (data, filters) => {
 
             //mapRegionGroups[currRegion].items.push(currData);
             mapRegionGroups[currRegion].subtotal += currData.p;
-            mapRegionGroups[currRegion].yearSubTotals[currData.Year] = (mapRegionGroups[currRegion].yearSubTotals[currData.Year] || 0 ) + currData.p;
+            mapRegionGroups[currRegion].yearSubTotals[currData.yr] = (mapRegionGroups[currRegion].yearSubTotals[currData.yr] || 0 ) + currData.p;
 
             //mapDistrictGroups[currDistrict].items.push(currData);
             mapDistrictGroups[currDistrict].subtotal += currData.p;
-            mapDistrictGroups[currDistrict].yearSubTotals[currData.Year] = (mapDistrictGroups[currDistrict].yearSubTotals[currData.Year] || 0 ) + currData.p;
+            mapDistrictGroups[currDistrict].yearSubTotals[currData.yr] = (mapDistrictGroups[currDistrict].yearSubTotals[currData.yr] || 0 ) + currData.p;
 
             ret.grandTotal += currData.p;
         }
@@ -231,6 +231,7 @@ const dataSlice = createSlice({
             console.log('setSettingsAsync.fulfilled');
             state.Filters = action.payload.Filters;
             state.FilteredData = action.payload.FilteredData;
+            state.Grouping = action.payload.Grouping;
             //state.FilterLoadingMsg = null;// Uncomment to show spinner (we hide it now because filtering seems very fast done asynchronously)
         })
     }
@@ -249,12 +250,14 @@ export const doHeavTaskAsync = createAsyncThunk(
 export const setSettingsAsync = createAsyncThunk(
     'data/setSettingsAsync',
     async(payload, thunkAPI) => {
+        console.log('[setSettingsAsync] payload', payload);
         let origState = thunkAPI.getState();
         const updatedState = await new Promise((resolve => {
             const updatedFilteredData = mapAndFilterData(origState.dataReducer.AllData, payload.Filters);
             resolve({
                 Filters: payload.Filters,
-                FilteredData: updatedFilteredData
+                FilteredData: updatedFilteredData,
+                Grouping: payload.Grouping
             });
         }));
         return updatedState;

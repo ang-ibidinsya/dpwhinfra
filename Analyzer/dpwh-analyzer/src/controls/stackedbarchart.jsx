@@ -2,9 +2,9 @@ import './stackedbarchart.css';
 
 
 export const mapColors = {
-    2016: 'magenta',
+    2016: 'cyan',
     2017: '#F39C12', //Orange
-    2018: '#2C3E50', //Dark Blue
+    2018: '#2c456b', //Dark Blue
     2019: '#2ECC71', //Green
     2020: '#3498DB', //Blue
     2021: '#E74C3C', //Red

@@ -8,12 +8,17 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
+import { Tooltip } from 'react-tooltip';
 import { formatMoney, formatNumber, getMasterDataValue, statusColorMap } from '../util';
-import {useSelector} from 'react-redux';
+import { useSelector} from 'react-redux';
 import 'react-tooltip/dist/react-tooltip.css';
-import {EntityTypes} from '../enums';
-import {LoadingIndicator} from '../controls/loadingIndicator';
+import { EntityTypes} from '../enums';
+import { LoadingIndicator} from '../controls/loadingIndicator';
 import { TableByProject } from './table-project';
+import { TableByYear} from './table-year';
+import { TableByRegion } from './table-region';
+import { TableByDistrict} from './table-district';
+import { mapColors, StackedBarChart } from '../controls/stackedbarchart';
 
 const iconSortLookup = {
     'asc': 'bx bxs-chevron-up-circle',
@@ -42,7 +47,7 @@ export const createToolTip = (tooltipId) => {
     clickable={true}
     float={true}
     style={{ background: "black", color: "#fff" }}
-    render={({ content, activeAnchor }) => {
+    render={({ content }) => {
         let subtotalsMap = JSON.parse(content);
         if (!subtotalsMap) {
             console.log('[ToolTip] Render -- NULL', content);
@@ -284,12 +289,42 @@ export const TableBase = () => {
     console.log('[TableBase] render, dataState:', dataState);    
     
     // Choose table to return
-    return <>
-        {loadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={loadingMsg}/>}
-        {/* {dataState.FilterLoadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={dataState.FilterLoadingMsg}/>} */}
-        <div className="tableContainer" ref={tableRef}>
-            <TableByProject dataState={dataState} setLoadingMsg={setLoadingMsg}/>
-        </div>
-    </>
+    if (dataState.Grouping === '' || dataState.Grouping === 'Project') {
+        return <>
+            {loadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={loadingMsg}/>}
+            {/* {dataState.FilterLoadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={dataState.FilterLoadingMsg}/>} */}
+            <div className="tableContainer" ref={tableRef}>
+                <TableByProject dataState={dataState} setLoadingMsg={setLoadingMsg}/>
+            </div>
+        </>
+    }
+
+    if (dataState.Grouping === 'Year') {
+        return <>
+            {loadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={loadingMsg}/>}
+            <div className="tableContainer" ref={tableRef}>
+                <TableByYear dataState={dataState} setLoadingMsg={setLoadingMsg}/>
+            </div>
+        </>
+    }
+
+    if (dataState.Grouping === 'Region') {
+        return <>
+            {loadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={loadingMsg}/>}
+            <div className="tableContainer" ref={tableRef}>
+                <TableByRegion dataState={dataState} setLoadingMsg={setLoadingMsg}/>
+            </div>
+        </>
+    }
+
+    if (dataState.Grouping === 'District') {
+        return <>
+            {loadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={loadingMsg}/>}
+            <div className="tableContainer" ref={tableRef}>
+                <TableByDistrict dataState={dataState} setLoadingMsg={setLoadingMsg}/>
+            </div>
+        </>
+    }
+    
 
 }
