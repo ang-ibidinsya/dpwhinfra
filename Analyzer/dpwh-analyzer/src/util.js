@@ -58,8 +58,15 @@ export const getMasterDataValue = (masterData, masterDataType, value) => {
     }
 
     if (masterDataType === EntityTypes.contractor) {
+        
+        //[a] Single value - for contractor view
+        if (!Array.isArray(value)) {
+            return masterData.ContractorMaster[value];
+        }
+
+        // [b] Array Value - for projects view
         let contractorIds = value;
-        if (!Array.isArray(contractorIds) || contractorIds.length == 0) {
+        if (contractorIds.length == 0) {
             return [];
         }
         let contractorStrArr = contractorIds.map(cid => masterData.ContractorMaster[cid]);

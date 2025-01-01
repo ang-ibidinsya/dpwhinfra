@@ -20,6 +20,7 @@ import { TableByRegion } from './table-region';
 import { TableByDistrict} from './table-district';
 import { mapColors, StackedBarChart } from '../controls/stackedbarchart';
 import { TableByFundSrc } from './table-fundsrc';
+import { TableByContractor } from './table-contractor';
 
 const iconSortLookup = {
     'asc': 'bx bxs-chevron-up-circle',
@@ -81,7 +82,8 @@ export const prepareBody = (table, entityType) => {
     
     const prepareCostBarCell = (cell, row) => {
         let cellClass = 'tdCostBar ';
-        if (entityType === EntityTypes.district || entityType === EntityTypes.region || entityType === EntityTypes.fundSource) {
+        if (entityType === EntityTypes.district || entityType === EntityTypes.region 
+            || entityType === EntityTypes.fundSource || entityType === EntityTypes.contractor) {                
             // Stacked Bar Chart
             // We put all the stackedbarChart logic here and avoid doing the rendering inside the columnDef cell render because the react-tooltip has intermittent issues when user clicks Sort
             cellClass += ' tdCostBarFullWidth';
@@ -118,7 +120,7 @@ export const prepareBody = (table, entityType) => {
         }
 
         if (entityType === EntityTypes.district || entityType === EntityTypes.region || entityType === EntityTypes.year 
-            || entityType === EntityTypes.fundSource
+            || entityType === EntityTypes.fundSource || entityType === EntityTypes.contractor
         ) {
             cellClass += ' tdSummary';
         }
@@ -334,6 +336,15 @@ export const TableBase = () => {
             {loadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={loadingMsg}/>}
             <div className="tableContainer" ref={tableRef}>
                 <TableByFundSrc dataState={dataState} setLoadingMsg={setLoadingMsg}/>
+            </div>
+        </>
+    }
+
+    if (dataState.Grouping === 'Contractor') {
+        return <>
+            {loadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={loadingMsg}/>}
+            <div className="tableContainer" ref={tableRef}>
+                <TableByContractor dataState={dataState} setLoadingMsg={setLoadingMsg}/>
             </div>
         </>
     }

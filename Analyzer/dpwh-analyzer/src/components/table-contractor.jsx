@@ -8,15 +8,14 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
-import {prepareBody, prepareHeader, preparePagninator} from './table-base';
-import {formatMoney} from '../util';
-import {BarChart} from '../controls/barchart';
+import {prepareBody, prepareHeader, preparePagninator, showYearLegends, createToolTip} from './table-base';
+import {formatMoney, getMasterDataValue} from '../util';
 import {EntityTypes} from '../enums';
 
 const convertStateToTableFilter = (dataState) => {
     let ret = [{id: 'subtotal', value: null}];// Add a dummy subtotal filter, so that its custom filter can filter out 0 values
-    if (dataState.Filters.Year?.length > 0) {
-        ret.push({id: 'year', value: dataState.Filters.Year});
+    if (dataState.Filters.Contractor?.length > 0) {
+        ret.push({id: 'contractor', value: dataState.Filters.Contractor});
     }
     return ret;
 }
@@ -28,60 +27,65 @@ export const showGrandTotalDirectly = (grandTotal) => {
     </div>;
 }
 
-export const TableByYear = (props) => {
+export const TableByContractor = (props) => {
     
     const [columnFilters, setColumnFilters] = useState([]);
-    const {dataState} = props;
+    const [sorting, setSorting] = useState([{
+        id: 'subtotal',
+        desc: true
+    }]);
+    const {dataState, setLoadingMsg} = props;
     
-    console.log('[TableByYear] render, dataState:', dataState);
+    console.log('[TableByContractor] render, dataState:', dataState);
 
-    const filteredYearGroups = dataState.FilteredData?.yearGroups;
-    console.log('filteredYearGroups', filteredYearGroups);
+    const filteredContractorGroups = dataState.FilteredData?.contractorGroups;
+    console.log('filteredContractorGroups', filteredContractorGroups);
 
     const columnDefs = [
         {
-            accessorKey: "year",
-            header: "Year",
+            accessorKey: "contractor",
+            header: "Contractor",
             filterFn: 'multiValueFilter',
             cell: ({ getValue, row, column, table }) => {
-            return <div>{getValue()}</div>
+                let {masterData} = table.getState();
+                return <div>{getMasterDataValue(masterData, EntityTypes.contractor, getValue())}</div>
             },
         },
         {
             accessorKey: "subtotal",
             header: "Cost",
             filterFn: 'greaterThan0',
-            cell: ({ getValue, row, column, table }) => {                
+            cell: ({ getValue, row, column, table }) => {
                 return <div className="divCost">{formatMoney(getValue())}</div>
             },
         },
         {
             accessorKey: "CostBar",
-            header: "CostBar",
-            cell: ({ getValue, row, column, table }) => {
-                let {minCost, maxCost} = table.getState();
-                return <BarChart cost={row.getValue('subtotal')} minCost={minCost} maxCost={maxCost}/>;
-            },
+            header: "CostBar"
         },
     ];
 
     const table = useReactTable({
-        data: filteredYearGroups,
-        //data: dataAll,
+        data: filteredContractorGroups,
         columns: columnDefs,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        onSortingChange: setSorting,
         initialState: {
             pagination: {
                 pageSize: 20,
             },
         },
         state: {
+            sorting,
             columnFilters: columnFilters,
-            maxCost: dataState.FilteredData.overallYearMaxCost,
-            minCost: dataState.FilteredData.overallYearMinCost,
+            entityGroups: dataState.FilteredData.contractorGroups,
+            maxCost: dataState.FilteredData.overallContractorMaxCost,
+            minCost: dataState.FilteredData.overallContractorMinCost,
+            masterData: dataState.MasterData,
+            setLoadingMsg: setLoadingMsg
         },
         onColumnFiltersChange: setColumnFilters,
         filterFns: {
@@ -106,8 +110,8 @@ export const TableByYear = (props) => {
         dataState.Filters.Contractor,
     ])
 
-
     return <div className="tableContainer">
+        {showYearLegends()}
         {showGrandTotalDirectly(dataState.FilteredData.grandTotal)}
         {preparePagninator(table)}
         <table className="tableBase">
@@ -115,8 +119,8 @@ export const TableByYear = (props) => {
                 {prepareHeader(table)}
             </thead>
             <tbody>
-                {prepareBody(table, EntityTypes.year)}
+                {prepareBody(table, EntityTypes.contractor)}
             </tbody>
-        </table>        
+        </table>
     </div>;
 }

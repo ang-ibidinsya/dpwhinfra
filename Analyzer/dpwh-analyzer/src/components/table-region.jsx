@@ -107,7 +107,9 @@ export const TableByRegion = (props) => {
         dataState.Filters.Project, 
         dataState.Filters.Year, 
         dataState.Filters.District, 
-        dataState.Filters.Region
+        dataState.Filters.Region,
+        dataState.Filters.FundSource,
+        dataState.Filters.Contractor,
     ])
 
     return <div className="tableContainer">
