@@ -32,7 +32,7 @@ const satisfiesFilter = (currData, filters) => {
         return false;
     }
 
-    // [7] Contractor TODO: this is wrong
+    // [7] Contractor
     if (filters.Contractor?.length > 0) {
         let currCtorsList = currData.ctr;
         let ret = filters.Contractor.some(filter => currCtorsList.includes(filter));
