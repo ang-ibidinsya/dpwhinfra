@@ -89,7 +89,7 @@ export const TableByContractor = (props) => {
         },
         onColumnFiltersChange: setColumnFilters,
         filterFns: {
-            multiValueFilter: (row, columnId, filterValue) => {
+            multiValueFilter: (row, columnId, filterValue) => {                
                 let ret = filterValue.includes(row.getValue(columnId));
                 return ret;
             },
