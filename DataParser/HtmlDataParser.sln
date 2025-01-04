@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlDataParser", "HtmlDataParser\HtmlDataParser.csproj", "{12B4A47E-B4CD-4D73-8A8B-B6B0F5AE1C23}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Categorizer", "Categorizer\Categorizer.csproj", "{D85901D8-C1DE-4247-ADEF-44513B581E4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{12B4A47E-B4CD-4D73-8A8B-B6B0F5AE1C23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12B4A47E-B4CD-4D73-8A8B-B6B0F5AE1C23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12B4A47E-B4CD-4D73-8A8B-B6B0F5AE1C23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D85901D8-C1DE-4247-ADEF-44513B581E4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D85901D8-C1DE-4247-ADEF-44513B581E4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D85901D8-C1DE-4247-ADEF-44513B581E4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D85901D8-C1DE-4247-ADEF-44513B581E4B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -8,3 +8,6 @@ DataParser/.vscode/settings.json
 DataParser/Data.7z
 DataFetcher/PlayWrightFetcher/2024Nov30_DPWH_Infra.zip
 Analyzer/dpwh-analyzer/src/assets/AllContracts.json
+/DataParser/Categorizer/bin
+/DataParser/Categorizer/obj
+DataParser/Categorizer/.~lock.DpwhInfraProjects.xlsx\#
