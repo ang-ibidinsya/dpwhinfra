@@ -1,5 +1,6 @@
 import './table-base.css';
 import { useEffect, useMemo, useState } from "react";
+import { useDispatch } from 'react-redux';
 import {
     flexRender,
     getCoreRowModel,
@@ -13,6 +14,7 @@ import {formatMoney, convertStateToTableFilter, getMasterDataValue} from '../uti
 import {BarChart} from '../controls/barchart';
 import {EntityTypes} from '../enums';
 import {LoadingIndicator} from '../controls/loadingIndicator';
+import {setColumnSettings} from '../state/settings/settingsSlice';
 
 const BARCHART_ADJUSTER_MIN = 10;
 const BARCHART_ADJUSTER_MAX = 10;
@@ -22,6 +24,7 @@ const columnDefs = [
         accessorKey: "yr",
         header: "Year",
         filterFn: 'multiValueFilter',
+        defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
         return <div>{getValue()}</div>
         },
@@ -29,6 +32,7 @@ const columnDefs = [
     {
         accessorKey: "frm",
         header: " Contract Effectivity",
+        defaultColVisibility: false,
         cell: ({ getValue, row, column, table }) => {
                 let val = getValue();
                 if (val && val.length > 0) val = '20' + val;
@@ -38,6 +42,7 @@ const columnDefs = [
     {
         accessorKey: "to",
         header: "Contract Expiration",
+        defaultColVisibility: false,
         cell: ({ getValue, row, column, table }) => {
                 let val = getValue();
                 if (val && val.length > 0) val = '20' + val;
@@ -48,6 +53,7 @@ const columnDefs = [
         accessorKey: "rgn",
         header: "Region",
         filterFn: 'multiValueFilter',
+        defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
                 let {masterData} = table.getState();
                 return <div>{getMasterDataValue(masterData, EntityTypes.region, getValue())}</div>
@@ -57,6 +63,7 @@ const columnDefs = [
         accessorKey: "dst",
         header: "District",
         filterFn: 'multiValueFilter',
+        defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
                 let {masterData} = table.getState();
                 return <div>{getMasterDataValue(masterData, EntityTypes.district, getValue())}</div>
@@ -66,6 +73,7 @@ const columnDefs = [
         accessorKey: "dsc",
         header: "Project",
         enableSorting: false, // disables sorting - from tanstack
+        defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
             return <div className="itemDesc">{getValue()}</div>
         },
@@ -73,6 +81,7 @@ const columnDefs = [
     {
         accessorKey: "cId",
         header: "Contract ID",
+        defaultColVisibility: false,
         cell: ({ getValue, row, column, table }) => {
             return <div className="itemDesc">{getValue()}</div>
         },
@@ -81,6 +90,7 @@ const columnDefs = [
         accessorKey: "ctr",
         header: "Contractor(s)",
         filterFn: 'multiValueListFilter',
+        defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
             let {masterData} = table.getState();
             let contractors = getMasterDataValue(masterData, EntityTypes.contractor, getValue());
@@ -95,6 +105,7 @@ const columnDefs = [
         accessorKey: "src",
         header: "Fund Source",
         filterFn: 'multiValueFilter',
+        defaultColVisibility: false,
         cell: ({ getValue, row, column, table }) => {
             let {masterData} = table.getState();
             return <div className="itemDesc">{getMasterDataValue(masterData, EntityTypes.fundSource, getValue())}</div>
@@ -104,12 +115,14 @@ const columnDefs = [
         accessorKey: "sts",
         header: "Status",
         filterFn: 'multiValueFilter',
+        defaultColVisibility: true,
         // cell: rendered outside because unable to put background color properly here (unable for child to use up parent's entire cell area)
     },
     {
         accessorKey: "pct",
         header: "Progress",
         filterFn: 'multiValueFilter',
+        defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
                 return <div className="divCenter">{getValue()}%</div>
             },
@@ -118,6 +131,7 @@ const columnDefs = [
         accessorKey: "p",
         header: "Cost",
         sortingFn: 'alphanumeric',
+        defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {                        
             return <div className="divCost">{formatMoney(getValue())}</div>;
         },
@@ -125,6 +139,7 @@ const columnDefs = [
     {
         accessorKey: "CostBar",
         header: "CostBar",
+        defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
             let {minCost, maxCost} = table.getState();
             return <BarChart cost={row.getValue('p')} minCost={minCost} maxCost={maxCost} 
@@ -135,9 +150,21 @@ const columnDefs = [
 
 ];
 
+export const getDefaultColVisibility = () => {
+    let ret = {};
+    columnDefs.forEach(colDef => {
+        ret[colDef.accessorKey] = colDef.defaultColVisibility;
+    });
+
+    return ret;
+}
+
+
 export const TableByProject = (props) => {    
     const [columnFilters, setColumnFilters] = useState([]);
-    const {dataState, setLoadingMsg} = props;
+    const {dataState, setLoadingMsg, settingsState} = props;
+    const [columnVisibility, setColumnVisibility] = useState(getDefaultColVisibility());
+    const dispatch = useDispatch();
 
     const table = useReactTable({
         data: dataState.AllData,
@@ -155,16 +182,18 @@ export const TableByProject = (props) => {
                 //     id: 'p',
                 //     desc: true
                 // }
-            ]
+            ],
         },
         state: {
             columnFilters: columnFilters,
             masterData: dataState.MasterData,
             maxCost: dataState.FilteredData.overallProjMaxCost,
             minCost: dataState.FilteredData.overallProjMinCost,
-            setLoadingMsg: setLoadingMsg
+            setLoadingMsg: setLoadingMsg,
+            columnVisibility
         },
         onColumnFiltersChange: setColumnFilters,
+        onColumnVisibilityChange: setColumnVisibility,
         filterFns: {
             multiValueFilter: (row, columnId, filterValue) => {
                 let ret = filterValue.includes(row.getValue(columnId));
@@ -178,7 +207,20 @@ export const TableByProject = (props) => {
         }
     })
 
-    console.log('[TableByProject] render grandTotal', formatMoney(dataState.FilteredData.grandTotal));
+    const handleColumnVisibilityChange = selectedColumns => {
+        console.log('[ColumnSettings][handleChange] selectedColumns', selectedColumns);
+        let allCols = getDefaultColVisibility();
+        for (let key in allCols) {
+            if (!allCols.hasOwnProperty(key)) continue;
+            allCols[key] = selectedColumns.some(c => c.value === key);
+        }
+        allCols.CostBar = allCols.p; // Costbar always go hand in hand with Cost
+
+        //dispatch(setColumnSettings(allCols));        
+        setColumnVisibility(allCols);
+    };
+
+    console.log('[TableByProject] render grandTotal', formatMoney(dataState.FilteredData.grandTotal), 'columns', );
 
     useEffect(() => {
         console.log('[Project Table UseEffect]');
@@ -189,7 +231,7 @@ export const TableByProject = (props) => {
 
     return <>     
         {/* <LoadingIndicator isOverlay={true}/> */}
-        {showGrandTotal(table, 'p')}
+        {showGrandTotal(table, 'p', columnVisibility, handleColumnVisibilityChange)}
         {preparePagninator(table)}
         <table className="tableBase">
             <thead>

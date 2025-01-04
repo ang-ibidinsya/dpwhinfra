@@ -8,7 +8,7 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
-import {prepareBody, prepareHeader, preparePagninator, showYearLegends, createToolTip} from './table-base';
+import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showGrandTotalDirectly, createToolTip} from './table-base';
 import {formatMoney, getMasterDataValue} from '../util';
 import {EntityTypes} from '../enums';
 
@@ -18,13 +18,6 @@ const convertStateToTableFilter = (dataState) => {
         ret.push({id: 'fundSource', value: dataState.Filters.FundSource});
     }
     return ret;
-}
-
-export const showGrandTotalDirectly = (grandTotal) => {
-    return <div className="grandTotalContainer">
-        <div className="grandTotalLabel">SUBTOTAL:</div>
-        <div className="grandTotalValue">{formatMoney(grandTotal)}</div>
-    </div>;
 }
 
 export const TableByFundSrc = (props) => {

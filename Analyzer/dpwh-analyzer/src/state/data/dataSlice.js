@@ -262,12 +262,12 @@ const dataSlice = createSlice({
     name: 'data',
     initialState,
     reducers: {
-        setSettings: (state, action) => {
-            console.log('[settings reducer][setSettings] Start action:', action);
+        setSettings: (state, action) => { // TODO: rename as setFilters
+            console.log('[data reducer][setSettings] Start action:', action);
             Object.assign(state, action.payload);
             Object.assign(state.Filters, action.payload.Filters);
             Object.assign(state.FilteredData, mapAndFilterData(state.AllData, action.payload.Filters))
-            console.log('[settings reducer][setSettings] Finished action:', action);
+            console.log('[data reducer][setSettings] Finished action:', action);
         },
         setInitialData: (state, action) => {
             console.log('[settings reducer][setInitialData] action:', action);

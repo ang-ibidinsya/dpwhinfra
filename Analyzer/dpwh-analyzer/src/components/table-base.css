@@ -132,6 +132,23 @@
     align-items: center;
 }
 
+.grandTotalSettingsContainer {
+    border-left: 2px solid lightgrey;
+    border-right: 2px solid lightgrey;
+    border-top: 2px solid lightgrey;
+    display: flex;
+    justify-content: space-between;    
+    background: aliceblue;        
+}
+
+/* For label-control pair inside */
+.grandTotalSettings-fieldItemContainer {
+    display: flex;
+    align-items: center;
+    padding: 3px 10px 3px 10px;
+    gap: 10px;
+}
+
 .grandTotalLabel {
     font-family: 'Courier Prime', monospace;
     font-size: 1.1rem;
@@ -206,4 +223,12 @@
 
 .tooltipCell {
     margin-top: 2px;
+}
+
+.columnSettingsContainer {
+    border-top: 2px solid lightgrey;
+    border-left: 2px solid lightgrey;
+    border-right: 2px solid lightgrey;
+    background: white;
+    display: flex;
 }

@@ -141,8 +141,8 @@ export const Settings = () => {
             }),
             control: base => ({
                 ...base,
-                border: '1px solid black',
-                boxShadow: '1px solid black',
+                border: '1px solid darkgray',
+                boxShadow: '1px solid darkgray',
                 "&:hover": {
                     border: "1px solid #054bfc",
                     cursor: 'text'
