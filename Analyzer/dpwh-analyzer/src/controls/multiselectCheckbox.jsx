@@ -1,8 +1,12 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { default as ReactSelect } from "react-select";
 import { components } from "react-select";
 
+// This Control customizes React-select:
+// - Options contain checkboxes
+// - Value always just displays a default text
+
+// Options with Checkbox
 const Option = props => {    
     return (
         <div>
@@ -18,58 +22,21 @@ const Option = props => {
     );
 };
 
-const MultiValue = props => {
-    let labelToBeDisplayed = `${props.data.label}, `;
-    if (props.data.value === allOption.value) {
-      labelToBeDisplayed = "All is selected";
-    }
+// Fixed Placeholder inside ValueContainer
+const CustomValueContainer = ({ children, ...props }) => {
     return (
-      <components.MultiValue {...props}>
-        <span>{labelToBeDisplayed}</span>
-      </components.MultiValue>
+      <components.ValueContainer {...props}>
+        <components.Placeholder {...props} isFocused={props.isFocused}>
+          Select Columns...
+        </components.Placeholder>
+        {React.Children.map(children, child =>
+          child && child.type !== components.Placeholder ? child : null
+        )}
+      </components.ValueContainer>
     );
 };
 
-const Placeholder = (props) => {
-    return null;
-};
-
-const ClearIndicator = props => null;
-
-// const IndicatorsContainer = props => {
-//     //return <div style={{border: '1px solid red', width: '200px', height: '100%', textAlign:'center'}}>Select Columns</div>
-//     return null;
-// }
-
-const IndicatorsContainer = (props) => {
-    return (
-      <div style={{ background: 'red' }}>
-        <components.IndicatorsContainer {...props} />
-      </div>
-    );
-  };
-
-const ValueContainer = ({children, getValue, setValue,...props}) => {
-    //return <div style={{border: '0px solid red', width: '200px', height: '100%', textAlign:'center'}}>Select Columns</div>
-    //debugger
-    let currValue = getValue();
-    //console.log('[ValueContainer] currValue', currValue);
-    //console.log('[ValueContainer] props', props, 'children', children);
-    let filteredChildren = children.filter(c => c.key !== 'placeholder');
-    //console.log('[ValueContainer] props', props, 'filtered children', filteredChildren);
-    return <components.ValueContainer 
-    {...props}
-    
-    >
-      {children}
-      <div style={{position: 'absolute', width: '100%', textAlign: 'center'}}>Select Columns...</div>
-    </components.ValueContainer>
-};
-
-const MultiValueContainer = (props) => {
-    return null;
-};
-
+const MultiValueContainer = (props) => null;
 const MultiValueLabel = (props) => null;
   
 export const MultiSelectCheckbox = props => {
@@ -86,16 +53,14 @@ export const MultiSelectCheckbox = props => {
                 Option,
                 MultiValueContainer,
                 MultiValueLabel,
-                Placeholder,
-                //IndicatorsContainer,
-                ValueContainer
-                // MultiValue,
-                // ValueContainer
+                ValueContainer: CustomValueContainer
             }}
             styles={{
-                option: (base) => ({
+                option: (base, state) => ({
                     ...base,
-                    height: '100%',                
+                    height: '100%',
+                    backgroundColor: state.isSelected ? "rgba(108, 149, 209, 0.3)" : "white",
+                    color: "black",
                 }),
                 control: provided => ({
                     ...provided,
@@ -115,44 +80,12 @@ export const MultiSelectCheckbox = props => {
                 placeholder: (provided) => ({
                     ...provided,
                     color: 'black',  // Change placeholder text color
+                    position: 'absolute',
                 }),
-                // valueContainer: (provided) => ({
-                //     ...provided,
-                //     border: '1px solid blue',
-                //     backgroundColor: 'red',
-                    
-                // }),
             }}
             onChange={props.onChange}
-            // onChange={(selected, event) => {
-            //     debugger
-            //     if (selected !== null && selected.length > 0) {
-            //         let result = [];
-            //         if (selected.length === props.options.length) {
-            //             if (event.action === "select-option") {
-            //                 result = [props.allOption, ...props.options];
-            //             }
-            //             return props.onChange(result);
-            //         }
-            //     }
-        
-            //     return props.onChange(selected);
-            // }}
         />
     );
 };
-
-/*
-MySelect.propTypes = {
-  options: PropTypes.array,
-  value: PropTypes.any,
-  onChange: PropTypes.func,
-  allowSelectAll: PropTypes.bool,
-  allOption: PropTypes.shape({
-    label: PropTypes.string,
-    value: PropTypes.string
-  })
-};
-*/
 
 export default MultiSelectCheckbox;

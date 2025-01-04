@@ -21,8 +21,6 @@ import { TableByDistrict} from './table-district';
 import { mapColors, StackedBarChart } from '../controls/stackedbarchart';
 import { TableByFundSrc } from './table-fundsrc';
 import { TableByContractor } from './table-contractor';
-import { MultiSelectCheckbox } from '../controls/multiselectCheckbox';
-import { setColumnSettings } from '../state/settings/settingsSlice';
 
 const iconSortLookup = {
     'asc': 'bx bxs-chevron-up-circle',
@@ -227,58 +225,6 @@ export const showGrandTotalDirectly = (grandTotal) => {
     </div>;
 }
 
-const showColumnSettings = (columnVisibility, handleColumnVisibilityChange) => {
-    let options = [
-        {value: 'yr',    label: 'Year'                                      },
-        {value: 'frm',   label: 'Contract Effectivity'                      },
-        {value: 'to',    label: 'Contract Expiration'                       },
-        {value: 'rgn',   label: 'Region'                                    },
-        {value: 'dst',   label: 'District'                                  },
-        {value: 'dsc',   label: 'Project',                                  },
-        {value: 'cId',   label: 'Contract Id'                               },
-        {value: 'ctr',   label: 'Contractors'                               },
-        {value: 'src',   label: 'Fund Source'                               },
-        {value: 'sts',   label: 'Status'                                    },
-        {value: 'pct',   label: 'Progress'                                  },
-        {value: 'p',     label: 'Cost',                                     },
-    ]
-
-
-
-    let selectedVals = [];
-    for(let key in columnVisibility) {
-        if (!columnVisibility.hasOwnProperty(key)) continue;
-        if (columnVisibility[key] === true) {
-            selectedVals.push(options.find(o => o.value === key));
-        }
-    }
-
-    return <MultiSelectCheckbox 
-        options={options} 
-        placeholder={null}
-        onChange={(selectedCols) => handleColumnVisibilityChange(selectedCols)}
-        value={selectedVals}
-    />
-}
-
-/* For Project table only */
-export const showGrandTotal = (table, costColumn, columnVisibility, handleColumnVisibilityChange) => {
-    let rows = table.getFilteredRowModel().rows;
-    let sum = 0;
-    // Use for instead of foreach, for potential performance improvements
-    for (let i = 0; i < rows.length; i++) {
-        sum += rows[i].getValue(costColumn)
-    }
-    
-    return <div className="grandTotalSettingsContainer">
-        {showColumnSettings(columnVisibility, handleColumnVisibilityChange)}
-        <div className="grandTotalSettings-fieldItemContainer">
-            <div className="grandTotalLabel">SUBTOTAL:</div>
-            <div className="grandTotalValue">{formatMoney(sum)}</div>
-        </div>
-    </div>;
-}
-
 export const preparePagninator = (table) => {
     let totalFiltered = table.getFilteredRowModel().rows.length;
     let currPageIndex = table.getState().pagination.pageIndex;
@@ -336,7 +282,6 @@ export const TableBase = () => {
     // Redux values (global-values)
     // TODO: Do not select entire reducer to avoid unnecessary re-render while simply showing loader icon.
     const dataState = useSelector(state => state.dataReducer);
-    const settingsState = useSelector(state => state.settingsReducer);
     const [loadingMsg, setLoadingMsg] = useState(null);
     const tableRef = useRef();
     
@@ -348,7 +293,7 @@ export const TableBase = () => {
             {loadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={loadingMsg}/>}
             {/* {dataState.FilterLoadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={dataState.FilterLoadingMsg}/>} */}
             <div className="tableContainer" ref={tableRef}>
-                <TableByProject dataState={dataState} setLoadingMsg={setLoadingMsg} settingsState={settingsState}/>
+                <TableByProject dataState={dataState} setLoadingMsg={setLoadingMsg}/>
             </div>
         </>
     }

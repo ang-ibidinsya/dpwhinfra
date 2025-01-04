@@ -9,12 +9,12 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
-import {prepareBody, prepareHeader, preparePagninator, showGrandTotal} from './table-base';
-import {formatMoney, convertStateToTableFilter, getMasterDataValue} from '../util';
-import {BarChart} from '../controls/barchart';
-import {EntityTypes} from '../enums';
+import { prepareBody, prepareHeader, preparePagninator } from './table-base';
+import { formatMoney, convertStateToTableFilter, getMasterDataValue} from '../util';
+import { BarChart} from '../controls/barchart';
+import { MultiSelectCheckbox } from '../controls/multiselectCheckbox';
+import { EntityTypes} from '../enums';
 import {LoadingIndicator} from '../controls/loadingIndicator';
-import {setColumnSettings} from '../state/settings/settingsSlice';
 
 const BARCHART_ADJUSTER_MIN = 10;
 const BARCHART_ADJUSTER_MAX = 10;
@@ -150,7 +150,7 @@ const columnDefs = [
 
 ];
 
-export const getDefaultColVisibility = () => {
+const getDefaultColVisibility = () => {
     let ret = {};
     columnDefs.forEach(colDef => {
         ret[colDef.accessorKey] = colDef.defaultColVisibility;
@@ -159,12 +159,52 @@ export const getDefaultColVisibility = () => {
     return ret;
 }
 
+const showColumnSettings = (columnVisibility, handleColumnVisibilityChange) => {
+    let options = columnDefs.map(c => {
+        return {
+            value: c.accessorKey,
+            label: c.header
+        }
+    }).filter(c => c.value !== 'CostBar');
+
+    let selectedVals = [];
+    for(let key in columnVisibility) {
+        if (!columnVisibility.hasOwnProperty(key)) continue;
+        if (columnVisibility[key] === true) {
+            selectedVals.push(options.find(o => o.value === key));
+        }
+    }
+
+    return <MultiSelectCheckbox 
+        options={options} 
+        placeholder={null}
+        onChange={(selectedCols) => handleColumnVisibilityChange(selectedCols)}
+        value={selectedVals}
+    />
+}
+
+/* For Project table only */
+export const showGrandTotal = (table, costColumn, columnVisibility, handleColumnVisibilityChange) => {
+    let rows = table.getFilteredRowModel().rows;
+    let sum = 0;
+    // Use for instead of foreach, for potential performance improvements
+    for (let i = 0; i < rows.length; i++) {
+        sum += rows[i].getValue(costColumn)
+    }
+    
+    return <div className="grandTotalSettingsContainer">
+        {showColumnSettings(columnVisibility, handleColumnVisibilityChange)}
+        <div className="grandTotalSettings-fieldItemContainer">
+            <div className="grandTotalLabel">SUBTOTAL:</div>
+            <div className="grandTotalValue">{formatMoney(sum)}</div>
+        </div>
+    </div>;
+}
 
 export const TableByProject = (props) => {    
     const [columnFilters, setColumnFilters] = useState([]);
-    const {dataState, setLoadingMsg, settingsState} = props;
+    const {dataState, setLoadingMsg} = props;
     const [columnVisibility, setColumnVisibility] = useState(getDefaultColVisibility());
-    const dispatch = useDispatch();
 
     const table = useReactTable({
         data: dataState.AllData,
@@ -215,8 +255,7 @@ export const TableByProject = (props) => {
             allCols[key] = selectedColumns.some(c => c.value === key);
         }
         allCols.CostBar = allCols.p; // Costbar always go hand in hand with Cost
-
-        //dispatch(setColumnSettings(allCols));        
+      
         setColumnVisibility(allCols);
     };
 
