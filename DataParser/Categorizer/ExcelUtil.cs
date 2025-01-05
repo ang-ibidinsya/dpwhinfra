@@ -17,18 +17,19 @@ public class ExcelUtil
     private readonly int COL_TO = 3;
     private readonly int COL_REGION = 4;
     private readonly int COL_DISTRICT = 5;
-    private readonly int COL_ITEM = 6;
-    private readonly int COL_CONTRACTOR = 7;
-    private readonly int COL_TAGS = 8;
-    private readonly int COL_COST = 9;
-    private readonly int COL_STATUS = 10;
-    private readonly int COL_PROGRESS = 11;
-    private readonly int COL_SRC = 12;
+    private readonly int COL_CONTRACTID = 6;
+    private readonly int COL_ITEM = 7;
+    private readonly int COL_CONTRACTOR = 8;
+    private readonly int COL_TAGS = 9;
+    private readonly int COL_COST = 10;
+    private readonly int COL_STATUS = 11;
+    private readonly int COL_PROGRESS = 12;
+    private readonly int COL_SRC = 13;
     
-    private readonly int COL_GRANDTOTAL_LBL = 13;
-    private readonly int COL_GRANDTOTAL = 14;
-    private readonly int COL_FILTEREDTOTAL_LBL = 15;
-    private readonly int COL_FILTEREDTOTAL = 16;
+    private readonly int COL_GRANDTOTAL_LBL = 14;
+    private readonly int COL_GRANDTOTAL = 15;
+    private readonly int COL_FILTEREDTOTAL_LBL = 16;
+    private readonly int COL_FILTEREDTOTAL = 17;
 
     public void GenerateExcel(IEnumerable<Contract> allItems)
     {
@@ -40,6 +41,7 @@ public class ExcelUtil
         worksheet.Cell(ROW_COLHEADERS, COL_TO).Value = "Contract Expiration";
         worksheet.Cell(ROW_COLHEADERS, COL_REGION).Value = "Region";
         worksheet.Cell(ROW_COLHEADERS, COL_DISTRICT).Value = "District";
+        worksheet.Cell(ROW_COLHEADERS, COL_CONTRACTID).Value = "ContractID";
         worksheet.Cell(ROW_COLHEADERS, COL_ITEM).Value = "Item";
         worksheet.Cell(ROW_COLHEADERS, COL_CONTRACTOR).Value = "Contractor(s)";
         worksheet.Cell(ROW_COLHEADERS, COL_TAGS).Value = "Tags";
@@ -83,6 +85,7 @@ public class ExcelUtil
             worksheet.Cell(iXlRow, COL_TO).Value = item.EndDateStr;
             worksheet.Cell(iXlRow, COL_REGION).Value = item.Region;
             worksheet.Cell(iXlRow, COL_DISTRICT).Value = item.DistrictOffice.Substring(item.DistrictOffice.IndexOf('-')).Trim();
+            worksheet.Cell(iXlRow, COL_CONTRACTID).Value = item.ContractId;
             worksheet.Cell(iXlRow, COL_ITEM).Value = item.Desc;
             worksheet.Cell(iXlRow, COL_CONTRACTOR).Value = string.Join("\r\n", item.Contractors.Select(ctr => $"• {ctr}"));
             worksheet.Cell(iXlRow, COL_TAGS).Value = string.Join("\r\n", item.Tags.Select(ctr => $"• {ctr}"));
@@ -111,11 +114,11 @@ public class ExcelUtil
             .NumberFormat.Format = "#,##0.00";
 
         // [C Formula]
-        worksheet.Cell(ROW_COLHEADERS, COL_GRANDTOTAL).SetFormulaA1("=SUM(I:I)")
+        worksheet.Cell(ROW_COLHEADERS, COL_GRANDTOTAL).SetFormulaA1("=SUM(J:J)")
             .Style.Font.SetFontName("Courier New") // For easier reading numbers (alignment)
             .NumberFormat.Format = "#,##0.00";
        
-        worksheet.Cell(ROW_COLHEADERS, COL_FILTEREDTOTAL).SetFormulaA1("=SUBTOTAL(9,I:I)")
+        worksheet.Cell(ROW_COLHEADERS, COL_FILTEREDTOTAL).SetFormulaA1("=SUBTOTAL(9,J:J)")
             .Style.Font.SetFontName("Courier New") // For easier reading numbers (alignment)
             .NumberFormat.Format = "#,##0.00";
 
