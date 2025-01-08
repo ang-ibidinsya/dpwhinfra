@@ -37,5 +37,9 @@ public class Contract
     public ushort RegionId { get; set; }
     public string Region;
 
+    [JsonIgnore]
     public List<string> Tags { get; set; } = new List<string>();
+
+    [JsonPropertyName("cat")]
+    public ushort CategoryId { get; set; }
 }

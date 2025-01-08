@@ -17,4 +17,10 @@ public Dictionary<string, ushort> RegionMap = new Dictionary<string, ushort>();
     public Dictionary<uint, string> ContractorMaster {get; set;}
 
     public Dictionary<ushort, string> SourceMaster {get; set;}
+
+    internal Dictionary<string, ushort> CategoryInternal;
+
+    public Dictionary<ushort, string> CategoryMaster {get {
+        return CategoryInternal.ToDictionary(x => x.Value, x=> x.Key);
+    }}
 }

@@ -79,6 +79,38 @@ public class ProjectCategorizer
         }
         #endif
         //new ExcelUtil().GenerateExcel(contracts);
+
+        // Write categories into master data
+        Dictionary<string, ushort> categoryMap = WriteMasterData(dictTagDict, masterData);
+        foreach(Contract contract in contracts)
+        {
+            if (!contract.Tags.Any()) {
+                continue;
+            }
+            contract.CategoryId = categoryMap[contract.Tags.FirstOrDefault()];
+        }
+        // To avoid unnecessarily escaping ampersand and + in JSON
+        var options = new JsonSerializerOptions
+        {
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+        File.WriteAllText("AllContractsCategorized.json", JsonSerializer.Serialize(contracts, options));
+        File.WriteAllText("MasterDataCategorized.json", JsonSerializer.Serialize(masterData, options));
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] Finished Writing!");
+    }
+
+    private Dictionary<string, ushort> WriteMasterData( Dictionary<string, int> dictTagDict, MasterData masterData)
+    {
+        Dictionary<string, ushort> retMap = new Dictionary<string, ushort>();
+        var categories = dictTagDict.Keys;
+        ushort idx = 0;
+        foreach(string cat in categories)
+        {
+            retMap[cat] = idx++;
+        }
+
+        masterData.CategoryInternal = retMap;
+        return retMap;
     }
 
     private void MapContractMasterData(MasterData masterData, Contract contract)
@@ -189,6 +221,8 @@ public class ProjectCategorizer
            || descToLower.Contains("groin") || descToLower.Contains("shore prot") 
            || descToLower.Contains("shoreline prot") || descToLower.Contains("gabion") 
            || descToLower.Contains("mattress") || descToLower.Contains("bank improvement") 
+           || descToLower.Contains("breakwater") || descToLower.Contains("break water") 
+           || descToLower.Contains("retarding basin")
            )
         {
             contract.Tags.Add("flood");
@@ -197,7 +231,7 @@ public class ProjectCategorizer
         }
 
         if (descToLower.Contains("hospital") || descToLower.Contains("office building") || descToLower.Contains("office bldg")
-            || descToLower.Contains("kidney") || descToLower.Contains("cancer") || descToLower.Contains("office bldg"))
+            || descToLower.Contains("kidney") || descToLower.Contains("cancer") || descToLower.Contains("office bldg") || descToLower.Contains("health center") )
         {
             contract.Tags.Add("building");
             IncrementDict(dictTagDict, "building");
@@ -524,6 +558,8 @@ public class ProjectCategorizer
         {"office","building"},
         {"brgy. hall", "building"},
         {"public market", "building"},
+        {"government center", "building"},
+        {"city hall", "building"},
         {"classroom", "school"},
     };
 
@@ -638,18 +674,6 @@ public class ProjectCategorizer
         "water",
     };
 
-    private readonly Dictionary<string, string> singleKeywordsMap = new Dictionary<string, string>() {
-        {"building", "building"},
-        {"bldg.", "building"},
-        {"bldg", "building"},
-        {"bridge", "bridge"},
-        {" br.", "bridge"},
-        {" br ", "bridge"},
-        {"road", "road"},
-        {" rd.", "road"},
-        {" rd ", "road"},
-    };
-
     private List<string> bridgeKeywords = new List<string>() {
         "bridge",
         " br ",
@@ -664,9 +688,12 @@ public class ProjectCategorizer
     private List<string> roadKeywords = new List<string>() {
         "road",
         " rd ",
+        " rds ",
         " rd.",
         " rd,",
         "highway",
+        "coastal rd",
+        "coastal road",
     };
     [Flags]
     private enum existenceFlag {
@@ -782,6 +809,12 @@ public class ProjectCategorizer
             IncrementDict(dictTagDict, "lowest-bridge");
             return;
         }
-
+        
+        if (descToLower.Contains("municipal hall")) // usually a multipurpose building also, but if not specified as MPB, we classify as building
+        {
+            contract.Tags.Add("lowest-building");
+            IncrementDict(dictTagDict, "lowest-building");
+            return;
+        }
     }
 }
