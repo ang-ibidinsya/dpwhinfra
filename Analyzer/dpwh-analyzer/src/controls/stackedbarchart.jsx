@@ -1,5 +1,6 @@
 import './stackedbarchart.css';
 
+/*
 const colors = [
     'cyan',
     '#F39C12', //Orange
@@ -11,17 +12,32 @@ const colors = [
     '#F1C40F', //Yellow
     '#9B59B6', //Purple
 ]
+*/
+
+const colors = [
+    'cyan',
+    '#F39C12', //Orange
+    '#2c456b', //Dark Blue
+    '#2ECC71', //Green
+    '#E74C3C', //Red
+    '#3498DB', //Blue
+    '#1ABC9C', //Teal
+    '#F1C40F', //Yellow
+    '#9B59B6', //Purple
+    '#6B3A2C', // Coffee
+]
 
 export const mapYearColors = {
     2016: 'cyan',
     2017: '#F39C12', //Orange
     2018: '#2c456b', //Dark Blue
     2019: '#2ECC71', //Green
-    2020: '#3498DB', //Blue
-    2021: '#E74C3C', //Red
+    2020: '#E74C3C', //Red
+    2021: '#3498DB', //Blue
     2022: '#1ABC9C', //Teal
     2023: '#F1C40F', //Yellow
     2024: '#9B59B6', //Purple
+    //2025: '#6B3A2C', //Coffee
 }
 
 export const getCategoryColor = (cat) => {

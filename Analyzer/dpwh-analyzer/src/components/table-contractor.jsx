@@ -11,6 +11,7 @@ import {
 import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showYearAndCategoryLegends, showGrandTotalDirectly} from './table-base';
 import {formatMoney, getMasterDataValue} from '../util';
 import {EntityTypes} from '../enums';
+import {getShortCategoryTooltipMessage} from '../controls/controlUtils';
 
 const convertStateToTableFilter = (dataState) => {
     let ret = [{id: 'subtotal', value: null}];// Add a dummy subtotal filter, so that its custom filter can filter out 0 values
@@ -60,7 +61,13 @@ export const TableByContractor = (props) => {
         },
         {
             accessorKey: "CostBarCategory",
-            header: <span style={{whiteSpace: 'nowrap'}}><i className="bx bxs-flask bx-xs bx-fw" color="red"></i>Cost by Category</span>,
+            header: <span 
+                data-tooltip-id='generic-tooltip'
+                data-tooltip-place='bottom-end'
+                data-tooltip-content={getShortCategoryTooltipMessage()}
+                style={{whiteSpace: 'nowrap'}}>
+                <i className="bx bxs-flask bx-xs bx-fw" color="red"></i>
+                Cost by Category</span>,
             enableSorting: false, // disables sorting - from tanstack
         },
     ];

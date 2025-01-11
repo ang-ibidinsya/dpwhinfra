@@ -8,7 +8,7 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
-import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showGrandTotalDirectly, createToolTip} from './table-base';
+import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showGrandTotalDirectly} from './table-base';
 import {formatMoney, getMasterDataValue} from '../util';
 import {EntityTypes} from '../enums';
 
@@ -117,7 +117,6 @@ export const TableByRegion = (props) => {
             <tbody>
                 {prepareBody(table, EntityTypes.region)}
             </tbody>
-            {/* {createToolTip('my-tooltip')} */}
         </table>    
     </div>;
 }

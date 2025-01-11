@@ -8,7 +8,7 @@ import {setSettings, doHeavTaskAsync, setSettingsAsync} from '../state/data/data
 import {uniqueYears} from './filterItems';
 import { filterOptions } from '../util';
 import {DebouncedTextField} from '../controls/debouncedTextField';
-
+import {getCategoryTooltipMessage} from '../controls/controlUtils';
 
 // Needed by React Select
 const formatComboOptions = (uniqValues) => {
@@ -116,7 +116,10 @@ export const Settings = () => {
                 </input>
                 <span>Contractor</span>
             </label>
-            <label className="groupingField">
+            <label className="groupingField" 
+                data-tooltip-id='generic-tooltip'
+                data-tooltip-place='top'
+                data-tooltip-content={getCategoryTooltipMessage()}>
                 <input type="radio" name="groupingFields" value="Category" 
                     {...register("Grouping", { required: true })}
                 >                    
@@ -164,7 +167,9 @@ export const Settings = () => {
                   ...styles,
                   backgroundColor: '#c9e2f5',
                 };
-            }
+            },
+            menu: (base) => ({ ...base, zIndex: 1 }),
+            menuPortal: (base) => ({ ...base, zIndex: 1 }),
         };
 
         const customComponents = {};

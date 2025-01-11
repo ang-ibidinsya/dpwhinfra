@@ -1,0 +1,16 @@
+.tooltip-generic-container{
+    max-width: 500px;
+}
+
+.tooltip-generic-title{
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.tooltip-generic-body {
+    margin-top: 10px;
+}
+
+.tooltip-generic-body:empty {
+    margin-top: 0px;
+}

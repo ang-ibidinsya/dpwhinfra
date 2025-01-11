@@ -14,7 +14,7 @@ import { formatMoney, convertStateToTableFilter, getMasterDataValue} from '../ut
 import { BarChart} from '../controls/barchart';
 import { MultiSelectCheckbox } from '../controls/multiselectCheckbox';
 import { EntityTypes} from '../enums';
-import {LoadingIndicator} from '../controls/loadingIndicator';
+import {getShortCategoryTooltipMessage} from '../controls/controlUtils';
 
 const BARCHART_ADJUSTER_MIN = 10;
 const BARCHART_ADJUSTER_MAX = 10;
@@ -71,7 +71,13 @@ const columnDefs = [
     },
     {
         accessorKey: "cat",
-        header: <span style={{whiteSpace: 'nowrap'}}><i className="bx bxs-flask bx-xs bx-fw" color="red"></i>Category</span>,
+        header: <span 
+            data-tooltip-id='generic-tooltip'
+            data-tooltip-place='bottom-end'
+            data-tooltip-content={getShortCategoryTooltipMessage()}
+            style={{whiteSpace: 'nowrap'}}>
+            <i className="bx bxs-flask bx-xs bx-fw" color="red">
+            </i>Category</span>,
         filterFn: 'multiValueFilter',
         defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {

@@ -7,7 +7,8 @@ import { LoadingIndicator } from './controls/loadingIndicator';
 import { AppHeader} from './components/appHeader';
 import { Settings} from './components/settings';
 import { TableBase } from './components/table-base';
-import {createToolTip} from './components/table-base';
+import {createChartToolTip} from './components/table-base';
+import {createGenericToolTip} from './controls/controlUtils';
 
 function App() {
     console.log('App Render...');
@@ -58,7 +59,8 @@ function App() {
     return (
     <div ref={tableRef}>
         {dataSliceFilterLoadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={dataSliceFilterLoadingMsg}/>}
-        {createToolTip('my-tooltip')}
+        {createChartToolTip('chart-tooltip')}
+        {createGenericToolTip('generic-tooltip')}
         <AppHeader/>
         <Settings/>
         <TableBase/>

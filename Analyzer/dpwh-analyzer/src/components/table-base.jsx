@@ -76,7 +76,7 @@ export const showYearAndCategoryLegends = (categoryMaster) => {
     </div>;
 }
 
-export const createToolTip = (tooltipId) => {
+export const createChartToolTip = (tooltipId) => {
     return <Tooltip
     id={tooltipId}
     opacity={1}
@@ -156,7 +156,7 @@ export const prepareBody = (table, entityType) => {
             
             return <td key={cell.id} className={cellClass}>
                 <div
-                data-tooltip-id="my-tooltip"
+                data-tooltip-id="chart-tooltip"
                 data-tooltip-content={JSON.stringify(yearSubtotalsTooltip)}
                 >                        
                 <StackedBarChart name={currEntity} subtotalsMap={findEntity.yearSubTotals} minCost={minCost} maxCost={maxCost}/>
@@ -193,7 +193,7 @@ export const prepareBody = (table, entityType) => {
 
         return <td key={cell.id} className={cellClass}>
             <div
-                data-tooltip-id="my-tooltip"
+                data-tooltip-id="chart-tooltip"
                 data-tooltip-content={JSON.stringify(categorySubTotalsTooltip)}
                 >   
             <StackedBarChart name={currEntity} subtotalsMap={findEntity.categorySubTotals} minCost={minCost} maxCost={maxCost} dataType='category'/>
