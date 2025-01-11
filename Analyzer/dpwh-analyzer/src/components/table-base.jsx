@@ -142,7 +142,7 @@ export const prepareBody = (table, entityType) => {
                 cellClass += ' tdCostBarFullWidth';
             }
             
-            let {entityGroups, minCost, maxCost} = table.getState();
+            let {entityGroups, minCost, maxCost, checkedStretch} = table.getState();
             const currEntity = row.getValue(entityType);
             const findEntity = entityGroups.find(grp => grp[entityType] === currEntity);
             if (!findEntity) {
@@ -159,12 +159,13 @@ export const prepareBody = (table, entityType) => {
                 data-tooltip-id="chart-tooltip"
                 data-tooltip-content={JSON.stringify(yearSubtotalsTooltip)}
                 >                        
-                <StackedBarChart name={currEntity} subtotalsMap={findEntity.yearSubTotals} minCost={minCost} maxCost={maxCost}/>
+                <StackedBarChart name={currEntity} subtotalsMap={findEntity.yearSubTotals} minCost={minCost} maxCost={maxCost} stretchToFullWidth={checkedStretch}/>
                 </div>                
             </td>
         }
         // else: just a normal bar chart (e.g. project/year view)
-        return <td key={cell.id} className={cellClass}>
+        //return <td key={cell.id} className={cellClass}>
+        return <td key={cell.id} className='tdCostBar tdCostBarFullWidth'>
                     <div>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </div>                
@@ -178,7 +179,7 @@ export const prepareBody = (table, entityType) => {
         // We put all the stackedbarChart logic here and avoid doing the rendering inside the columnDef cell render because the react-tooltip has intermittent issues when user clicks Sort
         //cellClass += ' tdCostBarFullWidth';        
         
-        let {entityGroups, minCost, maxCost, categoryMaster} = table.getState();
+        let {entityGroups, minCost, maxCost, categoryMaster, checkedStretch} = table.getState();
         const currEntity = row.getValue(entityType);
         const findEntity = entityGroups.find(grp => grp[entityType] === currEntity);
         if (!findEntity) {
@@ -196,7 +197,7 @@ export const prepareBody = (table, entityType) => {
                 data-tooltip-id="chart-tooltip"
                 data-tooltip-content={JSON.stringify(categorySubTotalsTooltip)}
                 >   
-            <StackedBarChart name={currEntity} subtotalsMap={findEntity.categorySubTotals} minCost={minCost} maxCost={maxCost} dataType='category'/>
+            <StackedBarChart name={currEntity} subtotalsMap={findEntity.categorySubTotals} minCost={minCost} maxCost={maxCost} dataType='category' stretchToFullWidth={checkedStretch}/>
             </div> 
         </td>        
     }
@@ -392,8 +393,7 @@ export const TableBase = () => {
     // Choose table to return
     if (dataState.Grouping === '' || dataState.Grouping === 'Project') {
         return <>
-            {loadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={loadingMsg}/>}
-            {/* {dataState.FilterLoadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={dataState.FilterLoadingMsg}/>} */}
+            {loadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={loadingMsg}/>}            
             <div className="tableContainer" ref={tableRef}>
                 <TableByProject dataState={dataState} setLoadingMsg={setLoadingMsg}/>
             </div>

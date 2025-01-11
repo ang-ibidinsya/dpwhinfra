@@ -109,107 +109,109 @@ const mapAndFilterData = (data, filters) => {
         ret.overallProjMinCost = Math.min(ret.overallProjMinCost, currData.p);
 
         let bSatisfiesFilter = satisfiesFilter(currData, filters);
+
+        if (bSatisfiesFilter) { // temprarily filter it
         
-        // [a] year
-        if (!mapYearGroups[currYear]) {
-            mapYearGroups[currYear] = {    
-                items:[], 
-                subtotal: 0,
-                year: currYear                
-            };
-        }
-        if (!unFilteredYearMap[currYear]) {
-            unFilteredYearMap[currYear] = {
-                subtotal: 0
-            }
-        }
-        unFilteredYearMap[currYear].subtotal += currData.p;
-
-        // [b] region
-        if (!mapRegionGroups[currRegion]) {
-            mapRegionGroups[currRegion] = {
-                items:[], 
-                subtotal: 0,
-                region: currRegion,
-                yearSubTotals: {}
-            };
-        }
-        if (!unFilteredRegionMap[currRegion]) {
-            unFilteredRegionMap[currRegion] = {
-                subtotal: 0
-            }
-        }
-        unFilteredRegionMap[currRegion].subtotal += currData.p;
-
-        // [c] district
-        if (!mapDistrictGroups[currDistrict]) {
-            mapDistrictGroups[currDistrict] = {
-                items:[], 
-                subtotal: 0,
-                district: currDistrict,
-                yearSubTotals: {}
-            };
-        }
-        if (!unFilteredDistrictMap[currDistrict]) {
-            unFilteredDistrictMap[currDistrict] = {
-                subtotal: 0
-            }
-        }
-        unFilteredDistrictMap[currDistrict].subtotal += currData.p;
-
-        // [d] Fund Source
-        if (!mapFundSourceGroups[currFundSource]) {
-            mapFundSourceGroups[currFundSource] = {
-                items:[], 
-                subtotal: 0,
-                fundSource: currFundSource,
-                yearSubTotals: {}
-            };
-        }
-        if (!unFilteredFundSrcMap[currFundSource]) {
-            unFilteredFundSrcMap[currFundSource] = {
-                subtotal: 0
-            }
-        }
-        unFilteredFundSrcMap[currFundSource].subtotal += currData.p;
-
-        // [e] Contractors             
-        for (let iXtor = 0; iXtor < currContractorList.length; iXtor++) {
-            let currContractor = currContractorList[iXtor];
-            if (!mapContractorGroups[currContractor]) {
-                mapContractorGroups[currContractor] = {
+            // [a] year
+            if (!mapYearGroups[currYear]) {
+                mapYearGroups[currYear] = {    
                     items:[], 
                     subtotal: 0,
-                    contractor: currContractor,
-                    yearSubTotals: {},
-                    categorySubTotals: {}
+                    year: currYear                
                 };
             }
-            if (!unFilteredContractorMap[currContractor]) {
-                unFilteredContractorMap[currContractor] = {
+            if (!unFilteredYearMap[currYear]) {
+                unFilteredYearMap[currYear] = {
                     subtotal: 0
                 }
             }
-            unFilteredContractorMap[currContractor].subtotal += currData.p;
-        }
+            unFilteredYearMap[currYear].subtotal += currData.p;
 
-        // [f] Category
-        if (!mapCategoryGroups[currCategory]) {
-            mapCategoryGroups[currCategory] = {
-                items:[], 
-                subtotal: 0,
-                category: currCategory,
-                yearSubTotals: {}
-            };
-        }
-        if (!unFilteredCategoryMap[currCategory]) {
-            unFilteredCategoryMap[currCategory] = {
-                subtotal: 0
+            // [b] region
+            if (!mapRegionGroups[currRegion]) {
+                mapRegionGroups[currRegion] = {
+                    items:[], 
+                    subtotal: 0,
+                    region: currRegion,
+                    yearSubTotals: {}
+                };
             }
-        }
-        unFilteredCategoryMap[currCategory].subtotal += currData.p;
+            if (!unFilteredRegionMap[currRegion]) {
+                unFilteredRegionMap[currRegion] = {
+                    subtotal: 0
+                }
+            }
+            unFilteredRegionMap[currRegion].subtotal += currData.p;
 
-        if (bSatisfiesFilter) {
+            // [c] district
+            if (!mapDistrictGroups[currDistrict]) {
+                mapDistrictGroups[currDistrict] = {
+                    items:[], 
+                    subtotal: 0,
+                    district: currDistrict,
+                    yearSubTotals: {}
+                };
+            }
+            if (!unFilteredDistrictMap[currDistrict]) {
+                unFilteredDistrictMap[currDistrict] = {
+                    subtotal: 0
+                }
+            }
+            unFilteredDistrictMap[currDistrict].subtotal += currData.p;
+
+            // [d] Fund Source
+            if (!mapFundSourceGroups[currFundSource]) {
+                mapFundSourceGroups[currFundSource] = {
+                    items:[], 
+                    subtotal: 0,
+                    fundSource: currFundSource,
+                    yearSubTotals: {}
+                };
+            }
+            if (!unFilteredFundSrcMap[currFundSource]) {
+                unFilteredFundSrcMap[currFundSource] = {
+                    subtotal: 0
+                }
+            }
+            unFilteredFundSrcMap[currFundSource].subtotal += currData.p;
+
+            // [e] Contractors             
+            for (let iXtor = 0; iXtor < currContractorList.length; iXtor++) {
+                let currContractor = currContractorList[iXtor];
+                if (!mapContractorGroups[currContractor]) {
+                    mapContractorGroups[currContractor] = {
+                        items:[], 
+                        subtotal: 0,
+                        contractor: currContractor,
+                        yearSubTotals: {},
+                        categorySubTotals: {}
+                    };
+                }
+                if (!unFilteredContractorMap[currContractor]) {
+                    unFilteredContractorMap[currContractor] = {
+                        subtotal: 0
+                    }
+                }
+                unFilteredContractorMap[currContractor].subtotal += currData.p;
+            }
+
+            // [f] Category
+            if (!mapCategoryGroups[currCategory]) {
+                mapCategoryGroups[currCategory] = {
+                    items:[], 
+                    subtotal: 0,
+                    category: currCategory,
+                    yearSubTotals: {}
+                };
+            }
+            if (!unFilteredCategoryMap[currCategory]) {
+                unFilteredCategoryMap[currCategory] = {
+                    subtotal: 0
+                }
+            }
+            unFilteredCategoryMap[currCategory].subtotal += currData.p;
+
+        // if (bSatisfiesFilter) {
             //mapYearGroups[currYear].items.push(currData);
             mapYearGroups[currYear].subtotal += currData.p;
 

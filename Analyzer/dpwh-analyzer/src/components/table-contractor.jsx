@@ -21,9 +21,31 @@ const convertStateToTableFilter = (dataState) => {
     return ret;
 }
 
+const showStretchCheckbox = (checkboxState) => {
+    return <label className="chkboxGrandTotalSetting">
+    <input 
+        type="checkbox"
+        value="chkStretch"
+        checked={checkboxState.checkedStretch}
+        onChange={checkboxState.handleCheckboxChange}/>
+        <span>Stretch All Bar Charts to Full Width</span>
+    </label>
+}
+
+const showGrandTotalDirectlyWithSettings = (grandTotal, checkboxState) => {
+    return <div className="grandTotalSettingsContainer">
+        {showStretchCheckbox(checkboxState)}  
+        <div className="grandTotalSettings-fieldItemContainer">
+            <div className="grandTotalLabel">SUBTOTAL:</div>
+            <div className="grandTotalValue">{formatMoney(grandTotal)}</div>
+        </div>
+    </div>;
+}
+
 export const TableByContractor = (props) => {
     
     const [columnFilters, setColumnFilters] = useState([]);
+    const [checkedStretch, setCheckedStretch] = useState(false);
     const [sorting, setSorting] = useState([{
         id: 'subtotal',
         desc: true
@@ -93,12 +115,13 @@ export const TableByContractor = (props) => {
             minCost: dataState.FilteredData.overallContractorMinCost,
             masterData: dataState.MasterData,
             setLoadingMsg: setLoadingMsg,
-            categoryMaster
+            categoryMaster,
+            checkedStretch
         },
         onColumnFiltersChange: setColumnFilters,
         filterFns: {
             multiValueFilter: (row, columnId, filterValue) => {                
-                let ret = filterValue.includes(row.getValue(columnId));
+                let ret = filterValue.includes(grandTotalSettingsContainerrow.getValue(columnId));
                 return ret;
             },
             greaterThan0:(row, columnId, filterValue) => {
@@ -118,9 +141,13 @@ export const TableByContractor = (props) => {
         dataState.Filters.Contractor,
     ])
 
+    const handleCheckboxChange = (arg) => {
+        setCheckedStretch(arg.target.checked); // Toggle the checkbox value
+      };
+
     return <div className="tableContainer">
         {showYearAndCategoryLegends(categoryMaster)}
-        {showGrandTotalDirectly(dataState.FilteredData.grandTotal)}
+        {showGrandTotalDirectlyWithSettings(dataState.FilteredData.grandTotal, {checkedStretch, handleCheckboxChange})}
         {preparePagninator(table)}
         <table className="tableBase">
             <thead>

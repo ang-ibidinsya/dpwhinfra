@@ -144,7 +144,8 @@
     border-right: 2px solid lightgrey;
     border-top: 2px solid lightgrey;
     display: flex;
-    justify-content: space-between;    
+    justify-content: space-between;
+    align-items: center;    
     background: aliceblue;        
 }
 
@@ -169,6 +170,10 @@
     background: #d2bafa;
     border-radius: 5px;
     padding: 3px 10px 1px 10px;
+}
+
+.chkboxGrandTotalSetting {
+
 }
 
 .pageSizeSelector {
