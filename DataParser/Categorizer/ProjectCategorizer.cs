@@ -12,6 +12,13 @@ public class ProjectCategorizer
         {"20OD0220", "school"}, //CONSTRUCTION OF NEW VALPOLY CAMPUS, BRGY. PARADA, VALENZUELA CITY
         {"20O00040", "building"}, //CONSTRUCTION OF TAGUIG CITY PAROLA, BRGY. NAPINDAN, TAGUIG CITY
         {"17L00007", "road"}, //IMPVT./UPGRADING (GRAVEL TO CONCRETE) OF ISLAND GARDEN CITY OF SAMAL (IGACOS) CIRC. RD (EAST SIDE) D
+        {"19Z00015", "bridge"}, //PR-09A, GUICAM BRIDGE, ZAMBOANGA SIBUGAY UNDER ADB LOAN NO. 3631-PHI: IMPROVING GROWTH CORRIDORS IN MINDANAO ROAD SECTOR PROJECT (IGCMRSP)
+        {"18Z00005", "road"}, //CENTRAL LUZON LINK EXPRESSWAY (CLLEX) PROJECT, PHASE 1 PACKAGE 5 - ZARAGOZA INTERCHANGE SECTION
+        {"22O00030", "building"}, //CONSTRUCTION OF NATIONAL HEADQUARTERS OF THE COOPERATIVE DEVELOPMENT AUTHORITY (CDA), 827 AURORA BLVD., CUBAO, QUEZON CITY
+        {"19L00197", "building"}, //CONSTRUCTION OF AGDAO FARMERS MARKET PHASE 2, AGDAO, DAVAO CITY
+        {"21N00047", "bridge"}, //HUBO BR. (B01834MN) ALONG SURIGAO- DAVAO COASTAL RD, SAN AGUSTIN, SURIGAO DEL SUR
+        {"23N00131", "bridge"}, //KINALABLABAN BR. (B00306MN) ALONG SURIGAO-DAVAO COASTAL RD
+        {"22N00024", "road+bridge"}, //BUTUAN CITY WEST DIVERSION ROAD (PINAMANCULAN BRIDGE), PACKAGE 1, BUTUAN CITY, AGUSAN DEL NORTE
     };
     public void LoadData(string MasterDataFile, string ContractsDataFile)
     {
@@ -42,6 +49,11 @@ public class ProjectCategorizer
             CategorizeLeadingTo(contract, dictTagDict);
             CategorizeSingleKeywordProjects(contract, dictTagDict);
             CategorizeLowestPrecedence(contract, dictTagDict);
+            if (!contract.Tags.Any())
+            {
+                contract.Tags.Add("uncategorized");
+                IncrementDict(dictTagDict, "uncategorized");
+            }
         }
 
         // Log statistics
@@ -78,7 +90,7 @@ public class ProjectCategorizer
             Console.WriteLine($"[{i++}][{string.Join("/", x.Tags)}]{x.Desc}");
         }
         #endif
-        //new ExcelUtil().GenerateExcel(contracts);
+        new ExcelUtil().GenerateExcel(contracts);
 
         // Write categories into master data
         Dictionary<string, ushort> categoryMap = WriteMasterData(dictTagDict, masterData);
@@ -168,6 +180,14 @@ public class ProjectCategorizer
             return;
         }
 
+        string descToLower = contract.Desc.ToLower();
+        // Exclude Davao Bypass
+        if (descToLower.Contains("davao") && 
+            (descToLower.Contains("bypass") || descToLower.Contains("by-pass")))
+        {
+            return;
+        }
+
         if (contract.DistrictOffice == "Central Office - Flood Control Management Cluster")
         {
             contract.Tags.Add("flood");
@@ -182,6 +202,7 @@ public class ProjectCategorizer
             return;
         }
 
+#if false // Remove because some are bridges (e.g. Panguil Bay Bridge)
         if (contract.DistrictOffice == "Central Office - Roads Management Cluster I (Bilateral)" ||
            contract.DistrictOffice == "Central Office - Roads Management Cluster II (Multilateral)")
         {
@@ -189,7 +210,7 @@ public class ProjectCategorizer
             IncrementDict(dictTagDict, "road");
             return;
         }
-
+#endif
         if (contract.DistrictOffice == "Central Office - Buildings and Special Projects Management Cluster")
         {
             contract.Tags.Add("building");
@@ -210,7 +231,7 @@ public class ProjectCategorizer
         if (descToLower.Contains("flood") || descToLower.Contains("dred") || descToLower.Contains("storm")
            || descToLower.Contains("booster pump") || descToLower.Contains("pumping sta")
            || descToLower.Contains("riverbank pro") || descToLower.Contains("revetment")
-           || descToLower.Contains("river prot")
+           || descToLower.Contains("river prot")|| descToLower.Contains("desiltation")
            || descToLower.Contains("river control") || descToLower.Contains("embankment")
            || descToLower.Contains("bank protection") || descToLower.Contains("wall prot")
            || descToLower.Contains("lakewall") || descToLower.Contains("lake wall")
@@ -222,7 +243,7 @@ public class ProjectCategorizer
            || descToLower.Contains("shoreline prot") || descToLower.Contains("gabion") 
            || descToLower.Contains("mattress") || descToLower.Contains("bank improvement") 
            || descToLower.Contains("breakwater") || descToLower.Contains("break water") 
-           || descToLower.Contains("retarding basin")
+           || descToLower.Contains("retarding basin") || descToLower.Contains("retention basin")
            )
         {
             contract.Tags.Add("flood");
@@ -326,22 +347,22 @@ public class ProjectCategorizer
 
         if (descToLower.Contains("lanes"))
         {
-            contract.Tags.Add("lanes");
-            IncrementDict(dictTagDict, "lanes");
+            contract.Tags.Add("road");
+            IncrementDict(dictTagDict, "road");
             return;
         }
 
         if (descToLower.Contains("access road") || descToLower.Contains("access rd"))
         {
-            contract.Tags.Add("access road");
-            IncrementDict(dictTagDict, "access road");
+            contract.Tags.Add("road");
+            IncrementDict(dictTagDict, "road");
             return;
         }
 
         if (descToLower.Contains("coastal roads"))
         {
-            contract.Tags.Add("coastal roads");
-            IncrementDict(dictTagDict, "coastal roads");
+            contract.Tags.Add("road");
+            IncrementDict(dictTagDict, "road");
             return;
         }
 
@@ -377,8 +398,8 @@ public class ProjectCategorizer
         {
             if (descToLower.Contains("bridge"))
             {
-                contract.Tags.Add("roads+bridges");
-                IncrementDict(dictTagDict, "roads+bridges");
+                contract.Tags.Add("road+bridge");
+                IncrementDict(dictTagDict, "road+bridge");
                 return;
             }
             contract.Tags.Add("road");
@@ -394,8 +415,8 @@ public class ProjectCategorizer
         {
             if (descToLower.Contains("bridges"))
             {
-                contract.Tags.Add("roads+bridges");
-                IncrementDict(dictTagDict, "roads+bridges");
+                contract.Tags.Add("road+bridge");
+                IncrementDict(dictTagDict, "road+bridge");
                 return;
             }
             contract.Tags.Add("road");
@@ -422,6 +443,7 @@ public class ProjectCategorizer
            || descToLower.Contains("permanent birdges") || descToLower.Contains("permanent bridges")
            || descToLower.Contains("national bridge const") || descToLower.Contains("bridge program") 
            || descToLower.StartsWith("construction of concrete bridge") || descToLower.StartsWith("tulay ng pangulo")
+           || descToLower.StartsWith("bridge")
            || descToLower.StartsWith("repair of bridge") || descToLower.StartsWith("repair of permanent bridge")
            || descToLower.StartsWith("maintenance of bridge") || descToLower.StartsWith("construction of bridge")
            || descToLower.StartsWith("construction of permanent bridge") || descToLower.StartsWith("const. of bridge")
@@ -437,8 +459,8 @@ public class ProjectCategorizer
         if (descToLower.Contains("various roads") || descToLower.Contains("various road proj")
         || descToLower.Contains("various road building"))
         {
-            contract.Tags.Add("various road");
-            IncrementDict(dictTagDict, "various road");
+            contract.Tags.Add("road");
+            IncrementDict(dictTagDict, "road");
             return;
         }
 
@@ -452,8 +474,8 @@ public class ProjectCategorizer
 
         if (descToLower.Contains("mitigation"))
         {
-            contract.Tags.Add("mitigation");
-            IncrementDict(dictTagDict, "mitigation");
+            contract.Tags.Add("flood");
+            IncrementDict(dictTagDict, "flood");
             return;
         }
 
@@ -491,7 +513,9 @@ public class ProjectCategorizer
 
         if (descToLower.Contains("police") || descToLower.Contains("military") || descToLower.Contains("camp aguinaldo") 
         || descToLower.Contains("camp emilio aguinaldo") || descToLower.Contains("pnp") || descToLower.Contains("camp crame") 
-        || descToLower.Contains("camp bagong") || descToLower.Contains("ncrpo") || descToLower.Contains("army aviation"))
+        || descToLower.Contains("camp bagong") || descToLower.Contains("ncrpo") || descToLower.Contains("army aviation")
+        || descToLower.Contains("defense") || descToLower.Contains("national security")
+        )
         {            
             contract.Tags.Add("police+military");
             IncrementDict(dictTagDict, "police+military");
@@ -502,29 +526,41 @@ public class ProjectCategorizer
            || descToLower.Contains("school") || descToLower.Contains("academy") || descToLower.Contains("college")
            || descToLower.Contains("healthcare institute") || descToLower.Contains("institute of technology")
            || descToLower.Contains("science and tech") // DOST building will not come here because it has 'storey' building
-           || descToLower.Contains("classroom")
+           || descToLower.Contains("classroom") || descToLower.Contains("up mindanao") || descToLower.Contains("u.p. mindanao")
         )
-        {            
-            contract.Tags.Add("school");
-            IncrementDict(dictTagDict, "school");
-            return;
+        {
+            if (!descToLower.Contains("leading to")) // exclude leading to, it's most likely a road
+            {
+                contract.Tags.Add("school");
+                IncrementDict(dictTagDict, "school");
+                return;
+            }
         }
 
         // Lower priority for airbase because it has elementary schools, drainage and road projects too
         if (descToLower.Contains("air base") || descToLower.Contains("airbase") 
            || descToLower.Contains("philippine army") || descToLower.Contains("philippine navy")
         )
-        {            
+        {
             contract.Tags.Add("police+military");
             IncrementDict(dictTagDict, "police+military");
             return;
         }
 
         if (descToLower.Contains("water supply") || descToLower.Contains("water system")
+           || descToLower.Contains("waterworks") || descToLower.Contains("watersystem")
         )
         {            
             contract.Tags.Add("water supply");
             IncrementDict(dictTagDict, "water supply");
+            return;
+        }
+
+        if (descToLower.Contains("cruise port")
+        )
+        {            
+            contract.Tags.Add("cruise port");
+            IncrementDict(dictTagDict, "cruise port");
             return;
         }
 
@@ -533,7 +569,7 @@ public class ProjectCategorizer
         if (descToLower.Contains("purpose") || descToLower.Contains("evacuation") || descToLower.Contains("mpb") 
         || descToLower.Contains("convention") || descToLower.Contains("sport") || descToLower.Contains("skate")
         || descToLower.Contains("covered court") || descToLower.Contains("baseball") || descToLower.Contains("basketball")
-        || descToLower.Contains("boxing")
+        || descToLower.Contains("boxing") || descToLower.Contains("gym")
         )
         {
             contract.Tags.Add("multi");
@@ -550,6 +586,7 @@ public class ProjectCategorizer
         {"bypass","road"},
         {"highway","road"},
         {"boulevard","road"},
+        {"causeway","road"},
         {"bridge","bridge"},
         {" br.","bridge"}, // note cannot use "br" as it can be mistaken as brgy
         {" br ","bridge"}, // with space before and after
@@ -657,7 +694,7 @@ public class ProjectCategorizer
             string cat = MatchNounAndVerbViaClosestIndex(descToLower, startPhrase);
             if (!string.IsNullOrEmpty(cat))
             {
-                cat = "idx-" + cat;
+                //cat = "idx-" + cat;
                 contract.Tags.Add(cat);
                 IncrementDict(dictTagDict, cat);
                 //Console.WriteLine($"[{cat}] {contract.Desc}");
@@ -688,12 +725,19 @@ public class ProjectCategorizer
     private List<string> roadKeywords = new List<string>() {
         "road",
         " rd ",
+        " rd-",
         " rds ",
         " rd.",
         " rd,",
+        " ave.",
+        " ave.",
+        " ave-",
+        " ave ",
         "highway",
+        "higway",
         "coastal rd",
         "coastal road",
+        "causeway",
     };
     [Flags]
     private enum existenceFlag {
@@ -737,20 +781,20 @@ public class ProjectCategorizer
 
         if ((flagKeywords & existenceFlag.hasRoad) > 0)
         {
-            contract.Tags.Add("single-road");
-            IncrementDict(dictTagDict, "single-road");
+            contract.Tags.Add("road");
+            IncrementDict(dictTagDict, "road");
             return;
         }
         if ((flagKeywords & existenceFlag.hasBridge) > 0)
         {
-            contract.Tags.Add("single-bridge");
-            IncrementDict(dictTagDict, "single-bridge");
+            contract.Tags.Add("bridge");
+            IncrementDict(dictTagDict, "bridge");
             return;
         }
         if ((flagKeywords & existenceFlag.hasBuilding) > 0)
         {
-            contract.Tags.Add("single-building");
-            IncrementDict(dictTagDict, "single-building");
+            contract.Tags.Add("building");
+            IncrementDict(dictTagDict, "building");
             return;
         }
     }
@@ -772,15 +816,15 @@ public class ProjectCategorizer
             int indexBridge = descToLower.IndexOf(bridgeKeyword);
             if (indexBridge >= 0 && indexLeadTo > indexBridge)
             {
-                contract.Tags.Add("leadingTo-bridge");
-                IncrementDict(dictTagDict, "leadingTo-bridge");
+                contract.Tags.Add("bridge");
+                IncrementDict(dictTagDict, "bridge");
                 return;
             }
         }
 
         // by default, set as road
-        contract.Tags.Add("leadingTo-road");
-        IncrementDict(dictTagDict, "leadingTo-road");
+        contract.Tags.Add("road");
+        IncrementDict(dictTagDict, "road");
 
     }
     
@@ -793,10 +837,18 @@ public class ProjectCategorizer
         }
 
         string descToLower = contract.Desc.ToLower();
-        if (descToLower.Contains("daang maharlika"))
+        string districtToLower = contract.DistrictOffice.ToLower();
+        if (districtToLower.Contains("roads management"))
         {
-            contract.Tags.Add("lowest-road");
-            IncrementDict(dictTagDict, "lowest-road");
+            contract.Tags.Add("road");
+            IncrementDict(dictTagDict, "road");
+            return;
+        }
+
+        if (descToLower.Contains("daang maharlika") || descToLower.Contains("daan maharlika"))
+        {
+            contract.Tags.Add("road");
+            IncrementDict(dictTagDict, "road");
             return;
         }
         
@@ -805,16 +857,24 @@ public class ProjectCategorizer
             descToLower.Contains("br. along") ||
             descToLower.Contains("br. 2 along"))
         {
-            contract.Tags.Add("lowest-bridge");
-            IncrementDict(dictTagDict, "lowest-bridge");
+            contract.Tags.Add("bridge");
+            IncrementDict(dictTagDict, "bridge");
             return;
         }
         
-        if (descToLower.Contains("municipal hall")) // usually a multipurpose building also, but if not specified as MPB, we classify as building
+        if (descToLower.Contains("municipal hall") || descToLower.Contains("function hall")) // usually a multipurpose building also, but if not specified as MPB, we classify as building
         {
-            contract.Tags.Add("lowest-building");
-            IncrementDict(dictTagDict, "lowest-building");
+            contract.Tags.Add("building");
+            IncrementDict(dictTagDict, "building");
             return;
         }
+
+        if (descToLower.Contains("river") || descToLower.Contains("dike") || descToLower.Contains("creek"))
+        {
+            contract.Tags.Add("river+dike+creek");
+            IncrementDict(dictTagDict, "river+dike+creek");
+            return;
+        }
+
     }
 }

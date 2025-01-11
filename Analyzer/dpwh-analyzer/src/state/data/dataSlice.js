@@ -39,6 +39,11 @@ const satisfiesFilter = (currData, filters) => {
         return ret;
     }
 
+    // [8] Category
+    if (filters.Category?.length > 0 && !filters.Category.includes(currData.cat)) {
+        return false;
+    }
+
     return true;
 }
 
@@ -48,6 +53,7 @@ const mapAndFilterData = (data, filters) => {
     let mapDistrictGroups = {};
     let mapFundSourceGroups = {};
     let mapContractorGroups = {};
+    let mapCategoryGroups = {};
 
     let ret = {
         yearGroups: {},
@@ -55,6 +61,7 @@ const mapAndFilterData = (data, filters) => {
         districtGroups: {},
         fundSrcGroups: {},
         contractorGroups: {},
+        categoryGroups: {},
         grandTotal: 0, // filtered Grandtotal
         // not affected by filter
         overallProjMaxCost: 0, 
@@ -68,7 +75,9 @@ const mapAndFilterData = (data, filters) => {
         overallFundSourceMaxCost: 0,
         overallFundSourceMinCost: Number.MAX_VALUE,
         overallContractorMaxCost: 0,
-        overallContractorMinCost: Number.MAX_VALUE,        
+        overallContractorMinCost: Number.MAX_VALUE,
+        overallCategoryMaxCost: 0,
+        overallCategoryMinCost: Number.MAX_VALUE,     
     }
     if (!data) {
         return ret;
@@ -80,6 +89,7 @@ const mapAndFilterData = (data, filters) => {
     let unFilteredDistrictMap = {};
     let unFilteredFundSrcMap = {};
     let unFilteredContractorMap = {};
+    let unFilteredCategoryMap = {};
     // use for instead of forEach
     for (let i = 0; i < data.length; i++) {        
         let currData = data[i];
@@ -88,6 +98,7 @@ const mapAndFilterData = (data, filters) => {
         let currDistrict = currData.dst;
         let currFundSource = currData.src;
         let currContractorList = currData.ctr;
+        let currCategory = currData.cat;
 
         ret.overallProjMaxCost = Math.max(ret.overallProjMaxCost, currData.p);
         ret.overallProjMinCost = Math.min(ret.overallProjMinCost, currData.p);
@@ -176,6 +187,22 @@ const mapAndFilterData = (data, filters) => {
             unFilteredContractorMap[currContractor].subtotal += currData.p;
         }
 
+        // [f] Category
+        if (!mapCategoryGroups[currCategory]) {
+            mapCategoryGroups[currCategory] = {
+                items:[], 
+                subtotal: 0,
+                category: currCategory,
+                yearSubTotals: {}
+            };
+        }
+        if (!unFilteredCategoryMap[currCategory]) {
+            unFilteredCategoryMap[currCategory] = {
+                subtotal: 0
+            }
+        }
+        unFilteredCategoryMap[currCategory].subtotal += currData.p;
+
         if (bSatisfiesFilter) {
             //mapYearGroups[currYear].items.push(currData);
             mapYearGroups[currYear].subtotal += currData.p;
@@ -197,6 +224,10 @@ const mapAndFilterData = (data, filters) => {
                 mapContractorGroups[currContractor].yearSubTotals[currData.yr] = (mapContractorGroups[currContractor].yearSubTotals[currData.yr] || 0 ) + currData.p;
             }
 
+            mapCategoryGroups[currCategory].subtotal += currData.p;
+            mapCategoryGroups[currCategory].yearSubTotals[currData.yr] = (mapCategoryGroups[currCategory].yearSubTotals[currData.yr] || 0 ) + currData.p;
+
+
             ret.grandTotal += currData.p;
         }
     }
@@ -206,6 +237,7 @@ const mapAndFilterData = (data, filters) => {
     const unfilteredDistrictData = Object.values(unFilteredDistrictMap).map (y => y.subtotal);
     const unfilteredFundSrcData = Object.values(unFilteredFundSrcMap).map (y => y.subtotal);
     const unfilteredContractorData = Object.values(unFilteredContractorMap).map (y => y.subtotal);
+    const unfilteredCategoryData = Object.values(unFilteredCategoryMap).map (y => y.subtotal);
     ret.overallYearMaxCost = Math.max(...unfilteredYearData);
     ret.overallYearMinCost = Math.min(...unfilteredYearData);
     ret.overallRegionMaxCost = Math.max(...unfilteredRegionData);
@@ -216,12 +248,15 @@ const mapAndFilterData = (data, filters) => {
     ret.overallFundSourceMinCost = Math.min(...unfilteredFundSrcData);
     ret.overallContractorMaxCost = Math.max(...unfilteredContractorData);
     ret.overallContractorMinCost = Math.min(...unfilteredContractorData);
+    ret.overallCategoryMinCost = Math.min(...unfilteredCategoryData);
+    ret.overallCategoryMaxCost = Math.max(...unfilteredCategoryData);
 
     ret.yearGroups = Object.values(mapYearGroups);
     ret.regionGroups = Object.values(mapRegionGroups);
     ret.districtGroups = Object.values(mapDistrictGroups);
     ret.fundSrcGroups = Object.values(mapFundSourceGroups);
     ret.contractorGroups = Object.values(mapContractorGroups);
+    ret.categoryGroups = Object.values(mapCategoryGroups);
 
     console.log('[mapAndFilterData] ret', ret);
     return ret;

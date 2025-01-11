@@ -73,6 +73,10 @@ export const getMasterDataValue = (masterData, masterDataType, value) => {
         return contractorStrArr;
     }
 
+    if (masterDataType === EntityTypes.category) {
+        return masterData.CategoryMaster[value];
+    }
+
     return value;
 }
 
@@ -112,6 +116,10 @@ export const convertStateToTableFilter= (settingsState) => {
 
     if (settingsState.Filters.Contractor?.length > 0) {
         ret.push({id: 'ctr', value: settingsState.Filters.Contractor});
+    }
+
+    if (settingsState.Filters.Category?.length > 0) {
+        ret.push({id: 'cat', value: settingsState.Filters.Category});
     }
 
     console.log('[convertStateToTableFilter]', ret);

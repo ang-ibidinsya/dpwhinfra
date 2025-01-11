@@ -19,7 +19,7 @@ function App() {
     console.log('useEffect...');
     const fetchAndLoadData = async () => {
         console.log('fetchAndLoadData start');
-        const fetchResponse = await fetch('./AllContracts.json.zip');
+        const fetchResponse = await fetch('./AllContractsCategorized.json.zip');
         if (!fetchResponse.ok) {
             console.error('Unable to fetch contracts data!');
             return;
@@ -28,10 +28,10 @@ function App() {
         const zip = new JSZip();
         try {
             const unzippedFiles = await zip.loadAsync(contractsZip);
-            const contractsFile = unzippedFiles.files['AllContracts.json'];
+            const contractsFile = unzippedFiles.files['AllContractsCategorized.json'];
             const constractsJson = JSON.parse(await contractsFile.async('string'));
             console.log('Contracts Length', constractsJson.length);
-            const masterDataFile = unzippedFiles.files['MasterData.json'];
+            const masterDataFile = unzippedFiles.files['MasterDataCategorized.json'];
             const masterDataJson = JSON.parse(await masterDataFile.async('string'));
             dispatch(setInitialData({constractsJson, masterDataJson}));
         }

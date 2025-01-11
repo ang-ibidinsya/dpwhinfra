@@ -70,6 +70,16 @@ const columnDefs = [
             },
     },
     {
+        accessorKey: "cat",
+        header: <span style={{whiteSpace: 'nowrap'}}><i className="bx bxs-flask bx-xs bx-fw" color="red"></i>Category</span>,
+        filterFn: 'multiValueFilter',
+        defaultColVisibility: true,
+        cell: ({ getValue, row, column, table }) => {
+                let {masterData} = table.getState();
+                return <div className="taggedValueContainer"><div className="taggedValue">{getMasterDataValue(masterData, EntityTypes.category, getValue())}</div></div>
+            },
+    },
+    {
         accessorKey: "dsc",
         header: "Project",
         enableSorting: false, // disables sorting - from tanstack
@@ -81,7 +91,7 @@ const columnDefs = [
     {
         accessorKey: "cId",
         header: "Contract ID",
-        defaultColVisibility: false,
+        defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
             return <div className="itemDesc">{getValue()}</div>
         },
@@ -265,7 +275,7 @@ export const TableByProject = (props) => {
         console.log('[Project Table UseEffect]');
         table.setColumnFilters(convertStateToTableFilter(dataState))
     }, [dataState.Filters.Project, dataState.Filters.Year, dataState.Filters.District, dataState.Filters.Region, 
-        dataState.Filters.Status, dataState.Filters.FundSource, dataState.Filters.Contractor])
+        dataState.Filters.Status, dataState.Filters.FundSource, dataState.Filters.Contractor, dataState.Filters.Category])
 
 
     return <>     

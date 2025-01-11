@@ -232,3 +232,22 @@
     background: white;
     display: flex;
 }
+
+.taggedValueContainer {
+    width: 100%;    
+    display: flex;
+}
+
+.taggedValue {
+    display: inline-block;
+    margin: 0 auto;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #ddd;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    justify-content: center;
+    
+}

@@ -99,7 +99,8 @@ export const TableByFundSrc = (props) => {
         dataState.Filters.Year, 
         dataState.Filters.District, 
         dataState.Filters.Region,
-        dataState.Filters.FundSource
+        dataState.Filters.FundSource,
+        dataState.Filters.Category,
     ])
 
     return <div className="tableContainer">

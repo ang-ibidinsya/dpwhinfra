@@ -7,5 +7,6 @@ export const EntityTypes = {
     status: 'status',
     percent: 'percent',
     fundSource: 'fundSource',
-    contractor: 'contractor'
+    contractor: 'contractor',
+    category: 'category'
 }

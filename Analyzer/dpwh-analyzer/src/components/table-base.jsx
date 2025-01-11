@@ -21,6 +21,7 @@ import { TableByDistrict} from './table-district';
 import { mapColors, StackedBarChart } from '../controls/stackedbarchart';
 import { TableByFundSrc } from './table-fundsrc';
 import { TableByContractor } from './table-contractor';
+import { TableByCategory } from './table-category';
 
 const iconSortLookup = {
     'asc': 'bx bxs-chevron-up-circle',
@@ -83,7 +84,8 @@ export const prepareBody = (table, entityType) => {
     const prepareCostBarCell = (cell, row) => {
         let cellClass = 'tdCostBar ';
         if (entityType === EntityTypes.district || entityType === EntityTypes.region 
-            || entityType === EntityTypes.fundSource || entityType === EntityTypes.contractor) {                
+            || entityType === EntityTypes.fundSource || entityType === EntityTypes.contractor
+            || entityType === EntityTypes.category) {                
             // Stacked Bar Chart
             // We put all the stackedbarChart logic here and avoid doing the rendering inside the columnDef cell render because the react-tooltip has intermittent issues when user clicks Sort
             cellClass += ' tdCostBarFullWidth';
@@ -120,7 +122,7 @@ export const prepareBody = (table, entityType) => {
         }
 
         if (entityType === EntityTypes.district || entityType === EntityTypes.region || entityType === EntityTypes.year 
-            || entityType === EntityTypes.fundSource || entityType === EntityTypes.contractor
+            || entityType === EntityTypes.fundSource || entityType === EntityTypes.contractor || entityType === EntityTypes.category
         ) {
             cellClass += ' tdSummary';
         }
@@ -343,4 +345,12 @@ export const TableBase = () => {
         </>
     }
 
+    if (dataState.Grouping === 'Category') {
+        return <>
+            {loadingMsg && <LoadingIndicator isOverlay={true} refTable={tableRef} msg={loadingMsg}/>}
+            <div className="tableContainer" ref={tableRef}>
+                <TableByCategory dataState={dataState} setLoadingMsg={setLoadingMsg}/>
+            </div>
+        </>
+    }
 }

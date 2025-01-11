@@ -42,6 +42,7 @@ export const Settings = () => {
     const uniqueContractors = dataStateMasterData?.ContractorMaster;
     const uniqueStatuses = dataStateMasterData?.StatusMaster;
     const uniqueSourceOfFunds = dataStateMasterData?.SourceMaster;
+    const uniqueCategories = dataStateMasterData?.CategoryMaster;
     
     // redux dispatch-related
     const dispatch = useDispatch();
@@ -63,6 +64,7 @@ export const Settings = () => {
                     Status: data.Status ? data.Status.map(x => parseInt(x.value)): [],
                     FundSource: data['Fund Source'] ? data['Fund Source'].map(x => parseInt(x.value)): [],
                     Contractor: data.Contractor ? data.Contractor.map(x => parseInt(x.value)): [],
+                    Category: data.Category ? data.Category.map(x => parseInt(x.value)): [],
                 },
                 // Grouping
                 Grouping: data.Grouping
@@ -115,6 +117,14 @@ export const Settings = () => {
                 <span>Contractor</span>
             </label>
             <label className="groupingField">
+                <input type="radio" name="groupingFields" value="Category" 
+                    {...register("Grouping", { required: true })}
+                >                    
+                </input>
+                <i className="bx bxs-flask bx-xs bx-fw" color="red"></i>
+                <span>Category</span>
+            </label>
+            <label className="groupingField">
                 <input type="radio" name="groupingFields" value="Project" defaultChecked 
                     {...register("Grouping", { required: true })}
                 >                    
@@ -130,7 +140,8 @@ export const Settings = () => {
         District: formatMasterDataComboOptions(uniqueDistricts),
         Contractor: formatMasterDataComboOptions(uniqueContractors),
         Status: formatMasterDataComboOptions(uniqueStatuses),
-        "Fund Source": formatMasterDataComboOptions(uniqueSourceOfFunds)
+        "Fund Source": formatMasterDataComboOptions(uniqueSourceOfFunds),
+        Category: formatMasterDataComboOptions(uniqueCategories),
     }
 
     const createFilterField = (fieldName, fieldType, options) => {
@@ -241,10 +252,10 @@ export const Settings = () => {
     }
 
     const formMain = <form className="mainForm">
-        <div className="collapsibleContainerText">
+        {/* <div className="collapsibleContainerText">
             <i className="bx bxs-cog"></i>
             <span>Settings</span>
-        </div>
+        </div> */}
         {/* Filter */}
         <div className="groupForm">
             <div className="groupLabel">
@@ -258,6 +269,7 @@ export const Settings = () => {
             {createFilterField('Status', 'combo')}
             {createFilterField('Fund Source', 'combo')}
             {createFilterField('Contractor', 'combo', {largeCombo: true})}
+            {createFilterField('Category', 'combo')}
             </div>
         </div>
     {/* Gouping */}
