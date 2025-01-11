@@ -54,6 +54,7 @@ const mapAndFilterData = (data, filters) => {
     let mapFundSourceGroups = {};
     let mapContractorGroups = {};
     let mapCategoryGroups = {};
+    //let mapContractorCategoryGroups = {};
 
     let ret = {
         yearGroups: {},
@@ -62,6 +63,7 @@ const mapAndFilterData = (data, filters) => {
         fundSrcGroups: {},
         contractorGroups: {},
         categoryGroups: {},
+        //contractorCategoryGroups: {},
         grandTotal: 0, // filtered Grandtotal
         // not affected by filter
         overallProjMaxCost: 0, 
@@ -78,6 +80,8 @@ const mapAndFilterData = (data, filters) => {
         overallContractorMinCost: Number.MAX_VALUE,
         overallCategoryMaxCost: 0,
         overallCategoryMinCost: Number.MAX_VALUE,     
+        // overallContractorCategoryMaxCost: 0,
+        // overallContractorCategoryMinCost: Number.MAX_VALUE,     
     }
     if (!data) {
         return ret;
@@ -90,6 +94,7 @@ const mapAndFilterData = (data, filters) => {
     let unFilteredFundSrcMap = {};
     let unFilteredContractorMap = {};
     let unFilteredCategoryMap = {};
+    let unFilteredContractorCategoryMap = {};
     // use for instead of forEach
     for (let i = 0; i < data.length; i++) {        
         let currData = data[i];
@@ -176,7 +181,8 @@ const mapAndFilterData = (data, filters) => {
                     items:[], 
                     subtotal: 0,
                     contractor: currContractor,
-                    yearSubTotals: {}
+                    yearSubTotals: {},
+                    categorySubTotals: {}
                 };
             }
             if (!unFilteredContractorMap[currContractor]) {
@@ -222,6 +228,7 @@ const mapAndFilterData = (data, filters) => {
                 let currContractor = currContractorList[iXtor];
                 mapContractorGroups[currContractor].subtotal += currData.p;
                 mapContractorGroups[currContractor].yearSubTotals[currData.yr] = (mapContractorGroups[currContractor].yearSubTotals[currData.yr] || 0 ) + currData.p;
+                mapContractorGroups[currContractor].categorySubTotals[currData.cat] = (mapContractorGroups[currContractor].categorySubTotals[currData.cat] || 0 ) + currData.p;
             }
 
             mapCategoryGroups[currCategory].subtotal += currData.p;

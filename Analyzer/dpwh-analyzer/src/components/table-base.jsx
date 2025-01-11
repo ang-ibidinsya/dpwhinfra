@@ -18,7 +18,7 @@ import { TableByProject } from './table-project';
 import { TableByYear} from './table-year';
 import { TableByRegion } from './table-region';
 import { TableByDistrict} from './table-district';
-import { mapColors, StackedBarChart } from '../controls/stackedbarchart';
+import { mapYearColors, StackedBarChart, getCategoryColor } from '../controls/stackedbarchart';
 import { TableByFundSrc } from './table-fundsrc';
 import { TableByContractor } from './table-contractor';
 import { TableByCategory } from './table-category';
@@ -30,17 +30,50 @@ const iconSortLookup = {
 
 export const showYearLegends = () => {
     let legendsEl = [];
-    for (var year in mapColors) {
-        if (!Object.prototype.hasOwnProperty.call(mapColors, year)) {
+    for (var year in mapYearColors) {
+        if (!Object.prototype.hasOwnProperty.call(mapYearColors, year)) {
             continue;
         }
         legendsEl.push(<div key={`legend-${year}`} className="legendItem">
-            <div className='legendSquare' style={{backgroundColor:`${mapColors[year]}`}}/>
+            <div className='legendSquare' style={{backgroundColor:`${mapYearColors[year]}`}}/>
             <div className='legendLabel'>{year}</div>
         </div>);
     }
 
-    return <div className='legendsContainer'>{legendsEl}</div>;
+    return <div className='legendsContainer'>
+        <div className="legendItemsContainer">{legendsEl}</div>        
+    </div>;
+}
+
+export const showYearAndCategoryLegends = (categoryMaster) => {
+    let legendsCatEl = [];
+    for (var cat in categoryMaster) {
+        if (!Object.prototype.hasOwnProperty.call(categoryMaster, cat)) {
+            continue;
+        }
+        legendsCatEl.push(<div key={`legend-${cat}`} className="legendItem">
+            <div className='legendSquare' style={{backgroundColor:`${getCategoryColor(cat)}`}}/>
+            <div className='legendLabel'>{categoryMaster[cat]}</div>
+        </div>);
+    }
+    let legendsYearEl = [];
+    for (var year in mapYearColors) {
+        if (!Object.prototype.hasOwnProperty.call(mapYearColors, year)) {
+            continue;
+        }
+        legendsYearEl.push(<div key={`legend-${year}`} className="legendItem">
+            <div className='legendSquare' style={{backgroundColor:`${mapYearColors[year]}`}}/>
+            <div className='legendLabel'>{year}</div>
+        </div>);
+    }
+
+    return <div className='legendsGrid-container'>        
+            <div className='legendsGrid-group-title legendsGrid-item-bottom-border'>Years: </div>
+            <div className='legendsGrid-group-item-container legendsGrid-item-bottom-border'>{legendsYearEl}</div>
+                
+            <div className='legendsGrid-group-title'>Categories: </div>
+            <div className='legendsGrid-group-item-container'>{legendsCatEl}</div>        
+    </div>;
 }
 
 export const createToolTip = (tooltipId) => {
@@ -63,7 +96,7 @@ export const createToolTip = (tooltipId) => {
                 continue;
             }
             items.push(<div className="tooltipItemContainer">
-                <div className="tooltipCell tooltipYearColor" style={{backgroundColor: `${mapColors[year]}`}}/>
+                <div className="tooltipCell tooltipYearColor" style={{backgroundColor: `${mapYearColors[year]}`}}/>
                 <div className="tooltipCell tooltipYear">{year}:</div>
                 <div className="tooltipCell tooltipCost">{formatMoney(subtotalsMap[year])}</div>
             </div>);
@@ -88,7 +121,13 @@ export const prepareBody = (table, entityType) => {
             || entityType === EntityTypes.category) {                
             // Stacked Bar Chart
             // We put all the stackedbarChart logic here and avoid doing the rendering inside the columnDef cell render because the react-tooltip has intermittent issues when user clicks Sort
-            cellClass += ' tdCostBarFullWidth';
+            if (entityType === EntityTypes.contractor) {
+                cellClass = 'tdCostBarStandalone';
+            }
+            else {
+                cellClass += ' tdCostBarFullWidth';
+            }
+            
             let {entityGroups, minCost, maxCost} = table.getState();
             const currEntity = row.getValue(entityType);
             const findEntity = entityGroups.find(grp => grp[entityType] === currEntity);
@@ -114,20 +153,54 @@ export const prepareBody = (table, entityType) => {
                 </td>
     }
 
+    const prepareCategoryBarCell = (cell, row) => {
+        let cellClass = 'tdCostBar ';
+         
+        // Stacked Bar Chart
+        // We put all the stackedbarChart logic here and avoid doing the rendering inside the columnDef cell render because the react-tooltip has intermittent issues when user clicks Sort
+        //cellClass += ' tdCostBarFullWidth';        
+        
+        let {entityGroups, minCost, maxCost} = table.getState();
+        const currEntity = row.getValue(entityType);
+        const findEntity = entityGroups.find(grp => grp[entityType] === currEntity);
+        if (!findEntity) {
+            console.error('[prepareCostBarCell] Unable to find entity', currEntity);
+            return;
+        }
+        const categorySubTotals = findEntity.categorySubTotals;            
+        return <td key={cell.id} className={cellClass}>
+            <div
+                data-tooltip-id="my-tooltip"
+                data-tooltip-content={JSON.stringify(categorySubTotals)}
+                >   
+            <StackedBarChart name={currEntity} subtotalsMap={categorySubTotals} minCost={minCost} maxCost={maxCost} dataType='category'/>
+            </div> 
+        </td>        
+    }
+
     const prepareNormalCell = (cell) => {
         let cellClass = 'tdTable';
         const cellColId = cell.column.id;
+        let styles={};
         if (cellColId === 'p' || cellColId === 'subtotal') {
             cellClass = 'tdCost';
+            if (entityType === EntityTypes.contractor) {
+                styles.width = `${1/7.0*100}%`
+            }
+        }
+        else {
+            if (entityType === EntityTypes.contractor) {
+                styles.width = `${2/7.0*100}%`
+            }
         }
 
         if (entityType === EntityTypes.district || entityType === EntityTypes.region || entityType === EntityTypes.year 
-            || entityType === EntityTypes.fundSource || entityType === EntityTypes.contractor || entityType === EntityTypes.category
+            || entityType === EntityTypes.fundSource || entityType === EntityTypes.category
         ) {
             cellClass += ' tdSummary';
-        }
+        }                
 
-        return <td key={cell.id} className={cellClass}>
+        return <td key={cell.id} className={cellClass} style={styles}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
     }
@@ -147,11 +220,14 @@ export const prepareBody = (table, entityType) => {
     const prepareCells = (row) => {
         let retCells = row.getVisibleCells().map(cell => {
             const cellColId = cell.column.id;
-            if (cellColId === 'CostBar') {
+            if (cellColId === 'CostBar' || cellColId === 'CostBarYear') {
                 return prepareCostBarCell(cell, row)
             }
             if (cellColId === 'sts') {
                 return prepareStatusCell(cell, row)
+            }
+            if (cellColId === 'CostBarCategory') {
+                return prepareCategoryBarCell(cell, row)
             }
             return prepareNormalCell(cell);
         });
@@ -179,7 +255,7 @@ const getSortingIcon = (isSorted) => {
     return <i className={iconClass}></i>;
 }
 
-export const prepareHeader = (table) => {
+export const prepareHeader = (table, entityType) => {
     const headerGroups = table.getHeaderGroups();
     const setLoadingMsg = table.getState()?.setLoadingMsg;
     let headerColumns = [];
@@ -195,7 +271,7 @@ export const prepareHeader = (table) => {
             if (isSortable) {
                 thClassNames += ' thSortable'
             }
-            let colSpan = colHeader === 'Cost' ? 2 : 1;            
+            let colSpan = colHeader === 'Cost' && entityType != EntityTypes.contractor ? 2 : 1;            
             headerColumns.push(<th key={header.id} className={thClassNames} 
                 onClick={ () => {
                     if (!isSortable) {
@@ -207,7 +283,8 @@ export const prepareHeader = (table) => {
                             setLoadingMsg(null);
                           }, 0);
                     }                   
-                } 
+                }
+                // style={{width: '33.33%'}}
                 colSpan={colSpan}>
                 {colHeader}
                 {isSortable && getSortingIcon(header.column.getIsSorted())}                

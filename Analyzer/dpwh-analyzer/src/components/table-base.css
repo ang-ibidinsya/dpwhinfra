@@ -22,7 +22,7 @@
 }
 
 .tdCost {
-    border-left: 2px 0px 2px 2px solid lightgrey;
+    border-left: 2px solid lightgrey;
     border-top: 2px solid lightgrey;
     border-bottom: 2px solid lightgrey;
     padding: 5px 10px 5px 10px;
@@ -37,6 +37,13 @@
     border-right: 2px solid lightgrey;
     border-top: 2px solid lightgrey;
     border-bottom: 2px solid lightgrey;        
+}
+
+.tdCostBarStandalone {
+    border-right: 2px solid lightgrey;
+    border-top: 2px solid lightgrey;
+    border-bottom: 2px solid lightgrey;     
+    border-left: 2px solid lightgrey;   
 }
 
 .tdCostBarFullWidth {
@@ -177,6 +184,17 @@
     border-right: 2px solid lightgrey;
     background: white;
     display: flex;
+    align-items: center;
+}
+
+.legendsGrid-group-title {
+    width: 100px;
+    margin-top: 2px;
+}
+
+.legendItemsContainer {
+    display: flex;
+    align-items: center;
 }
 
 .legendItem {
@@ -190,6 +208,24 @@
     font-size: 1rem;
     width: 1.2rem;
     border-radius: 3px;
+}
+
+.legendsGrid-container {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    padding: 5px;
+    border-top: 2px solid lightgray;
+    border-left: 2px solid lightgray;
+    border-right: 2px solid lightgray;
+}
+
+.legendsGrid-group-item-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.legendsGrid-item-bottom-border {
+    border-bottom: 1px solid #ddd;
 }
 
 /* grid-template-columns: fit-content(8ch) fit-content(8ch) fit-content(8ch); */

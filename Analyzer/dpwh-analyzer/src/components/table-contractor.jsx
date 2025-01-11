@@ -8,7 +8,7 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
-import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showGrandTotalDirectly, createToolTip} from './table-base';
+import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showYearAndCategoryLegends, showGrandTotalDirectly, createToolTip} from './table-base';
 import {formatMoney, getMasterDataValue} from '../util';
 import {EntityTypes} from '../enums';
 
@@ -32,6 +32,7 @@ export const TableByContractor = (props) => {
     console.log('[TableByContractor] render, dataState:', dataState);
 
     const filteredContractorGroups = dataState.FilteredData?.contractorGroups;
+    const categoryMaster = dataState.MasterData.CategoryMaster;
     console.log('filteredContractorGroups', filteredContractorGroups);
 
     const columnDefs = [
@@ -53,8 +54,14 @@ export const TableByContractor = (props) => {
             },
         },
         {
-            accessorKey: "CostBar",
-            header: "CostBar"
+            accessorKey: "CostBarYear",
+            header: "Cost by Year",
+            enableSorting: false, // disables sorting - from tanstack
+        },
+        {
+            accessorKey: "CostBarCategory",
+            header: <span style={{whiteSpace: 'nowrap'}}><i className="bx bxs-flask bx-xs bx-fw" color="red"></i>Cost by Category</span>,
+            enableSorting: false, // disables sorting - from tanstack
         },
     ];
 
@@ -104,12 +111,12 @@ export const TableByContractor = (props) => {
     ])
 
     return <div className="tableContainer">
-        {showYearLegends()}
+        {showYearAndCategoryLegends(categoryMaster)}
         {showGrandTotalDirectly(dataState.FilteredData.grandTotal)}
         {preparePagninator(table)}
         <table className="tableBase">
             <thead>
-                {prepareHeader(table)}
+                {prepareHeader(table, EntityTypes.contractor)}
             </thead>
             <tbody>
                 {prepareBody(table, EntityTypes.contractor)}
