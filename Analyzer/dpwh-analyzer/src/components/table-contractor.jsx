@@ -8,7 +8,7 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
-import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showYearAndCategoryLegends, showGrandTotalDirectly, createToolTip} from './table-base';
+import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showYearAndCategoryLegends, showGrandTotalDirectly} from './table-base';
 import {formatMoney, getMasterDataValue} from '../util';
 import {EntityTypes} from '../enums';
 
@@ -85,7 +85,8 @@ export const TableByContractor = (props) => {
             maxCost: dataState.FilteredData.overallContractorMaxCost,
             minCost: dataState.FilteredData.overallContractorMinCost,
             masterData: dataState.MasterData,
-            setLoadingMsg: setLoadingMsg
+            setLoadingMsg: setLoadingMsg,
+            categoryMaster
         },
         onColumnFiltersChange: setColumnFilters,
         filterFns: {

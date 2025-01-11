@@ -90,19 +90,33 @@ export const createToolTip = (tooltipId) => {
             return "NULL";
         }
         console.log('[ToolTip] Render', content);
-        let items = [];
-        for (var year in subtotalsMap) {
-            if (!Object.prototype.hasOwnProperty.call(subtotalsMap, year)) {
+        let elItems = [];
+        let dataType = subtotalsMap.dataType;
+        let subTotalItems = subtotalsMap.items;
+        let categoryMaster = subtotalsMap.categoryMaster;
+
+        for (var key in subTotalItems) {
+            if (!Object.prototype.hasOwnProperty.call(subTotalItems, key)) {
                 continue;
             }
-            items.push(<div className="tooltipItemContainer">
-                <div className="tooltipCell tooltipYearColor" style={{backgroundColor: `${mapYearColors[year]}`}}/>
-                <div className="tooltipCell tooltipYear">{year}:</div>
-                <div className="tooltipCell tooltipCost">{formatMoney(subtotalsMap[year])}</div>
+            let color= null;
+            let displayKey = null;
+            if (dataType === 'category') {
+                color = getCategoryColor(key);
+                displayKey = categoryMaster[key];
+            }
+            else {
+                color = mapYearColors[key];
+                displayKey = key;
+            }
+            elItems.push(<div className="tooltipItemContainer" key={`tooltipItem-${key}`}>
+                <div className="tooltipCell tooltipYearColor" style={{backgroundColor: `${color}`}}/>
+                <div className="tooltipCell tooltipYear">{displayKey}:</div>
+                <div className="tooltipCell tooltipCost">{formatMoney(subTotalItems[key])}</div>
             </div>);
         }
         return <div>
-            {items}
+            {elItems}
         </div>
     }}
       
@@ -135,13 +149,17 @@ export const prepareBody = (table, entityType) => {
                 console.error('[prepareCostBarCell] Unable to find entity', currEntity);
                 return;
             }
-            const yearSubtotals = findEntity.yearSubTotals;            
+            const yearSubtotalsTooltip = {
+                dataType: 'year', 
+                items: findEntity.yearSubTotals,
+            };
+            
             return <td key={cell.id} className={cellClass}>
                 <div
                 data-tooltip-id="my-tooltip"
-                data-tooltip-content={JSON.stringify(yearSubtotals)}
+                data-tooltip-content={JSON.stringify(yearSubtotalsTooltip)}
                 >                        
-                <StackedBarChart name={currEntity} subtotalsMap={yearSubtotals} minCost={minCost} maxCost={maxCost}/>
+                <StackedBarChart name={currEntity} subtotalsMap={findEntity.yearSubTotals} minCost={minCost} maxCost={maxCost}/>
                 </div>                
             </td>
         }
@@ -160,20 +178,25 @@ export const prepareBody = (table, entityType) => {
         // We put all the stackedbarChart logic here and avoid doing the rendering inside the columnDef cell render because the react-tooltip has intermittent issues when user clicks Sort
         //cellClass += ' tdCostBarFullWidth';        
         
-        let {entityGroups, minCost, maxCost} = table.getState();
+        let {entityGroups, minCost, maxCost, categoryMaster} = table.getState();
         const currEntity = row.getValue(entityType);
         const findEntity = entityGroups.find(grp => grp[entityType] === currEntity);
         if (!findEntity) {
             console.error('[prepareCostBarCell] Unable to find entity', currEntity);
             return;
         }
-        const categorySubTotals = findEntity.categorySubTotals;            
+        const categorySubTotalsTooltip = {
+            dataType: 'category', 
+            items: findEntity.categorySubTotals,
+            categoryMaster: categoryMaster
+        };            
+
         return <td key={cell.id} className={cellClass}>
             <div
                 data-tooltip-id="my-tooltip"
-                data-tooltip-content={JSON.stringify(categorySubTotals)}
+                data-tooltip-content={JSON.stringify(categorySubTotalsTooltip)}
                 >   
-            <StackedBarChart name={currEntity} subtotalsMap={categorySubTotals} minCost={minCost} maxCost={maxCost} dataType='category'/>
+            <StackedBarChart name={currEntity} subtotalsMap={findEntity.categorySubTotals} minCost={minCost} maxCost={maxCost} dataType='category'/>
             </div> 
         </td>        
     }

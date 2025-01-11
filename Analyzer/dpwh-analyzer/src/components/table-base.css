@@ -231,7 +231,7 @@
 /* grid-template-columns: fit-content(8ch) fit-content(8ch) fit-content(8ch); */
 .tooltipItemContainer {
     display: grid;
-    grid-template-columns: minmax(1rem, 1rem) minmax(1rem, 2rem) auto;
+    grid-template-columns: minmax(1rem, 1rem) auto auto;
     column-gap: 8px;
 }
 
@@ -247,7 +247,8 @@
 .tooltipYear {
     font-weight: 600;
     width: 100%;
-    text-align: right;
+    text-align: left;
+    white-space: nowrap;
 }
 
 .tooltipYearColor {
