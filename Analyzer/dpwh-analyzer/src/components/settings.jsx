@@ -9,6 +9,8 @@ import {uniqueYears} from './filterItems';
 import { filterOptions } from '../util';
 import {DebouncedTextField} from '../controls/debouncedTextField';
 import {getCategoryTooltipMessage} from '../controls/controlUtils';
+import {CustomMenuWithDescription} from '../controls/customMenuWithDescription';
+import { categoryLabelMap } from '../controls/controlUtils';
 
 // Needed by React Select
 const formatComboOptions = (uniqValues) => {
@@ -29,6 +31,20 @@ const formatMasterDataComboOptions = (uniqValues) => {
 
     return ret.sort((a, b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0));
 }
+
+const formatCategoryComboOptions = (uniqValues) => {
+    let ret = [];
+    if (!uniqValues) {
+        return ret;
+    }
+    for (var key in uniqValues) {
+        if (!uniqValues.hasOwnProperty(key)) continue;
+        ret.push({value: key, label: uniqValues[key], subtitle: categoryLabelMap[uniqValues[key]]});
+    }
+
+    return ret.sort((a, b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0));
+}
+
 
 export const Settings = () => {
     // Note: calling watch here (not inside useEffect) will cause this for to re-render each time a watched value changes (not good)
@@ -144,7 +160,7 @@ export const Settings = () => {
         Contractor: formatMasterDataComboOptions(uniqueContractors),
         Status: formatMasterDataComboOptions(uniqueStatuses),
         "Fund Source": formatMasterDataComboOptions(uniqueSourceOfFunds),
-        Category: formatMasterDataComboOptions(uniqueCategories),
+        Category: formatCategoryComboOptions(uniqueCategories),
     }
 
     const createFilterField = (fieldName, fieldType, options) => {
@@ -221,6 +237,24 @@ export const Settings = () => {
             )}
             />;
         }
+        else if (fieldName === 'Category') {
+            inputElem = <Controller
+            name={fieldName}
+            control={control}
+            defaultValue=""
+            render = {({ field}) => (
+                <CustomMenuWithDescription {...field} 
+                    className="fieldSelect"
+                    options={comboOptions[fieldName]}
+                    styles={customStylesSelect}
+                    isMulti={true}
+                    closeMenuOnSelect={false}
+                    placeholder={`Select ${fieldName}...`}
+                    ref={null}
+                />
+            )}
+            />;
+        }
         else
         {
             inputElem = <Controller
@@ -235,7 +269,6 @@ export const Settings = () => {
                     isMulti={true}
                     closeMenuOnSelect={false}
                     placeholder={`Select ${fieldName}...`}
-                    components={customComponents}
                 />
             )}
             />;

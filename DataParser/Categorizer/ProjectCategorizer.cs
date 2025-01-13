@@ -19,6 +19,9 @@ public class ProjectCategorizer
         {"21N00047", "bridge"}, //HUBO BR. (B01834MN) ALONG SURIGAO- DAVAO COASTAL RD, SAN AGUSTIN, SURIGAO DEL SUR
         {"23N00131", "bridge"}, //KINALABLABAN BR. (B00306MN) ALONG SURIGAO-DAVAO COASTAL RD
         {"22N00024", "road+bridge"}, //BUTUAN CITY WEST DIVERSION ROAD (PINAMANCULAN BRIDGE), PACKAGE 1, BUTUAN CITY, AGUSAN DEL NORTE
+        {"18G00043", "road+bridge"}, //BACOLOD NEGROS OCCIDENTAL ECONOMIC HIGHWAY (BANOCEH), SECTION 1, PACKAGE A, INCL. BRIDGE AND ROW, NEGROS OCCIDENTAL
+        {"23N00020", "bridge"}, //
+        {"17OH0101", "building"}, //PROPOSED ASPHALT OVERLAY AT COCONUT PALACE COMPOUND,CCP COMPLEX,PASAY CITY
     };
     public void LoadData(string MasterDataFile, string ContractsDataFile)
     {
@@ -238,7 +241,7 @@ public class ProjectCategorizer
            || descToLower.Contains("seawall") || descToLower.Contains("sea wall")
            || descToLower.Contains("guardwall") || descToLower.Contains("guard wall")
            || descToLower.Contains("riverwall") || descToLower.Contains("river wall")
-           || descToLower.Contains("water impounding") || descToLower.Contains("culvert") 
+           || descToLower.Contains("water impounding") || descToLower.Contains("    ") 
            || descToLower.Contains("groin") || descToLower.Contains("shore prot") 
            || descToLower.Contains("shoreline prot") || descToLower.Contains("gabion") 
            || descToLower.Contains("mattress") || descToLower.Contains("bank improvement") 
@@ -256,20 +259,6 @@ public class ProjectCategorizer
         {
             contract.Tags.Add("building");
             IncrementDict(dictTagDict, "building");
-            return;
-        }
-
-        if (descToLower.Contains("footbridge") || descToLower.Contains("foot bridge"))
-        {
-            contract.Tags.Add("footbridge");
-            IncrementDict(dictTagDict, "footbridge");
-            return;
-        }
-
-        if (descToLower.Contains("light") && !descToLower.Contains("lighthouse"))
-        {
-            contract.Tags.Add("light");
-            IncrementDict(dictTagDict, "light");
             return;
         }
 
@@ -303,13 +292,6 @@ public class ProjectCategorizer
             return;
         }
 
-        if (descToLower.Contains("waiting") || descToLower.Contains("covered walk"))
-        {
-            contract.Tags.Add("waiting");
-            IncrementDict(dictTagDict, "waiting");
-            return;
-        }
-
         if (descToLower.Contains("road wid") || descToLower.Contains("missing link") || descToLower.Contains("new road"))
         {
             contract.Tags.Add("road");
@@ -317,7 +299,7 @@ public class ProjectCategorizer
             return;
         }
 
-        if (descToLower.Contains("widen") || descToLower.Contains("national road system"))
+        if (descToLower.Contains("widen"))
         {
             if (descToLower.Contains("bridge") || descToLower.Contains("birdge"))
             {
@@ -481,15 +463,15 @@ public class ProjectCategorizer
 
         if (descToLower.Contains("overpass") || descToLower.Contains("over-pass"))
         {
-            contract.Tags.Add("overpass");
-            IncrementDict(dictTagDict, "overpass");
+            contract.Tags.Add("overpass+underpass");
+            IncrementDict(dictTagDict, "overpass+underpass");
             return;
         }
 
         if (descToLower.Contains("underpass") || descToLower.Contains("under-pass"))
         {
-            contract.Tags.Add("underpass");
-            IncrementDict(dictTagDict, "underpass");
+            contract.Tags.Add("overpass+underpass");
+            IncrementDict(dictTagDict, "overpass+underpass");
             return;
         }
 
@@ -514,7 +496,8 @@ public class ProjectCategorizer
         if (descToLower.Contains("police") || descToLower.Contains("military") || descToLower.Contains("camp aguinaldo") 
         || descToLower.Contains("camp emilio aguinaldo") || descToLower.Contains("pnp") || descToLower.Contains("camp crame") 
         || descToLower.Contains("camp bagong") || descToLower.Contains("ncrpo") || descToLower.Contains("army aviation")
-        || descToLower.Contains("defense") || descToLower.Contains("national security")
+        || descToLower.Contains("defense") || descToLower.Contains("national security") || descToLower.Contains("afp")
+        || descToLower.Contains("isafp") || descToLower.Contains("intelligence")
         )
         {            
             contract.Tags.Add("police+military");
@@ -585,6 +568,7 @@ public class ProjectCategorizer
         {"jct","road"},
         {"bypass","road"},
         {"highway","road"},
+        {"avenue","road"},
         {"boulevard","road"},
         {"causeway","road"},
         {"bridge","bridge"},
@@ -876,5 +860,34 @@ public class ProjectCategorizer
             return;
         }
 
+        if (descToLower.Contains("light") && !descToLower.Contains("lighthouse"))
+        {
+            contract.Tags.Add("light");
+            IncrementDict(dictTagDict, "light");
+            return;
+        }
+
+        if (descToLower.Contains("footbridge") || descToLower.Contains("foot bridge"))
+        {
+            contract.Tags.Add("footbridge");
+            IncrementDict(dictTagDict, "footbridge");
+            return;
+        }
+    }
+
+    public void TestCategorize(string desc)
+    {
+        Contract contract = new Contract() {
+            Desc = desc
+        };
+
+        Dictionary<string, int> dictTagDict = new Dictionary<string, int>(); // For debugging only
+
+        CategorizeViaDistrict(contract, dictTagDict);
+        CategorizeViaWordSearch(contract, dictTagDict);
+        CategorizeViaNounAndVerb(contract, dictTagDict);
+        CategorizeLeadingTo(contract, dictTagDict);
+        CategorizeSingleKeywordProjects(contract, dictTagDict);
+        CategorizeLowestPrecedence(contract, dictTagDict);
     }
 }

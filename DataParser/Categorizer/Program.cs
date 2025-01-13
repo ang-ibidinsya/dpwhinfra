@@ -2,6 +2,7 @@
 
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] Categorizer Start");
 ProjectCategorizer c = new ProjectCategorizer();
-c.LoadData("Data/MasterData.json", "Data/AllContracts.json");
-
+//c.LoadData("Data/MasterData.json", "Data/AllContracts.json");
+//c.TestCategorize("ORGANIZATIONAL OUTCOME 1: ENSURE SAFE AND RELIABLE NATIONAL ROAD SYSTEM: NETWORK DEVELOPMENT: CONSTRUCTION OF BY-PASS ROAD, PACKAGE 2, ISABELA (GOV. DY BRIDGE)");
+c.TestCategorize("CONVERGENCE AND SPECIAL SUPPORT PROGRAM-CONSTRUCTION/IMPROVEMENT OF VARIOUS INFRASTRUCTURES IN SUPPORT OF NATIONAL SECURITY (TATAG NG IMPRASTRAKTURA PARA SA KAPAYAPAAN AT SEGURIDAD PROGRAM-TIKAS)- CONSTRUCTION OF BARRACKS, ISAFP, CAMP LAPU-LAPU, APAS");
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] Categorizer Finished");

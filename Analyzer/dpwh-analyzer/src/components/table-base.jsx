@@ -163,9 +163,11 @@ export const prepareBody = (table, entityType) => {
                 </div>                
             </td>
         }
+        if (entityType === EntityTypes.year) {
+            cellClass += ' tdCostBarFullWidth';
+        }
         // else: just a normal bar chart (e.g. project/year view)
-        //return <td key={cell.id} className={cellClass}>
-        return <td key={cell.id} className='tdCostBar tdCostBarFullWidth'>
+        return <td key={cell.id} className={cellClass}>
                     <div>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </div>                

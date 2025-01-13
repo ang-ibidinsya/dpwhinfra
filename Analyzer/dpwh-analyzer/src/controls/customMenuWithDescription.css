@@ -1,0 +1,16 @@
+.optionLabel{    
+    background-color: lightgrey;
+    display: inline-block;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 10px;
+}
+
+.optionSubtitle {    
+    color: #555;
+    font-size: 0.95rem;
+    margin-top: 5px;
+    margin-left: 8px;
+}

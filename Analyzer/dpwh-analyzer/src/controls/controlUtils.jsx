@@ -17,6 +17,29 @@ export const getShortCategoryTooltipMessage = () => {
     return JSON.stringify(ret);
 }
 
+export const categoryLabelMap = {
+    bridge: 'bridge construction, widening, maintenance, etc',
+    building: 'office buildings, city halls, brgy halls, public markets, municipal halls etc',
+    'cruise port': 'cruise ports',
+    'davao bypass': 'davao bypass road project (one of the biggest infra projects)',
+    'flood': 'pumping stations, revetment, river/shore protection, guardwall, culvert, retention basin etc',
+    footbridge: 'pedestrian foot bridges',
+    light: 'street lights, stud lights',
+    multi: 'multi-purpose halls/bldgs, sports complex, gyms, convention center, evacuation center',
+    'police+military': 'police stations/HQ/multipurpose bldg, police academy, military camps, intelligence services/school',
+    'river+dike+creek': 'river, dike and creek programs that do not have flood control technical keywords',
+    road: 'roads, highways, expressways, coastal roads, causeways, avenues, right-of-way, signages/markings etc (except davao bypass road)',
+    'road+bridge': 'projects that involve both roads and bridges',
+    school: 'school/university buildings and mulitipurpose halls, classrooms (excluding police academies)',
+    uncategorized: 'city jails, airports, seaports, bus terminals, pdea and other projects that are difficult to categorize',
+    'overpass+underpass': 'pedestrian overpass/underpass',
+    'water supply': 'water supply, sytem, waterworks'
+}
+
+export const getCategoryLabel = (cat) => {
+
+}
+
 export const createGenericToolTip = (tooltipId) => {
     return <Tooltip
     id={tooltipId}
