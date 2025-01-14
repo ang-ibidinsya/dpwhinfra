@@ -22,6 +22,13 @@ public class ProjectCategorizer
         {"18G00043", "road+bridge"}, //BACOLOD NEGROS OCCIDENTAL ECONOMIC HIGHWAY (BANOCEH), SECTION 1, PACKAGE A, INCL. BRIDGE AND ROW, NEGROS OCCIDENTAL
         {"23N00020", "bridge"}, //
         {"17OH0101", "building"}, //PROPOSED ASPHALT OVERLAY AT COCONUT PALACE COMPOUND,CCP COMPLEX,PASAY CITY
+        {"20K00356", "building"}, //CLUSTER RO-02 CONSTRUCTION OF BUILDING PROJECTS IN BUKIDNON, 1. CONSTRUCTION OF TRACK AND FIELD AND TRACK OVAL, BRGY. LAGUITAS, MALAYBALAY CITY, BUKIDNON = PHP30,000,000.00, 2. CONSTRUCTION OF PERIMETER FENCE (WITH FENCE LIGHTS), BRGY. LAGUITAS ...
+        {"22AB0101", "light"}, //INSTALLATION OF STREET LIGHTS ALONG SEAWALL BOULEVARD, CURRIMAO, ILOCOS NORTE
+        {"23JI0059", "light"}, // CONSTRUCTION OF SOLAR STREET LIGHT LANAO-PAGADIAN-ZAMBOANGA CITY NATIONAL ROAD STA. 1724+-595 - STA. 1756+236
+        {"21DG0066", "light"}, // 
+        {"23KD0024", "light"}, //INST. OF STREET LIGHTS ALONG MACASANDIG-BALULANG BRIDGE(SITIO TIBASAK, MACASANDIG TO BRGY BALULANG)
+        {"23AI0115", "light"}, // REHABILITATION OF SOLAR LED STREET LIGHTS IN BINALONAN, PANGASINAN
+        {"19OB0167", "road"}, // REHABILITATION/IMPROVEMENT OF ROADS, DRAINAGE SYSTEM AND FOOT BRIDGE AT MASTRIL1, M. GREGORIO ST., F. MANALO ST. AND ISAIAS BUNYI, BRGY. CALZADA AND DULONG BAYAN ST., BAMBANG TAGUIG CITY
     };
     public void LoadData(string MasterDataFile, string ContractsDataFile)
     {
@@ -60,7 +67,7 @@ public class ProjectCategorizer
         }
 
         // Log statistics
-        int countWithLabel = contracts.Count(c => c.Tags.Count > 0);
+        int countWithLabel = contracts.Count(c => !c.Tags.Contains("uncategorized"));
         Console.WriteLine($"{countWithLabel} / {contracts.Count} has been categorized ({countWithLabel*100.0/contracts.Count:0.00}%)");
         foreach(var kvp in dictTagDict)
         {
@@ -241,7 +248,7 @@ public class ProjectCategorizer
            || descToLower.Contains("seawall") || descToLower.Contains("sea wall")
            || descToLower.Contains("guardwall") || descToLower.Contains("guard wall")
            || descToLower.Contains("riverwall") || descToLower.Contains("river wall")
-           || descToLower.Contains("water impounding") || descToLower.Contains("    ") 
+           || descToLower.Contains("water impounding") || descToLower.Contains("culvert") 
            || descToLower.Contains("groin") || descToLower.Contains("shore prot") 
            || descToLower.Contains("shoreline prot") || descToLower.Contains("gabion") 
            || descToLower.Contains("mattress") || descToLower.Contains("bank improvement") 
@@ -260,6 +267,31 @@ public class ProjectCategorizer
             contract.Tags.Add("building");
             IncrementDict(dictTagDict, "building");
             return;
+        }
+        
+        if (descToLower.Contains("footbridge") || descToLower.Contains("foot bridge"))
+        {
+            bool bSkipFb = false;
+            // skip if it contains other "bridge"
+            int indexFb = descToLower.IndexOf("footbridge");
+            int lenFb = "footbridge".Length;
+            if (indexFb < 0)
+            {
+                indexFb = descToLower.IndexOf("foot bridge");
+                lenFb = "foot bridge".Length;
+            }
+            if (indexFb < 0)
+            {
+                throw new Exception("Unexpected Index for footbridge");
+            }
+            int indexBridgeBefore = descToLower.Substring(0, indexFb).IndexOf("bridge");
+            int indexBridgeAfter = descToLower.Substring(indexFb + lenFb).IndexOf("bridge");
+            if (indexBridgeBefore < 0 && indexBridgeAfter < 0)
+            {
+                contract.Tags.Add("footbridge");
+                IncrementDict(dictTagDict, "footbridge");
+                return;
+            }            
         }
 
         /* Too many more wrong spellings, just use purpose
@@ -312,6 +344,20 @@ public class ProjectCategorizer
             IncrementDict(dictTagDict, "road");
             return;        
         }
+
+        if ( (descToLower.Contains("install") && (descToLower.Contains("light") || descToLower.Contains("studs") || descToLower.Contains("studflush"))) 
+            || descToLower.Contains("lighting")
+            || descToLower.Contains("construction of solar street light")
+        )
+        {
+            if (!descToLower.Contains("lighthouse"))
+            {
+                contract.Tags.Add("light");
+                IncrementDict(dictTagDict, "light");
+                return;
+            }
+        }
+
 
         if (descToLower.Contains("roads") && descToLower.Contains("bridges"))
         {
@@ -475,7 +521,7 @@ public class ProjectCategorizer
             return;
         }
 
-        if (descToLower.StartsWith("jct") || descToLower.Contains("bdry"))
+        if (descToLower.StartsWith("jct") || descToLower.Contains("bdry") || descToLower.Contains("center island"))
         {
             contract.Tags.Add("road");
             IncrementDict(dictTagDict, "road");
@@ -532,6 +578,7 @@ public class ProjectCategorizer
 
         if (descToLower.Contains("water supply") || descToLower.Contains("water system")
            || descToLower.Contains("waterworks") || descToLower.Contains("watersystem")
+           || descToLower.Contains("solar system") || descToLower.Contains("solar swater")
         )
         {            
             contract.Tags.Add("water supply");
@@ -721,6 +768,8 @@ public class ProjectCategorizer
         "higway",
         "coastal rd",
         "coastal road",
+        "service road",
+        "service rd",
         "causeway",
     };
     [Flags]
@@ -860,17 +909,10 @@ public class ProjectCategorizer
             return;
         }
 
-        if (descToLower.Contains("light") && !descToLower.Contains("lighthouse"))
+        if (descToLower.StartsWith("road") || descToLower.StartsWith("rd"))
         {
-            contract.Tags.Add("light");
-            IncrementDict(dictTagDict, "light");
-            return;
-        }
-
-        if (descToLower.Contains("footbridge") || descToLower.Contains("foot bridge"))
-        {
-            contract.Tags.Add("footbridge");
-            IncrementDict(dictTagDict, "footbridge");
+            contract.Tags.Add("road");
+            IncrementDict(dictTagDict, "road");
             return;
         }
     }

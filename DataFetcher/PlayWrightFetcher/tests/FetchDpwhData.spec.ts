@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import {regionsList} from './constants';
-import {awaitSpinner} from './utils';
+import {awaitSpinner, sleep} from './utils';
 
 const fs = require("node:fs/promises");
 
@@ -36,16 +36,17 @@ test('FetchAll', async ({ page }) => {
 
   await expect(page.locator("#UpdateProgress1")).toBeHidden();
   for (let year = 2024; year >= 2016; year--) {
-    console.log('Year:', year);
-    if (year !== 2024) {
-      await page.getByLabel('Infra Year').selectOption((year).toString());
-      await awaitSpinner(spinner);
-    }
+    console.log('Year:', year);    
+    await page.getByLabel('Infra Year').selectOption((year).toString());
+    await sleep(2000);
+    await awaitSpinner(spinner);    
     for (let i = 0; i < regionsList.length; i++) {
       let region = regionsList[i];
       console.log('Fetching Region', region);
       await page.getByLabel('Region').selectOption(region);
+      await sleep(2000);
       await awaitSpinner(spinner);
+      console.log('Saving Page', region);
       let pageContent:string = await page.content();
       await fs.writeFile(`${year}-${region}.html`, pageContent);
     }    
