@@ -9,7 +9,7 @@ Uses PlayWright (Typescript) to fetch data from DPWH Infra Projects site each an
 
 ## 2. DataParser/HtmlDataParser
 Uses C# HtmlAgilityPack library to parse the offline HTML files from Project#1 above.
-#### Prerequite/Dependency: The folder that contains the HTML files from Project#1 above.
+#### Prerequisite/Dependency: The folder that contains the HTML files from Project#1 above.
 #### Outputs 2 json files:
 1. MasterData.json - All unique values for Region, District, Contractor, Status etc are assigned a numeric value, to be used in AllContracts.json below.
    Rationale:  to conserve file size since this will be used later on in the actual web application; perhaps better filter performance also since filtering by number is more performant than filtering by string.
@@ -34,13 +34,13 @@ Each contract ideally should be given 1 major category only, so that there won't
 
 * If it's hard to categorize a project, just leave it uncategorized.
 
-Challenges:
+**Challenges:**
 - Wrong spellings ('contruction', 'higway', 'strenghtening')
 - Different conventions ("construction" vs "const." vs "const'n" vs "conc.", "multi-purpose" vs "multipurpose" vs "mpb" vs "m-purpose" vs "multi - purpose")
 
-Other Ideas: Use AI / machine learning to categorize the projects.
+**Other Ideas:** Use AI / machine learning to categorize the projects.
 
-#### Prerequite/Dependency: The 2 json files in Project #2
+#### Prerequisite/Dependency: The 2 json files in Project #2
 #### Outputs: 
 1. Updated MasterData.json to add Category Numeric values
 2. Updated AllContracts.json to add Category field for each contract
