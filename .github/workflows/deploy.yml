@@ -19,6 +19,9 @@ jobs:
         with:
           node-version: 16
 
+      - name: PWD
+        run: pwd
+
       - name: Debug folders
         run: cd /home/runner/work/dpwhinfra/dpwhinfra/Analyzer/dpwh-analyzer
         
