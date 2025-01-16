@@ -71,12 +71,11 @@ const columnDefs = [
     },
     {
         accessorKey: "cat",
-        header: <span 
-            data-tooltip-id='generic-tooltip'
-            data-tooltip-place='bottom-end'
-            data-tooltip-content={getShortCategoryTooltipMessage()}
-            style={{whiteSpace: 'nowrap'}}>
-            <i className="bx bxs-flask bx-xs bx-fw" color="red">
+        header: <span style={{whiteSpace: 'nowrap'}}>
+            <i className="bx bxs-flask bx-xs bx-fw" color="red"
+                data-tooltip-id='generic-tooltip'
+                data-tooltip-content={getShortCategoryTooltipMessage()}
+            >
             </i>Category</span>,
         filterFn: 'multiValueFilter',
         defaultColVisibility: true,

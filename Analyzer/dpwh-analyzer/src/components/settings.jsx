@@ -8,7 +8,7 @@ import {setSettings, doHeavTaskAsync, setSettingsAsync} from '../state/data/data
 import {uniqueYears} from './filterItems';
 import { filterOptions } from '../util';
 import {DebouncedTextField} from '../controls/debouncedTextField';
-import {getCategoryTooltipMessage} from '../controls/controlUtils';
+import {getCategoryTooltipMessage, getDistrictTooltipMessage, getProjectTooltipMessage} from '../controls/controlUtils';
 import {CustomMenuWithDescription} from '../controls/customMenuWithDescription';
 import { categoryLabelMap } from '../controls/controlUtils';
 
@@ -132,16 +132,16 @@ export const Settings = () => {
                 </input>
                 <span>Contractor</span>
             </label>
-            <label className="groupingField" 
-                data-tooltip-id='generic-tooltip'
-                data-tooltip-place='top'
-                data-tooltip-content={getCategoryTooltipMessage()}>
+            <label className="groupingField">
                 <input type="radio" name="groupingFields" value="Category" 
                     {...register("Grouping", { required: true })}
                 >                    
                 </input>
-                <i className="bx bxs-flask bx-xs bx-fw" color="red"></i>
                 <span>Category</span>
+                <i className="bx bxs-flask bx-xs bx-fw" color="red"
+                    data-tooltip-id='generic-tooltip'
+                    data-tooltip-content={getCategoryTooltipMessage()}
+                ></i>
             </label>
             <label className="groupingField">
                 <input type="radio" name="groupingFields" value="Project" defaultChecked 
@@ -161,6 +161,44 @@ export const Settings = () => {
         Status: formatMasterDataComboOptions(uniqueStatuses),
         "Fund Source": formatMasterDataComboOptions(uniqueSourceOfFunds),
         Category: formatCategoryComboOptions(uniqueCategories),
+    }
+
+    const getFilterLabel = (fieldName) => {
+        if (fieldName === 'District') {
+            return <div className="fieldLabel">                
+                {fieldName}
+                <span className='fieldInfo'
+                    data-tooltip-id='generic-tooltip'
+                    data-tooltip-content={getDistrictTooltipMessage()}
+                    style={{cursor: 'pointer'}}> 🛈 :</span>
+            </div>
+        }
+
+        if (fieldName === 'Project') {
+            return <div className="fieldLabel">                
+                {fieldName}
+                <span className='fieldInfo'
+                    data-tooltip-id='generic-tooltip'
+                    data-tooltip-content={getProjectTooltipMessage()}
+                    style={{cursor: 'pointer'}}> 🛈 :</span>
+            </div>
+        }
+
+        if (fieldName === 'Category') {
+            return <div className="fieldLabel">
+                <span>{fieldName}</span>
+                <i className='fieldInfo bx bxs-flask bx-xs bx-fw'
+                    data-tooltip-id='generic-tooltip'
+                    data-tooltip-content={getCategoryTooltipMessage()}
+                    style={{cursor: 'pointer'}}
+                ></i>
+                <span>:</span>
+            </div>
+        }
+
+        return <div className="fieldLabel">
+            {fieldName}:
+        </div>
     }
 
     const createFilterField = (fieldName, fieldType, options) => {
@@ -280,9 +318,7 @@ export const Settings = () => {
         }
 
         return <>
-            <div className="fieldLabel">
-                {fieldName}:
-            </div>
+            {getFilterLabel(fieldName)}
             <div className={fieldInputClassName}>                
                 {inputElem}
             </div>

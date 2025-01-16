@@ -11,7 +11,7 @@ import {
 import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showYearAndCategoryLegends, showGrandTotalDirectly} from './table-base';
 import {formatMoney, getMasterDataValue} from '../util';
 import {EntityTypes} from '../enums';
-import {getShortCategoryTooltipMessage} from '../controls/controlUtils';
+import {getShortCategoryTooltipMessage, getContractorCostTooltipMessage, getContractorFilterTooltipMessage} from '../controls/controlUtils';
 
 const convertStateToTableFilter = (dataState) => {
     let ret = [{id: 'subtotal', value: null}];// Add a dummy subtotal filter, so that its custom filter can filter out 0 values
@@ -61,7 +61,10 @@ export const TableByContractor = (props) => {
     const columnDefs = [
         {
             accessorKey: "contractor",
-            header: "Contractor",
+            header: <span><span 
+                data-tooltip-id='generic-tooltip'
+                data-tooltip-content={getContractorFilterTooltipMessage()}
+                style={{fontWeight: '400', cursor: 'pointer'}}>🛈 </span>Contractor</span>,
             filterFn: 'multiValueFilter',
             cell: ({ getValue, row, column, table }) => {
                 let {masterData} = table.getState();
@@ -70,7 +73,10 @@ export const TableByContractor = (props) => {
         },
         {
             accessorKey: "subtotal",
-            header: "Cost",
+            header: <span><span 
+                data-tooltip-id='generic-tooltip'
+                data-tooltip-content={getContractorCostTooltipMessage()}
+                style={{fontWeight: '400', cursor: 'pointer'}}>🛈 </span>Cost</span>,
             filterFn: 'greaterThan0',
             cell: ({ getValue, row, column, table }) => {
                 return <div className="divCost">{formatMoney(getValue())}</div>
@@ -83,12 +89,11 @@ export const TableByContractor = (props) => {
         },
         {
             accessorKey: "CostBarCategory",
-            header: <span 
-                data-tooltip-id='generic-tooltip'
-                data-tooltip-place='bottom-end'
-                data-tooltip-content={getShortCategoryTooltipMessage()}
-                style={{whiteSpace: 'nowrap'}}>
-                <i className="bx bxs-flask bx-xs bx-fw" color="red"></i>
+            header: <span style={{whiteSpace: 'nowrap'}}>
+                <i className="bx bxs-flask bx-xs bx-fw" color="red"
+                    data-tooltip-id='generic-tooltip'
+                    data-tooltip-content={getShortCategoryTooltipMessage()}
+                ></i>
                 Cost by Category</span>,
             enableSorting: false, // disables sorting - from tanstack
         },

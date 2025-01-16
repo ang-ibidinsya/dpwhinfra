@@ -3,7 +3,7 @@ import { Tooltip } from "react-tooltip";
 
 export const getCategoryTooltipMessage = () => {
     let ret = {
-        title: `⚠️ Experimental Feature Warning`,
+        title: `⚠️ EXPERIMENTAL FEATURE`,
         body: "Categories are not provided on the DPWH website and are assigned based on the developer's algorithm/judgment. Misclassified or uncategorized items can be reported to the developer."
     };
     return JSON.stringify(ret);
@@ -13,6 +13,38 @@ export const getShortCategoryTooltipMessage = () => {
     let ret = {
         title: `⚠️ Experimental Feature`,
         body: ""
+    };
+    return JSON.stringify(ret);
+}
+
+export const getDistrictTooltipMessage = () => {
+    let ret = {
+        title: `💡 NOTE`,
+        body: "The DPWH District Engineering Office is not directly correlated with Congressional Districts. There are 254 Congressional Districts in the 20th Congress, while there are only 210 DPWH DEO's."
+    };
+    return JSON.stringify(ret);
+}
+
+export const getProjectTooltipMessage = () => {
+    let ret = {
+        title: `💡 NOTE`,
+        body: "Exact phrase search only for now. (Hoping to be able to implement fuzzy/ wildcard search next time)"
+    };
+    return JSON.stringify(ret);
+}
+
+export const getContractorCostTooltipMessage = () => {
+    let ret = {
+        title: `💡 NOTE`,
+        body: "A contract may involve multiple contractors. This cost represents the total for all contracts the contractor is involved with, without a breakdown by individual contractor."
+    };
+    return JSON.stringify(ret);
+}
+
+export const getContractorFilterTooltipMessage = () => {
+    let ret = {
+        title: `💡 NOTE`,
+        body: "If a contractor filter is applied, you may see other contractors listed, whom the filtered contractor(s) collaborated with on multi-contractor contracts."
     };
     return JSON.stringify(ret);
 }

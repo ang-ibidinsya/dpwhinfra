@@ -22,6 +22,7 @@ import { mapYearColors, StackedBarChart, getCategoryColor } from '../controls/st
 import { TableByFundSrc } from './table-fundsrc';
 import { TableByContractor } from './table-contractor';
 import { TableByCategory } from './table-category';
+import { categoryLabelMap } from '../controls/controlUtils';
 
 const iconSortLookup = {
     'asc': 'bx bxs-chevron-up-circle',
@@ -223,7 +224,7 @@ export const prepareBody = (table, entityType) => {
         if (entityType === EntityTypes.district || entityType === EntityTypes.region || entityType === EntityTypes.year 
             || entityType === EntityTypes.fundSource || entityType === EntityTypes.category
         ) {
-            cellClass += ' tdSummary';
+            cellClass += ' tdNoWrap';
         }                
 
         return <td key={cell.id} className={cellClass} style={styles}>
@@ -243,6 +244,24 @@ export const prepareBody = (table, entityType) => {
                 </td>
     }
 
+    const prepareCategoryCellWithNoteTooltip = (cell, row) => {      
+        let cellClass = 'tdTable tdNoWrap';  
+        const {masterData} = table.getState();
+        const catVal = row.getValue('category');
+        const catUserDefinedName = getMasterDataValue(masterData, EntityTypes.category, catVal)
+        const catTipStr = categoryLabelMap[catUserDefinedName];
+        const catTipObj = JSON.stringify({
+            title: catUserDefinedName,
+            body: catTipStr
+        });
+        return <td className={cellClass} key={`key-cat-${catVal}`}>
+                <span>{catUserDefinedName}</span>
+                <span data-tooltip-id='generic-tooltip'
+                    data-tooltip-content={catTipObj}
+                    style={{cursor: 'pointer'}}> 🛈</span>
+        </td>
+    }
+
     const prepareCells = (row) => {
         let retCells = row.getVisibleCells().map(cell => {
             const cellColId = cell.column.id;
@@ -254,6 +273,10 @@ export const prepareBody = (table, entityType) => {
             }
             if (cellColId === 'CostBarCategory') {
                 return prepareCategoryBarCell(cell, row)
+            }
+
+            if (cellColId === 'category' && entityType === EntityTypes.category) {
+                return prepareCategoryCellWithNoteTooltip(cell, row)
             }
             return prepareNormalCell(cell);
         });

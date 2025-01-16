@@ -39,10 +39,10 @@ export const TableByCategory = (props) => {
             accessorKey: "category",
             header: "Category",
             filterFn: 'multiValueFilter',
-            cell: ({ getValue, row, column, table }) => {
-                let {masterData} = table.getState();
-                return <div>{getMasterDataValue(masterData, EntityTypes.category, getValue())}</div>
-            },
+            // cell: ({ getValue, row, column, table }) => {
+            //     let {masterData} = table.getState();
+            //     return <div>{getMasterDataValue(masterData, EntityTypes.category, getValue())}</div>
+            // },
         },
         {
             accessorKey: "subtotal",
