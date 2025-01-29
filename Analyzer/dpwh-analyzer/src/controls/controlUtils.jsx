@@ -1,6 +1,14 @@
 import './controlUtils.css';
 import { Tooltip } from "react-tooltip";
 
+export const getDpwhTooltipMessage = () => {
+    let ret = {
+        title: `💡 INFORMATION`,
+        body: "Data is sourced from the publicly accessible DPWH Infrastructure Projects website, analyzed offline, and transformed into JSON format. No hacking or any malicious activity performed on the DPWH website. Accessing this webpage does not interact with the DPWH website. This page only loads the prepared JSON file mentioned earlier."
+    };
+    return JSON.stringify(ret);
+}
+
 export const getCategoryTooltipMessage = () => {
     let ret = {
         title: `⚠️ EXPERIMENTAL FEATURE`,
@@ -28,7 +36,7 @@ export const getDistrictTooltipMessage = () => {
 export const getProjectTooltipMessage = () => {
     let ret = {
         title: `💡 NOTE`,
-        body: "Exact phrase search only for now. (Hoping to be able to implement fuzzy/ wildcard search next time)"
+        body: "Exact phrase search only for now. Search is case-insensitive (e.g. ROAD, road & Road are all the same). Hoping to be able to implement fuzzy/ wildcard search next time"
     };
     return JSON.stringify(ret);
 }

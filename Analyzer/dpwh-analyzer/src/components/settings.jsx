@@ -232,9 +232,9 @@ export const Settings = () => {
             inputElem = <Controller
             name={fieldName}
             control={control}
-            defaultValue=""
+            defaultValue=""            
             render = {(props) => {                    
-                    return <DebouncedTextField controllerProps={props}></DebouncedTextField>
+                    return <DebouncedTextField controllerProps={props} placeholder={options?.placeHolder}></DebouncedTextField>
                 }
             }
             />
@@ -269,7 +269,7 @@ export const Settings = () => {
                     styles={customStylesSelect}
                     isMulti={true}
                     closeMenuOnSelect={false}
-                    placeholder={`Select or type in ${fieldName} Name...`}
+                    placeholder={options?.placeHolder || `Select or type in ${fieldName} Name...`}
                     components={customComponents}
                 />
             )}
@@ -287,7 +287,7 @@ export const Settings = () => {
                     styles={customStylesSelect}
                     isMulti={true}
                     closeMenuOnSelect={false}
-                    placeholder={`Select ${fieldName}...`}
+                    placeholder={options?.placeHolder || `Select ${fieldName}...`}
                     ref={null}
                 />
             )}
@@ -306,7 +306,7 @@ export const Settings = () => {
                     styles={customStylesSelect}
                     isMulti={true}
                     closeMenuOnSelect={false}
-                    placeholder={`Select ${fieldName}...`}
+                    placeholder={options?.placeHolder || `Select ${fieldName}...`}
                 />
             )}
             />;
@@ -336,14 +336,14 @@ export const Settings = () => {
                 <i className="bx bxs-filter-alt"></i> Filters
             </div>
             <div className="fieldTable">
-            {createFilterField('Year', 'combo')}
-            {createFilterField('Region', 'combo')}
-            {createFilterField('District', 'combo')}
-            {createFilterField('Project', 'text')}
-            {createFilterField('Status', 'combo')}
-            {createFilterField('Fund Source', 'combo')}
-            {createFilterField('Contractor', 'combo', {largeCombo: true})}
-            {createFilterField('Category', 'combo')}
+            {createFilterField('Year', 'combo', {placeHolder: 'e.g. "2024", "2023" (multiselect)'})}
+            {createFilterField('Region', 'combo', {placeHolder: 'e.g. "region x", "region iii" (multiselect)'})}
+            {createFilterField('District', 'combo', {placeHolder: 'e.g. "cavite", "bulacan" (multiselect)'})}
+            {createFilterField('Project', 'text', {placeHolder: 'e.g. "tondo", "panguil bay", "up diliman" '})}
+            {createFilterField('Status', 'combo', {placeHolder: 'e.g. "completed", "on-going" (multiselect) '})}
+            {createFilterField('Fund Source', 'combo', {placeHolder: 'e.g. "gaa 2024", "gaa 2016" (multiselect)'})}
+            {createFilterField('Contractor', 'combo', {largeCombo: true, placeHolder: 'e.g. "sunwest", "alro", "hi-tone", "graia" (multiselect)'})}
+            {createFilterField('Category', 'combo', {placeHolder: 'e.g. "road", "footbridge", "flood" (multiselect)'})}
             </div>
         </div>
     {/* Gouping */}

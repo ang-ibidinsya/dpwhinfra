@@ -41,6 +41,7 @@ export function DebouncedTextField(props) {
       className="fieldText"
       onChange={handleChange}
       value={innerValue}
+      placeholder={props.placeholder}
     ></input>
   );
 }

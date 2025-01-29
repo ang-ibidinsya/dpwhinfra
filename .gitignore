@@ -12,3 +12,6 @@ Analyzer/dpwh-analyzer/src/assets/AllContracts.json
 /DataParser/Categorizer/obj
 DataParser/Categorizer/.~lock.DpwhInfraProjects.xlsx\#
 DataParser/Categorizer/.vscode/settings.json
+/DataParser/Archive
+DataParser/Categorizer/MasterDataCategorized_Form.json
+DataParser/Categorizer/Categorizer.sln
