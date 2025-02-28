@@ -44,6 +44,11 @@ const satisfiesFilter = (currData, filters) => {
         return false;
     }
 
+    // [9] Contract Id    
+    if (filters.ContractId && currData.cId.toUpperCase().indexOf(filters.ContractId.toUpperCase()) < 0) {
+        return false;
+    }
+
     return true;
 }
 

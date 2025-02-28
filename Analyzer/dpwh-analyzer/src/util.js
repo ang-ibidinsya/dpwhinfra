@@ -122,6 +122,10 @@ export const convertStateToTableFilter= (settingsState) => {
         ret.push({id: 'cat', value: settingsState.Filters.Category});
     }
 
+    if (settingsState.Filters.ContractId) {
+        ret.push({id: 'cId', value: settingsState.Filters.ContractId});
+    }
+
     console.log('[convertStateToTableFilter]', ret);
 
     return ret;

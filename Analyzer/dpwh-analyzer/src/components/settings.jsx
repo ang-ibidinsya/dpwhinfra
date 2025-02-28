@@ -81,6 +81,7 @@ export const Settings = () => {
                     FundSource: data['Fund Source'] ? data['Fund Source'].map(x => parseInt(x.value)): [],
                     Contractor: data.Contractor ? data.Contractor.map(x => parseInt(x.value)): [],
                     Category: data.Category ? data.Category.map(x => parseInt(x.value)): [],
+                    ContractId: data['Contract Id']
                 },
                 // Grouping
                 Grouping: data.Grouping
@@ -342,7 +343,8 @@ export const Settings = () => {
             {createFilterField('Project', 'text', {placeHolder: 'e.g. "tondo", "panguil bay", "up diliman" '})}
             {createFilterField('Status', 'combo', {placeHolder: 'e.g. "completed", "on-going" (multiselect) '})}
             {createFilterField('Fund Source', 'combo', {placeHolder: 'e.g. "gaa 2024", "gaa 2016" (multiselect)'})}
-            {createFilterField('Contractor', 'combo', {largeCombo: true, placeHolder: 'e.g. "sunwest", "alro", "hi-tone", "graia" (multiselect)'})}
+            {createFilterField('Contractor', 'combo', {largeCombo: false, placeHolder: 'e.g. "sunwest", "alro", "hi-tone", "graia" (multiselect)'})}
+            {createFilterField('Contract Id', 'text', {placeHolder: 'e.g. "24B00084", "23B00040", "24CI0030"'})}
             {createFilterField('Category', 'combo', {placeHolder: 'e.g. "road", "footbridge", "flood" (multiselect)'})}
             </div>
         </div>

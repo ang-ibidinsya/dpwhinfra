@@ -144,6 +144,7 @@ export const TableByContractor = (props) => {
         dataState.Filters.Region,
         dataState.Filters.FundSource,
         dataState.Filters.Contractor,
+        dataState.Filters.ContractId
     ])
 
     const handleCheckboxChange = (arg) => {

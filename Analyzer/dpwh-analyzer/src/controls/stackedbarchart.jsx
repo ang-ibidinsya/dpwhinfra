@@ -74,7 +74,7 @@ export const StackedBarChart = ({name, subtotalsMap, minCost, maxCost, dataType,
     }
     
     let remaining = stretchToFullWidth ? 0: (maxCost-sumCosts) / minMaxDiff * 100.00;
-    stacks.push(<div className="barEmpty" key={`stack-region-${name}-${remaining}`} style={{flexBasis: `${remaining}%`}}/>);
+    stacks.push(<div className="barEmpty" key={`stack-region-${name}-remaining`} style={{flexBasis: `${remaining}%`}}/>);
         
     return <div className="stackedBarChart"
         >

@@ -97,7 +97,8 @@ export const TableByYear = (props) => {
         dataState.Filters.Region,
         dataState.Filters.FundSource,
         dataState.Filters.Contractor,
-        dataState.Filters.Category
+        dataState.Filters.Category,
+        dataState.Filters.ContractId,
     ])
 
 

@@ -29,6 +29,8 @@ public class ProjectCategorizer
         {"23KD0024", "light"}, //INST. OF STREET LIGHTS ALONG MACASANDIG-BALULANG BRIDGE(SITIO TIBASAK, MACASANDIG TO BRGY BALULANG)
         {"23AI0115", "light"}, // REHABILITATION OF SOLAR LED STREET LIGHTS IN BINALONAN, PANGASINAN
         {"19OB0167", "road"}, // REHABILITATION/IMPROVEMENT OF ROADS, DRAINAGE SYSTEM AND FOOT BRIDGE AT MASTRIL1, M. GREGORIO ST., F. MANALO ST. AND ISAIAS BUNYI, BRGY. CALZADA AND DULONG BAYAN ST., BAMBANG TAGUIG CITY
+        {"15BC0177", "road"}, //CONSTRUCTION/IMPROVEMENT OF ACCESS ROADS LEADING TO AIRPORTS,SEAPORTS,AND DECLARED TOURISM DESTINATIONS PAVING SHOULDERS AND INSTALLATION OF LIGHTINGS ALONG JCT. MAGUILLING-PIAT ROAD LEADING TO OUR LADY OF PIAT BASILICA MINORE (A NATIONAL SHRINE)        
+        {"17GA0060", "bridge"}, //CONST. OF NEW PERMANENT BRIDGE-PROVISION/INSTALLATION OF ROADWAY LIGHTING(BRIDGE APPROACHES)OF KALIB
     };
     public void LoadData(string MasterDataFile, string ContractsDataFile)
     {
@@ -269,30 +271,6 @@ public class ProjectCategorizer
             return;
         }
         
-        if (descToLower.Contains("footbridge") || descToLower.Contains("foot bridge"))
-        {
-            bool bSkipFb = false;
-            // skip if it contains other "bridge"
-            int indexFb = descToLower.IndexOf("footbridge");
-            int lenFb = "footbridge".Length;
-            if (indexFb < 0)
-            {
-                indexFb = descToLower.IndexOf("foot bridge");
-                lenFb = "foot bridge".Length;
-            }
-            if (indexFb < 0)
-            {
-                throw new Exception("Unexpected Index for footbridge");
-            }
-            int indexBridgeBefore = descToLower.Substring(0, indexFb).IndexOf("bridge");
-            int indexBridgeAfter = descToLower.Substring(indexFb + lenFb).IndexOf("bridge");
-            if (indexBridgeBefore < 0 && indexBridgeAfter < 0)
-            {
-                contract.Tags.Add("footbridge");
-                IncrementDict(dictTagDict, "footbridge");
-                return;
-            }            
-        }
 
         /* Too many more wrong spellings, just use purpose
         if (descToLower.Contains("multi-purpose") || descToLower.Contains("multipurpose") 
@@ -343,6 +321,38 @@ public class ProjectCategorizer
             contract.Tags.Add("road");
             IncrementDict(dictTagDict, "road");
             return;        
+        }
+
+        if (descToLower.Contains("pedestrian overpass"))
+        {            
+            contract.Tags.Add("overpass+underpass");
+            IncrementDict(dictTagDict, "overpass+underpass");
+            return;        
+        }
+
+        if (descToLower.Contains("footbridge") || descToLower.Contains("foot bridge"))
+        {
+            bool bSkipFb = false;
+            // skip if it contains other "bridge"
+            int indexFb = descToLower.IndexOf("footbridge");
+            int lenFb = "footbridge".Length;
+            if (indexFb < 0)
+            {
+                indexFb = descToLower.IndexOf("foot bridge");
+                lenFb = "foot bridge".Length;
+            }
+            if (indexFb < 0)
+            {
+                throw new Exception("Unexpected Index for footbridge");
+            }
+            int indexBridgeBefore = descToLower.Substring(0, indexFb).IndexOf("bridge");
+            int indexBridgeAfter = descToLower.Substring(indexFb + lenFb).IndexOf("bridge");
+            if (indexBridgeBefore < 0 && indexBridgeAfter < 0)
+            {
+                contract.Tags.Add("footbridge");
+                IncrementDict(dictTagDict, "footbridge");
+                return;
+            }            
         }
 
         if ( (descToLower.Contains("install") && (descToLower.Contains("light") || descToLower.Contains("studs") || descToLower.Contains("studflush"))) 

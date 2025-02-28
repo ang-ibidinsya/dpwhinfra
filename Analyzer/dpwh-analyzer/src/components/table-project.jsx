@@ -280,7 +280,7 @@ export const TableByProject = (props) => {
         console.log('[Project Table UseEffect]');
         table.setColumnFilters(convertStateToTableFilter(dataState))
     }, [dataState.Filters.Project, dataState.Filters.Year, dataState.Filters.District, dataState.Filters.Region, 
-        dataState.Filters.Status, dataState.Filters.FundSource, dataState.Filters.Contractor, dataState.Filters.Category])
+        dataState.Filters.Status, dataState.Filters.FundSource, dataState.Filters.Contractor, dataState.Filters.Category, dataState.Filters.ContractId])
 
 
     return <>     

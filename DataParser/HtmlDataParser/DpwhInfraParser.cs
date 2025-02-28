@@ -81,12 +81,20 @@ public class DpwhInfraParser
         }
         Console.WriteLine($"Found Tables: {allTables.Count}");
         ushort iYear = ushort.Parse(selectedYear);
-        
+
+        HashSet<string> allContractIds = new HashSet<string>(); //to hasten duplicate checks
         foreach(HtmlNode tableNode in allTables)
         {
             Contract contract = ParseTable(tableNode, fileName, iYear, selectedRegion);
+            // Check duplicates
+            if (allContractIds.Contains(contract.ContractId))
+            {
+                Console.WriteLine($"Ignore Duplicate: {contract.ContractId}");
+                continue;
+            }
             ExtractContractMasterData(contract);
             allContracts.Add(contract);
+            allContractIds.Add(contract.ContractId);
         }        
     }
 

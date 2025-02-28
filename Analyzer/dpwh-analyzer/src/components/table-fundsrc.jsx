@@ -101,6 +101,8 @@ export const TableByFundSrc = (props) => {
         dataState.Filters.Region,
         dataState.Filters.FundSource,
         dataState.Filters.Category,
+        dataState.Filters.ContractId,
+        dataState.Filters.Contractor,
     ])
 
     return <div className="tableContainer">

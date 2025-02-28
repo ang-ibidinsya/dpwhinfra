@@ -4,7 +4,7 @@ import { Tooltip } from "react-tooltip";
 export const getDpwhTooltipMessage = () => {
     let ret = {
         title: `💡 INFORMATION`,
-        body: "Data is sourced from the publicly accessible DPWH Infrastructure Projects website, analyzed offline, and transformed into JSON format. No hacking or any malicious activity performed on the DPWH website. Accessing this webpage does not interact with the DPWH website. This page only loads the prepared JSON file mentioned earlier."
+        body: "Data is sourced from the publicly accessible DPWH Infrastructure Projects website, analyzed offline, and transformed into JSON format. No hacking or any malicious activity performed on the DPWH website. Accessing this webpage does not interact with the DPWH website. This page only loads the prepared JSON file mentioned earlier. Overall, is the data in this webpage complete? NO. Some contracts are missing from the DPWH Infra Projects Page, so this webpage will also lack those contracts (e.g. 23FA0092)"
     };
     return JSON.stringify(ret);
 }
