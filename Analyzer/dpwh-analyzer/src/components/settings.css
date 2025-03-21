@@ -76,3 +76,13 @@
 .groupingField {
     cursor: pointer;
 }
+
+.comboSearchType {
+    margin-right: 3px;
+    padding: 2px;
+    font-family: inherit;
+    background-color: #eee;
+    border-radius: 3px;
+    font-weight: 600;
+    border: 1px solid #888;
+}

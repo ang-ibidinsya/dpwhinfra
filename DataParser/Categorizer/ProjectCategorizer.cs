@@ -295,13 +295,14 @@ public class ProjectCategorizer
             return;
         }
 
+/*
         if (descToLower.Contains("davao") && descToLower.Contains("bypass"))
         {
             contract.Tags.Add("davao bypass");
             IncrementDict(dictTagDict, "davao bypass");
             return;
         }
-
+*/
         if (descToLower.Contains("road wid") || descToLower.Contains("missing link") || descToLower.Contains("new road"))
         {
             contract.Tags.Add("road");
@@ -589,6 +590,7 @@ public class ProjectCategorizer
         if (descToLower.Contains("water supply") || descToLower.Contains("water system")
            || descToLower.Contains("waterworks") || descToLower.Contains("watersystem")
            || descToLower.Contains("solar system") || descToLower.Contains("solar swater")
+           || descToLower.Contains("rainwater collect")
         )
         {            
             contract.Tags.Add("water supply");

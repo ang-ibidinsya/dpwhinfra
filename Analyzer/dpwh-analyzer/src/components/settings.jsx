@@ -81,7 +81,8 @@ export const Settings = () => {
                     FundSource: data['Fund Source'] ? data['Fund Source'].map(x => parseInt(x.value)): [],
                     Contractor: data.Contractor ? data.Contractor.map(x => parseInt(x.value)): [],
                     Category: data.Category ? data.Category.map(x => parseInt(x.value)): [],
-                    ContractId: data['Contract Id']
+                    ContractId: data['Contract Id'],
+                    ProjectSearchOption: data.ProjectSearchOption
                 },
                 // Grouping
                 Grouping: data.Grouping
@@ -202,6 +203,34 @@ export const Settings = () => {
         </div>
     }
 
+    const createProjectFilterField = () => {
+        let fieldName = 'Project';
+        let options = {placeHolder: 'e.g. "tondo", "panguil bay", "davao bypass" '};
+        let inputElem = <Controller
+        name={fieldName}
+        control={control}
+        defaultValue=""            
+        render = {(props) => {                    
+                return <DebouncedTextField controllerProps={props} placeholder={options?.placeHolder}></DebouncedTextField>
+            }
+        }
+        />
+
+        let comboSearchType = <select className="comboSearchType" {...register("ProjectSearchOption")}>
+                <option value="searchExact">Exact</option>
+                <option value="searchFuzzy">Fuzzy</option>
+                </select>        
+
+        let fieldInputClassName = 'fieldInput';
+        return <>
+            {getFilterLabel(fieldName)}
+            <div className={fieldInputClassName}>                
+                {comboSearchType}
+                {inputElem}
+            </div>
+        </>
+    }
+
     const createFilterField = (fieldName, fieldType, options) => {
         const customStylesSelect = {
             container: provided => ({
@@ -314,9 +343,6 @@ export const Settings = () => {
         }
             
         let fieldInputClassName = 'fieldInput';
-        if (options?.largeCombo) {
-            fieldInputClassName += ' fieldInput-large';
-        }
 
         return <>
             {getFilterLabel(fieldName)}
@@ -340,10 +366,11 @@ export const Settings = () => {
             {createFilterField('Year', 'combo', {placeHolder: 'e.g. "2024", "2023" (multiselect)'})}
             {createFilterField('Region', 'combo', {placeHolder: 'e.g. "region x", "region iii" (multiselect)'})}
             {createFilterField('District', 'combo', {placeHolder: 'e.g. "cavite", "bulacan" (multiselect)'})}
-            {createFilterField('Project', 'text', {placeHolder: 'e.g. "tondo", "panguil bay", "up diliman" '})}
+            {/* {createFilterField('Project', 'text', {placeHolder: 'e.g. "tondo", "panguil bay", "up diliman" '})} */}
+            {createProjectFilterField('Project')}
             {createFilterField('Status', 'combo', {placeHolder: 'e.g. "completed", "on-going" (multiselect) '})}
             {createFilterField('Fund Source', 'combo', {placeHolder: 'e.g. "gaa 2024", "gaa 2016" (multiselect)'})}
-            {createFilterField('Contractor', 'combo', {largeCombo: false, placeHolder: 'e.g. "sunwest", "alro", "hi-tone", "graia" (multiselect)'})}
+            {createFilterField('Contractor', 'combo', {largeCombo: true, placeHolder: 'e.g. "sunwest", "alro", "hi-tone", "graia" (multiselect)'})}
             {createFilterField('Contract Id', 'text', {placeHolder: 'e.g. "24B00084", "23B00040", "24CI0030"'})}
             {createFilterField('Category', 'combo', {placeHolder: 'e.g. "road", "footbridge", "flood" (multiselect)'})}
             </div>

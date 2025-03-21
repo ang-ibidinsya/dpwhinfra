@@ -9,7 +9,7 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
-import { prepareBody, prepareHeader, preparePagninator } from './table-base';
+import { prepareBody, prepareHeader, preparePagninator} from './table-base';
 import { formatMoney, convertStateToTableFilter, getMasterDataValue} from '../util';
 import { BarChart} from '../controls/barchart';
 import { MultiSelectCheckbox } from '../controls/multiselectCheckbox';
@@ -19,11 +19,12 @@ import {getShortCategoryTooltipMessage} from '../controls/controlUtils';
 const BARCHART_ADJUSTER_MIN = 10;
 const BARCHART_ADJUSTER_MAX = 10;
 
+// [2025-03-22] Remove react table filters here; use filtered data from reducer instead
 const columnDefs = [
     {
         accessorKey: "yr",
         header: "Year",
-        filterFn: 'multiValueFilter',
+        //filterFn: 'multiValueFilter',
         defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
         return <div>{getValue()}</div>
@@ -52,7 +53,7 @@ const columnDefs = [
     {
         accessorKey: "rgn",
         header: "Region",
-        filterFn: 'multiValueFilter',
+        //filterFn: 'multiValueFilter',
         defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
                 let {masterData} = table.getState();
@@ -62,7 +63,7 @@ const columnDefs = [
     {
         accessorKey: "dst",
         header: "District",
-        filterFn: 'multiValueFilter',
+        //filterFn: 'multiValueFilter',
         defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
                 let {masterData} = table.getState();
@@ -77,7 +78,7 @@ const columnDefs = [
                 data-tooltip-content={getShortCategoryTooltipMessage()}
             >
             </i>Category</span>,
-        filterFn: 'multiValueFilter',
+        //filterFn: 'multiValueFilter',
         defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
                 let {masterData} = table.getState();
@@ -104,7 +105,7 @@ const columnDefs = [
     {
         accessorKey: "ctr",
         header: "Contractor(s)",
-        filterFn: 'multiValueListFilter',
+        //filterFn: 'multiValueListFilter',
         defaultColVisibility: true,
         cell: ({ getValue, row, column, table }) => {
             let {masterData} = table.getState();
@@ -119,7 +120,7 @@ const columnDefs = [
     {
         accessorKey: "src",
         header: "Fund Source",
-        filterFn: 'multiValueFilter',
+        //filterFn: 'multiValueFilter',
         defaultColVisibility: false,
         cell: ({ getValue, row, column, table }) => {
             let {masterData} = table.getState();
@@ -128,16 +129,18 @@ const columnDefs = [
     },
     {
         accessorKey: "sts",
-        header: "Status",
-        filterFn: 'multiValueFilter',
-        defaultColVisibility: true,
+        header: "Progress / Status",
+        //filterFn: 'multiValueFilter',
+        defaultColVisibility: true,        
         // cell: rendered outside because unable to put background color properly here (unable for child to use up parent's entire cell area)
     },
+    // Merge Percent with Status to conserve space    
     {
         accessorKey: "pct",
         header: "Progress",
-        filterFn: 'multiValueFilter',
-        defaultColVisibility: true,
+        //filterFn: 'multiValueFilter',
+        defaultColVisibility: false,
+        permanentlyHide: true,
         cell: ({ getValue, row, column, table }) => {
                 return <div className="divCenter">{getValue()}%</div>
             },
@@ -162,7 +165,6 @@ const columnDefs = [
                         adjusterMax={BARCHART_ADJUSTER_MAX}/>;
         },
     },
-
 ];
 
 const getDefaultColVisibility = () => {
@@ -178,9 +180,10 @@ const showColumnSettings = (columnVisibility, handleColumnVisibilityChange) => {
     let options = columnDefs.map(c => {
         return {
             value: c.accessorKey,
-            label: c.header
+            label: c.header,
+            permanentlyHide: c.permanentlyHide
         }
-    }).filter(c => c.value !== 'CostBar');
+    }).filter(c => c.value !== 'CostBar' && c.permanentlyHide !== true);
 
     let selectedVals = [];
     for(let key in columnVisibility) {
@@ -199,7 +202,7 @@ const showColumnSettings = (columnVisibility, handleColumnVisibilityChange) => {
 }
 
 /* For Project table only */
-export const showGrandTotal = (table, costColumn, columnVisibility, handleColumnVisibilityChange) => {
+export const showGrandTotalOrig = (table, costColumn, columnVisibility, handleColumnVisibilityChange) => {
     let rows = table.getFilteredRowModel().rows;
     let sum = 0;
     // Use for instead of foreach, for potential performance improvements
@@ -216,13 +219,24 @@ export const showGrandTotal = (table, costColumn, columnVisibility, handleColumn
     </div>;
 }
 
+export const showGrandTotal = (grandTotal, columnVisibility, handleColumnVisibilityChange) => {   
+    return <div className="grandTotalSettingsContainer">
+        {showColumnSettings(columnVisibility, handleColumnVisibilityChange)}
+        <div className="grandTotalSettings-fieldItemContainer">
+            <div className="grandTotalLabel">SUBTOTAL:</div>
+            <div className="grandTotalValue">{formatMoney(grandTotal)}</div>
+        </div>
+    </div>;
+}
+
 export const TableByProject = (props) => {    
     const [columnFilters, setColumnFilters] = useState([]);
     const {dataState, setLoadingMsg} = props;
     const [columnVisibility, setColumnVisibility] = useState(getDefaultColVisibility());
+    
 
     const table = useReactTable({
-        data: dataState.AllData,
+        data: dataState.FilteredData.filteredProjects,
         columns: columnDefs,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -240,15 +254,16 @@ export const TableByProject = (props) => {
             ],
         },
         state: {
-            columnFilters: columnFilters,
+            //columnFilters: columnFilters,
             masterData: dataState.MasterData,
             maxCost: dataState.FilteredData.overallProjMaxCost,
             minCost: dataState.FilteredData.overallProjMinCost,
             setLoadingMsg: setLoadingMsg,
             columnVisibility
         },
-        onColumnFiltersChange: setColumnFilters,
+        //onColumnFiltersChange: setColumnFilters,
         onColumnVisibilityChange: setColumnVisibility,
+        /*
         filterFns: {
             multiValueFilter: (row, columnId, filterValue) => {
                 let ret = filterValue.includes(row.getValue(columnId));
@@ -258,8 +273,9 @@ export const TableByProject = (props) => {
                 let cellVals = row.getValue(columnId);
                 let ret = filterValue.some(filter => cellVals.includes(filter));
                 return ret;
-            }
+            },
         }
+        */
     })
 
     const handleColumnVisibilityChange = selectedColumns => {
@@ -278,14 +294,14 @@ export const TableByProject = (props) => {
 
     useEffect(() => {
         console.log('[Project Table UseEffect]');
-        table.setColumnFilters(convertStateToTableFilter(dataState))
+        //table.setColumnFilters(convertStateToTableFilter(dataState))
     }, [dataState.Filters.Project, dataState.Filters.Year, dataState.Filters.District, dataState.Filters.Region, 
         dataState.Filters.Status, dataState.Filters.FundSource, dataState.Filters.Contractor, dataState.Filters.Category, dataState.Filters.ContractId])
 
 
     return <>     
         {/* <LoadingIndicator isOverlay={true}/> */}
-        {showGrandTotal(table, 'p', columnVisibility, handleColumnVisibilityChange)}
+        {showGrandTotal(dataState.FilteredData.grandTotal, columnVisibility, handleColumnVisibilityChange)}        
         {preparePagninator(table)}
         <table className="tableBase">
             <thead>

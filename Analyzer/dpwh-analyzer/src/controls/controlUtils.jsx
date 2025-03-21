@@ -36,7 +36,7 @@ export const getDistrictTooltipMessage = () => {
 export const getProjectTooltipMessage = () => {
     let ret = {
         title: `💡 NOTE`,
-        body: "Exact phrase search only for now. Search is case-insensitive (e.g. ROAD, road & Road are all the same). Hoping to be able to implement fuzzy/ wildcard search next time"
+        body: "[1] Exact Phrase Search - use this to find the exact words / phrase. [2] Fuzzy Search - use this if you want to include data that don't perferctly match the search query (e.g. minor typos, spacing, different order of terms). Both Exact and Fuzzy search are case-insensitive (i.e. 'Apple' = 'appLE')."
     };
     return JSON.stringify(ret);
 }

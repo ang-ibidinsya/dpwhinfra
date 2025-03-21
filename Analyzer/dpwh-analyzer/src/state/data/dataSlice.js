@@ -1,4 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import Fuse from 'fuse.js';
+import {fuseSearch} from './fuseSearch';
 
 const satisfiesFilter = (currData, filters) => {
     if (!filters) {
@@ -18,7 +20,9 @@ const satisfiesFilter = (currData, filters) => {
         return false;
     }
     // [4] Item Name (case insensitive)
-    if (filters.Project && currData.dsc.toUpperCase().indexOf(filters.Project.toUpperCase()) < 0) {
+    // Orig Simple search
+    if (filters.Project && filters.ProjectSearchOption === 'searchExact' 
+        && currData.dsc.toUpperCase().indexOf(filters.Project.toUpperCase()) < 0) {
         return false;
     }
 
@@ -52,6 +56,18 @@ const satisfiesFilter = (currData, filters) => {
     return true;
 }
 
+const hasFilter = (filters) => {
+    return filters?.Year?.length > 0 ||
+    filters?.Region?.length > 0 ||
+    filters?.District?.length > 0 ||
+    filters?.Status?.length > 0 ||
+    filters?.FundSource?.length > 0 ||
+    filters?.Contractor?.length > 0 ||
+    filters?.Category?.length > 0 ||
+    filters?.ContractId?.length > 0 ||
+    filters?.Project?.length > 0;
+}
+
 const mapAndFilterData = (data, filters) => {
     let mapYearGroups = {};
     let mapRegionGroups = {};
@@ -59,7 +75,7 @@ const mapAndFilterData = (data, filters) => {
     let mapFundSourceGroups = {};
     let mapContractorGroups = {};
     let mapCategoryGroups = {};
-    //let mapContractorCategoryGroups = {};
+    let filteredProjects = []; // individual projects
 
     let ret = {
         yearGroups: {},
@@ -68,7 +84,6 @@ const mapAndFilterData = (data, filters) => {
         fundSrcGroups: {},
         contractorGroups: {},
         categoryGroups: {},
-        //contractorCategoryGroups: {},
         grandTotal: 0, // filtered Grandtotal
         // not affected by filter
         overallProjMaxCost: 0, 
@@ -84,14 +99,15 @@ const mapAndFilterData = (data, filters) => {
         overallContractorMaxCost: 0,
         overallContractorMinCost: Number.MAX_VALUE,
         overallCategoryMaxCost: 0,
-        overallCategoryMinCost: Number.MAX_VALUE,     
-        // overallContractorCategoryMaxCost: 0,
-        // overallContractorCategoryMinCost: Number.MAX_VALUE,     
+        overallCategoryMinCost: Number.MAX_VALUE,
+        filteredProjects: []
     }
     if (!data) {
         return ret;
     }
 
+    let anyFilter = hasFilter(filters);
+    
     // Optimization TODO: Do not re-compute unfiltered items each time
     let unFilteredYearMap = {};
     let unFilteredRegionMap = {};
@@ -99,10 +115,20 @@ const mapAndFilterData = (data, filters) => {
     let unFilteredFundSrcMap = {};
     let unFilteredContractorMap = {};
     let unFilteredCategoryMap = {};
-    let unFilteredContractorCategoryMap = {};
+    if (!anyFilter) {
+        filteredProjects = data;
+    }
+    let preFilteredData = data;
+    if (filters?.Project?.length > 0 && filters.ProjectSearchOption === 'searchFuzzy') {
+        console.log('[FuzzySearch start]', filters.Project);        
+        const searchVals = fuseSearch.search(filters.Project, data);
+        console.log('[FUSE] searchVals Result for', filters.Project, ':', searchVals);
+        preFilteredData = searchVals.map(result => result.item);
+    }   
+
     // use for instead of forEach
-    for (let i = 0; i < data.length; i++) {        
-        let currData = data[i];
+    for (let i = 0; i < preFilteredData.length; i++) {        
+        let currData = preFilteredData[i];
         let currYear = currData.yr;
         let currRegion = currData.rgn;
         let currDistrict = currData.dst;
@@ -110,12 +136,15 @@ const mapAndFilterData = (data, filters) => {
         let currContractorList = currData.ctr;
         let currCategory = currData.cat;
 
-        ret.overallProjMaxCost = Math.max(ret.overallProjMaxCost, currData.p);
-        ret.overallProjMinCost = Math.min(ret.overallProjMinCost, currData.p);
-
         let bSatisfiesFilter = satisfiesFilter(currData, filters);
 
         if (bSatisfiesFilter) { // temprarily filter it
+            ret.overallProjMaxCost = Math.max(ret.overallProjMaxCost, currData.p);
+            ret.overallProjMinCost = Math.min(ret.overallProjMinCost, currData.p);    
+
+            if (anyFilter) {
+                filteredProjects.push(currData);
+            }
         
             // [a] year
             if (!mapYearGroups[currYear]) {
@@ -216,15 +245,11 @@ const mapAndFilterData = (data, filters) => {
             }
             unFilteredCategoryMap[currCategory].subtotal += currData.p;
 
-        // if (bSatisfiesFilter) {
-            //mapYearGroups[currYear].items.push(currData);
             mapYearGroups[currYear].subtotal += currData.p;
 
-            //mapRegionGroups[currRegion].items.push(currData);
             mapRegionGroups[currRegion].subtotal += currData.p;
             mapRegionGroups[currRegion].yearSubTotals[currData.yr] = (mapRegionGroups[currRegion].yearSubTotals[currData.yr] || 0 ) + currData.p;
 
-            //mapDistrictGroups[currDistrict].items.push(currData);
             mapDistrictGroups[currDistrict].subtotal += currData.p;
             mapDistrictGroups[currDistrict].yearSubTotals[currData.yr] = (mapDistrictGroups[currDistrict].yearSubTotals[currData.yr] || 0 ) + currData.p;
 
@@ -243,8 +268,10 @@ const mapAndFilterData = (data, filters) => {
 
 
             ret.grandTotal += currData.p;
-        }
+        }        
     }
+    
+    ret.filteredProjects = filteredProjects;
 
     const unfilteredYearData = Object.values(unFilteredYearMap).map (y => y.subtotal);
     const unfilteredRegionData = Object.values(unFilteredRegionMap).map (y => y.subtotal);
@@ -304,7 +331,7 @@ const initialState = {
     */
     FilteredData: mapAndFilterData(null, null),
     FilterLoadingMsg: null,
-    dummy: null
+    //FuseData: null, // For fuzzy search
 };
 
 const dataSlice = createSlice({
@@ -323,6 +350,7 @@ const dataSlice = createSlice({
             Object.assign(state.AllData, action.payload.constractsJson);
             Object.assign(state.MasterData, action.payload.masterDataJson);
             Object.assign(state.FilteredData, mapAndFilterData(state.AllData, null))
+            fuseSearch.setFuse(state.AllData);
         }
     },
     // For handling async actions

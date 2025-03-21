@@ -236,11 +236,13 @@ export const prepareBody = (table, entityType) => {
         let cellClass = 'tdTable tdStatus';
         const {masterData} = table.getState();
         const statusVal = row.getValue('sts');
+        const percentVal = row.getValue('pct');
         const statusStr = getMasterDataValue(masterData, EntityTypes.status, statusVal)
         const statusColor = statusColorMap[statusStr];
         
         return <td key={cell.id} className={cellClass} style={{backgroundColor: statusColor}}>
-                {statusStr}
+                <div style={{textAlign: 'center'}}>{percentVal}%</div>
+                <div style={{textAlign: 'center'}}>({statusStr})</div>
                 </td>
     }
 

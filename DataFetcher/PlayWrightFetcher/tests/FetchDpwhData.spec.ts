@@ -35,7 +35,7 @@ test('FetchAll', async ({ page }) => {
   const spinner = await page.locator('#UpdateProgress1');
 
   await expect(page.locator("#UpdateProgress1")).toBeHidden();
-  for (let year = 2024; year >= 2016; year--) {
+  for (let year = 2025; year >= 2016; year--) {
     console.log('Year:', year);    
     await page.getByLabel('Infra Year').selectOption((year).toString());
     await sleep(2000);
