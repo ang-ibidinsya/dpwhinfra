@@ -37,7 +37,7 @@ export const mapYearColors = {
     2022: '#1ABC9C', //Teal
     2023: '#F1C40F', //Yellow
     2024: '#9B59B6', //Purple
-    //2025: '#6B3A2C', //Coffee
+    2025: '#6B3A2C', //Coffee
 }
 
 export const getCategoryColor = (cat) => {
