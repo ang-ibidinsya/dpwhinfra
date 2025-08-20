@@ -40,7 +40,9 @@ const satisfiesFilter = (currData, filters) => {
     if (filters.Contractor?.length > 0) {
         let currCtorsList = currData.ctr;
         let ret = filters.Contractor.some(filter => currCtorsList.includes(filter));
-        return ret;
+        if (ret === false) {
+            return ret;
+        }
     }
 
     // [8] Category
