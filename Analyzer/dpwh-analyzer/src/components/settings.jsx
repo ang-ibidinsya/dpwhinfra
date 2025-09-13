@@ -59,6 +59,10 @@ export const Settings = () => {
     const uniqueStatuses = dataStateMasterData?.StatusMaster;
     const uniqueSourceOfFunds = dataStateMasterData?.SourceMaster;
     const uniqueCategories = dataStateMasterData?.CategoryMaster;
+    const jointVentureOptions = {includeAll: 'Include All',
+        solo: 'Solo Ventures Only',
+        jointOnly: 'Joint Ventures Only',
+    }
     
     // redux dispatch-related
     const dispatch = useDispatch();
@@ -82,7 +86,8 @@ export const Settings = () => {
                     Contractor: data.Contractor ? data.Contractor.map(x => parseInt(x.value)): [],
                     Category: data.Category ? data.Category.map(x => parseInt(x.value)): [],
                     ContractId: data['Contract Id'],
-                    ProjectSearchOption: data.ProjectSearchOption
+                    ProjectSearchOption: data.ProjectSearchOption,
+                    JointVentures: data['Joint Ventures']?.value
                 },
                 // Grouping
                 Grouping: data.Grouping
@@ -163,6 +168,7 @@ export const Settings = () => {
         Status: formatMasterDataComboOptions(uniqueStatuses),
         "Fund Source": formatMasterDataComboOptions(uniqueSourceOfFunds),
         Category: formatCategoryComboOptions(uniqueCategories),
+        "Joint Ventures": formatMasterDataComboOptions(jointVentureOptions),
     }
 
     const getFilterLabel = (fieldName) => {
@@ -328,15 +334,16 @@ export const Settings = () => {
             inputElem = <Controller
             name={fieldName}
             control={control}
-            defaultValue=""
+            defaultValue={options?.defaultOptionValue? options.defaultOptionValue: ''}
             render = {({ field}) => (
                 <Select {...field} 
                     className="fieldSelect"
                     options={comboOptions[fieldName]}
                     styles={customStylesSelect}
-                    isMulti={true}
+                    isMulti={options?.isMulti === false? false : true}
                     closeMenuOnSelect={false}
                     placeholder={options?.placeHolder || `Select ${fieldName}...`}
+                    defaultValue={options?.defaultOptionValue? options.defaultOptionValue: ''}
                 />
             )}
             />;
@@ -373,6 +380,7 @@ export const Settings = () => {
             {createFilterField('Contractor', 'combo', {largeCombo: true, placeHolder: 'e.g. "sunwest", "alro", "hi-tone", "graia" (multiselect)'})}
             {createFilterField('Contract Id', 'text', {placeHolder: 'e.g. "24B00084", "23B00040", "24CI0030"'})}
             {createFilterField('Category', 'combo', {placeHolder: 'e.g. "road", "footbridge", "flood" (multiselect)'})}
+            {createFilterField('Joint Ventures', 'combo', {isMulti: false, placeHolder: '', defaultOptionValue: {value: 'includeAll', label: 'Include All'}})}
             </div>
         </div>
     {/* Gouping */}

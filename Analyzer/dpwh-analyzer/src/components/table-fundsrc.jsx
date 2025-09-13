@@ -103,6 +103,7 @@ export const TableByFundSrc = (props) => {
         dataState.Filters.Category,
         dataState.Filters.ContractId,
         dataState.Filters.Contractor,
+        dataState.Filters.JointVentures
     ])
 
     return <div className="tableContainer">

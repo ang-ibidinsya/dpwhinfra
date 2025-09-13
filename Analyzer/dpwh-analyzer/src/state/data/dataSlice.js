@@ -55,6 +55,14 @@ const satisfiesFilter = (currData, filters) => {
         return false;
     }
 
+    // [10] Joint Ventures
+    if (filters.JointVentures === 'solo' && currData.ctr?.length > 1) {        
+        return false;
+    }
+    if (filters.JointVentures === 'jointOnly' && currData.ctr?.length < 2) {        
+        return false;
+    }
+
     return true;
 }
 
@@ -67,7 +75,8 @@ const hasFilter = (filters) => {
     filters?.Contractor?.length > 0 ||
     filters?.Category?.length > 0 ||
     filters?.ContractId?.length > 0 ||
-    filters?.Project?.length > 0;
+    filters?.Project?.length > 0 ||
+    filters?.JointVentures === 'solo' || filters?.JointVentures === 'jointOnly';
 }
 
 const mapAndFilterData = (data, filters) => {
