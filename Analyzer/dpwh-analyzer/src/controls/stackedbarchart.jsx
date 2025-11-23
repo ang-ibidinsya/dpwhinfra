@@ -40,8 +40,20 @@ export const mapYearColors = {
     2025: '#6B3A2C', //Coffee
 }
 
+// Hardcode for now
+export const mapStatusColors = {
+    0: {statusName: 'Completed', color: 'green'},
+    1: {statusName: 'Terminated', color: 'red'}, // Terminated
+    2: {statusName: 'Ongoing', color: 'gold'}, // Ongoing
+    3: {statusName: 'Not Yet Started', color: 'lightgray'}, // Not Yet Started
+}
+
 export const getCategoryColor = (cat) => {
     return colors[cat % colors.length];
+}
+
+export const getStatusColor = (status) => {
+    return mapStatusColors[status].color;
 }
 
 export const StackedBarChart = ({name, subtotalsMap, minCost, maxCost, dataType, stretchToFullWidth}) => {
@@ -56,6 +68,9 @@ export const StackedBarChart = ({name, subtotalsMap, minCost, maxCost, dataType,
         let color = null;
         if (dataType === 'category') {
             color = getCategoryColor(key);
+        }
+        else if (dataType === 'status') {
+            color = getStatusColor(key);
         }
         else {
             color = mapYearColors[key];

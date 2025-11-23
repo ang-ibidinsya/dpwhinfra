@@ -97,6 +97,11 @@ export const TableByContractor = (props) => {
                 Cost by Category</span>,
             enableSorting: false, // disables sorting - from tanstack
         },
+        {
+            accessorKey: "CostBarStatus",
+            header: "Cost by Status",
+            enableSorting: false, // disables sorting - from tanstack
+        },
     ];
 
     const table = useReactTable({
@@ -153,8 +158,8 @@ export const TableByContractor = (props) => {
       };
 
     return <div className="tableContainer">
-        {showYearAndCategoryLegends(categoryMaster)}
         {showGrandTotalDirectlyWithSettings(dataState.FilteredData.grandTotal, {checkedStretch, handleCheckboxChange})}
+        {showYearAndCategoryLegends(categoryMaster)}
         {preparePagninator(table)}
         <table className="tableBase">
             <thead>

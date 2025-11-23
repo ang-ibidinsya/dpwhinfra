@@ -8,7 +8,7 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
-import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showGrandTotalDirectly} from './table-base';
+import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showStatusLegends, showGrandTotalDirectly, showGrandTotalDirectlyWithSettings} from './table-base';
 import {formatMoney, getMasterDataValue} from '../util';
 import {EntityTypes} from '../enums';
 
@@ -23,10 +23,12 @@ const convertStateToTableFilter = (dataState) => {
 export const TableByRegion = (props) => {
     
     const [columnFilters, setColumnFilters] = useState([]);
+    const [checkedStretch, setCheckedStretch] = useState(false);
     const [sorting, setSorting] = useState([{
         id: 'subtotal',
         desc: true
     }])
+    const [secondaryGroupingState, setSecondaryGroupingState] = useState('Year'); // For the combobox
     const {dataState} = props;
     
     console.log('[TableByRegion] render, dataState:', dataState);
@@ -53,8 +55,13 @@ export const TableByRegion = (props) => {
             },
         },
         {
-            accessorKey: "CostBar",
-            header: "CostBar",
+            accessorKey: "CostBarYear",
+            header: "Cost by Year"
+        },
+        {
+            accessorKey: "CostBarStatus",
+            header: "Cost by Status",
+            enableSorting: false, // disables sorting - from tanstack
         },
     ];
 
@@ -81,6 +88,7 @@ export const TableByRegion = (props) => {
             maxCost: dataState.FilteredData.overallRegionMaxCost,
             minCost: dataState.FilteredData.overallRegionMinCost,
             masterData: dataState.MasterData,
+            checkedStretch
         },
         onColumnFiltersChange: setColumnFilters,
         filterFns: {
@@ -108,16 +116,24 @@ export const TableByRegion = (props) => {
         dataState.Filters.JointVentures
     ])
 
+    const handleCheckboxChange = (arg) => {
+        setCheckedStretch(arg.target.checked); // Toggle the checkbox value
+      };
+
     return <div className="tableContainer">
+        {/* {showGrandTotalDirectlyWithSelector(dataState.FilteredData.grandTotal, {secondaryGroupingState, setSecondaryGroupingState})} */}
+        {/* {secondaryGroupingState === 'Year' && showYearLegends()} */}
+        {/* {secondaryGroupingState === 'Status' && showStatusLegends()} */}
+        {showGrandTotalDirectlyWithSettings(dataState.FilteredData.grandTotal, {checkedStretch, handleCheckboxChange})}
         {showYearLegends()}
-        {showGrandTotalDirectly(dataState.FilteredData.grandTotal)}
+        {showStatusLegends()}
         {preparePagninator(table)}
         <table className="tableBase">
             <thead>
-                {prepareHeader(table)}
+                {prepareHeader(table, EntityTypes.region)}
             </thead>
             <tbody>
-                {prepareBody(table, EntityTypes.region)}
+                {prepareBody(table, EntityTypes.region, secondaryGroupingState)}
             </tbody>
         </table>    
     </div>;

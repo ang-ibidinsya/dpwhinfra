@@ -162,7 +162,8 @@ const mapAndFilterData = (data, filters) => {
                 mapYearGroups[currYear] = {    
                     items:[], 
                     subtotal: 0,
-                    year: currYear                
+                    year: currYear,
+                    statusSubTotals: {}
                 };
             }
             if (!unFilteredYearMap[currYear]) {
@@ -178,7 +179,8 @@ const mapAndFilterData = (data, filters) => {
                     items:[], 
                     subtotal: 0,
                     region: currRegion,
-                    yearSubTotals: {}
+                    yearSubTotals: {},
+                    statusSubTotals: {}
                 };
             }
             if (!unFilteredRegionMap[currRegion]) {
@@ -194,7 +196,8 @@ const mapAndFilterData = (data, filters) => {
                     items:[], 
                     subtotal: 0,
                     district: currDistrict,
-                    yearSubTotals: {}
+                    yearSubTotals: {},
+                    statusSubTotals: {}
                 };
             }
             if (!unFilteredDistrictMap[currDistrict]) {
@@ -210,7 +213,8 @@ const mapAndFilterData = (data, filters) => {
                     items:[], 
                     subtotal: 0,
                     fundSource: currFundSource,
-                    yearSubTotals: {}
+                    yearSubTotals: {},
+                    statusSubTotals: {}
                 };
             }
             if (!unFilteredFundSrcMap[currFundSource]) {
@@ -229,7 +233,8 @@ const mapAndFilterData = (data, filters) => {
                         subtotal: 0,
                         contractor: currContractor,
                         yearSubTotals: {},
-                        categorySubTotals: {}
+                        categorySubTotals: {},
+                        statusSubTotals: {}
                     };
                 }
                 if (!unFilteredContractorMap[currContractor]) {
@@ -246,7 +251,8 @@ const mapAndFilterData = (data, filters) => {
                     items:[], 
                     subtotal: 0,
                     category: currCategory,
-                    yearSubTotals: {}
+                    yearSubTotals: {},
+                    statusSubTotals: {}
                 };
             }
             if (!unFilteredCategoryMap[currCategory]) {
@@ -257,25 +263,31 @@ const mapAndFilterData = (data, filters) => {
             unFilteredCategoryMap[currCategory].subtotal += currData.p;
 
             mapYearGroups[currYear].subtotal += currData.p;
+            mapYearGroups[currYear].statusSubTotals[currData.sts] = (mapYearGroups[currYear].statusSubTotals[currData.sts] || 0 ) + currData.p;
 
             mapRegionGroups[currRegion].subtotal += currData.p;
             mapRegionGroups[currRegion].yearSubTotals[currData.yr] = (mapRegionGroups[currRegion].yearSubTotals[currData.yr] || 0 ) + currData.p;
+            mapRegionGroups[currRegion].statusSubTotals[currData.sts] = (mapRegionGroups[currRegion].statusSubTotals[currData.sts] || 0 ) + currData.p;
 
             mapDistrictGroups[currDistrict].subtotal += currData.p;
             mapDistrictGroups[currDistrict].yearSubTotals[currData.yr] = (mapDistrictGroups[currDistrict].yearSubTotals[currData.yr] || 0 ) + currData.p;
+            mapDistrictGroups[currDistrict].statusSubTotals[currData.sts] = (mapDistrictGroups[currDistrict].statusSubTotals[currData.sts] || 0 ) + currData.p;
 
             mapFundSourceGroups[currFundSource].subtotal += currData.p;
             mapFundSourceGroups[currFundSource].yearSubTotals[currData.yr] = (mapFundSourceGroups[currFundSource].yearSubTotals[currData.yr] || 0 ) + currData.p;
+            mapFundSourceGroups[currFundSource].statusSubTotals[currData.sts] = (mapFundSourceGroups[currFundSource].statusSubTotals[currData.sts] || 0 ) + currData.p;
 
             for (let iXtor = 0; iXtor < currContractorList.length; iXtor++) {
                 let currContractor = currContractorList[iXtor];
                 mapContractorGroups[currContractor].subtotal += currData.p;
                 mapContractorGroups[currContractor].yearSubTotals[currData.yr] = (mapContractorGroups[currContractor].yearSubTotals[currData.yr] || 0 ) + currData.p;
                 mapContractorGroups[currContractor].categorySubTotals[currData.cat] = (mapContractorGroups[currContractor].categorySubTotals[currData.cat] || 0 ) + currData.p;
+                mapContractorGroups[currContractor].statusSubTotals[currData.sts] = (mapContractorGroups[currContractor].statusSubTotals[currData.sts] || 0 ) + currData.p;
             }
 
             mapCategoryGroups[currCategory].subtotal += currData.p;
             mapCategoryGroups[currCategory].yearSubTotals[currData.yr] = (mapCategoryGroups[currCategory].yearSubTotals[currData.yr] || 0 ) + currData.p;
+            mapCategoryGroups[currCategory].statusSubTotals[currData.sts] = (mapCategoryGroups[currCategory].statusSubTotals[currData.sts] || 0 ) + currData.p;
 
 
             ret.grandTotal += currData.p;

@@ -8,7 +8,7 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
-import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showGrandTotalDirectly} from './table-base';
+import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showStatusLegends, showGrandTotalDirectlyWithSettings} from './table-base';
 import {formatMoney, getMasterDataValue} from '../util';
 import {EntityTypes} from '../enums';
 
@@ -23,6 +23,7 @@ const convertStateToTableFilter = (dataState) => {
 export const TableByDistrict = (props) => {
     
     const [columnFilters, setColumnFilters] = useState([]);
+    const [checkedStretch, setCheckedStretch] = useState(false);
     const [sorting, setSorting] = useState([{
         id: 'subtotal',
         desc: true
@@ -53,8 +54,13 @@ export const TableByDistrict = (props) => {
             },
         },
         {
-            accessorKey: "CostBar",
-            header: "CostBar"
+            accessorKey: "CostBarYear",
+            header: "Cost by Year"
+        },
+        {
+            accessorKey: "CostBarStatus",
+            header: "Cost by Status",
+            enableSorting: false, // disables sorting - from tanstack
         },
     ];
 
@@ -79,6 +85,7 @@ export const TableByDistrict = (props) => {
             maxCost: dataState.FilteredData.overallDistrictMaxCost,
             minCost: dataState.FilteredData.overallDistrictMinCost,
             masterData: dataState.MasterData,
+            checkedStretch
         },
         onColumnFiltersChange: setColumnFilters,
         filterFns: {
@@ -106,13 +113,18 @@ export const TableByDistrict = (props) => {
         dataState.Filters.JointVentures
     ])
 
+    const handleCheckboxChange = (arg) => {
+        setCheckedStretch(arg.target.checked); // Toggle the checkbox value
+      };
+      
     return <div className="tableContainer">
+        {showGrandTotalDirectlyWithSettings(dataState.FilteredData.grandTotal, {checkedStretch, handleCheckboxChange})}
         {showYearLegends()}
-        {showGrandTotalDirectly(dataState.FilteredData.grandTotal)}
+        {showStatusLegends()}
         {preparePagninator(table)}
         <table className="tableBase">
             <thead>
-                {prepareHeader(table)}
+                {prepareHeader(table, EntityTypes.district)}
             </thead>
             <tbody>
                 {prepareBody(table, EntityTypes.district)}

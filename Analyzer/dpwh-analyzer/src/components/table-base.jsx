@@ -18,7 +18,7 @@ import { TableByProject } from './table-project';
 import { TableByYear} from './table-year';
 import { TableByRegion } from './table-region';
 import { TableByDistrict} from './table-district';
-import { mapYearColors, StackedBarChart, getCategoryColor } from '../controls/stackedbarchart';
+import { mapYearColors, mapStatusColors, StackedBarChart, getCategoryColor, getStatusColor } from '../controls/stackedbarchart';
 import { TableByFundSrc } from './table-fundsrc';
 import { TableByContractor } from './table-contractor';
 import { TableByCategory } from './table-category';
@@ -38,6 +38,23 @@ export const showYearLegends = () => {
         legendsEl.push(<div key={`legend-${year}`} className="legendItem">
             <div className='legendSquare' style={{backgroundColor:`${mapYearColors[year]}`}}/>
             <div className='legendLabel'>{year}</div>
+        </div>);
+    }
+
+    return <div className='legendsContainer'>
+        <div className="legendItemsContainer">{legendsEl}</div>        
+    </div>;
+}
+
+export const showStatusLegends = () => {
+    let legendsEl = [];
+    for (var status in mapStatusColors) {
+        if (!Object.prototype.hasOwnProperty.call(mapStatusColors, status)) {
+            continue;
+        }
+        legendsEl.push(<div key={`legend-${status}`} className="legendItem">
+            <div className='legendSquare' style={{backgroundColor:`${mapStatusColors[status].color}`}}/>
+            <div className='legendLabel'>{mapStatusColors[status].statusName}</div>
         </div>);
     }
 
@@ -90,7 +107,7 @@ export const createChartToolTip = (tooltipId) => {
             console.log('[ToolTip] Render -- NULL', content);
             return "NULL";
         }
-        console.log('[ToolTip] Render', content);
+        //console.log('[ToolTip] Render', content);
         let elItems = [];
         let dataType = subtotalsMap.dataType;
         let subTotalItems = subtotalsMap.items;
@@ -100,11 +117,16 @@ export const createChartToolTip = (tooltipId) => {
             if (!Object.prototype.hasOwnProperty.call(subTotalItems, key)) {
                 continue;
             }
+
             let color= null;
             let displayKey = null;
             if (dataType === 'category') {
                 color = getCategoryColor(key);
                 displayKey = categoryMaster[key];
+            }
+            else if (dataType === 'status') {
+                color = getStatusColor(key);
+                displayKey = categoryMaster[key].statusName;
             }
             else {
                 color = mapYearColors[key];
@@ -125,18 +147,19 @@ export const createChartToolTip = (tooltipId) => {
 }
 
 
-
-export const prepareBody = (table, entityType) => {
+// secondaryGroupingState: not used anymore
+export const prepareBody = (table, entityType, secondaryGroupingState) => {
 
     
     const prepareCostBarCell = (cell, row) => {
         let cellClass = 'tdCostBar ';
         if (entityType === EntityTypes.district || entityType === EntityTypes.region 
             || entityType === EntityTypes.fundSource || entityType === EntityTypes.contractor
-            || entityType === EntityTypes.category) {                
+            || entityType === EntityTypes.category
+            || entityType === EntityTypes.year) {                
             // Stacked Bar Chart
             // We put all the stackedbarChart logic here and avoid doing the rendering inside the columnDef cell render because the react-tooltip has intermittent issues when user clicks Sort
-            if (entityType === EntityTypes.contractor) {
+            if (entityType === EntityTypes.contractor || entityType === EntityTypes.district || entityType === EntityTypes.region || entityType === EntityTypes.fundSource || entityType === EntityTypes.category) {
                 cellClass = 'tdCostBarStandalone';
             }
             else {
@@ -150,22 +173,28 @@ export const prepareBody = (table, entityType) => {
                 console.error('[prepareCostBarCell] Unable to find entity', currEntity);
                 return;
             }
-            const yearSubtotalsTooltip = {
-                dataType: 'year', 
-                items: findEntity.yearSubTotals,
+
+            let dataToUse = findEntity.yearSubTotals;
+            let dataType = 'year';
+            if (secondaryGroupingState === 'Status' || entityType === EntityTypes.year || cell.column.id === 'CostBarStatus') {
+                dataToUse = findEntity.statusSubTotals;
+                dataType = 'status';
+            }
+
+            const subtotalsTooltip = {
+                dataType: dataType, 
+                items: dataToUse,
+                categoryMaster: mapStatusColors
             };
             
             return <td key={cell.id} className={cellClass}>
                 <div
                 data-tooltip-id="chart-tooltip"
-                data-tooltip-content={JSON.stringify(yearSubtotalsTooltip)}
+                data-tooltip-content={JSON.stringify(subtotalsTooltip)}
                 >                        
-                <StackedBarChart name={currEntity} subtotalsMap={findEntity.yearSubTotals} minCost={minCost} maxCost={maxCost} stretchToFullWidth={checkedStretch}/>
+                <StackedBarChart name={currEntity} subtotalsMap={dataToUse} minCost={minCost} maxCost={maxCost} stretchToFullWidth={checkedStretch} dataType={dataType}/>
                 </div>                
             </td>
-        }
-        if (entityType === EntityTypes.year) {
-            cellClass += ' tdCostBarFullWidth';
         }
         // else: just a normal bar chart (e.g. project/year view)
         return <td key={cell.id} className={cellClass}>
@@ -212,12 +241,18 @@ export const prepareBody = (table, entityType) => {
         if (cellColId === 'p' || cellColId === 'subtotal') {
             cellClass = 'tdCost';
             if (entityType === EntityTypes.contractor) {
-                styles.width = `${1/7.0*100}%`
+                styles.width = `${1/9.0*100}%`
+            }
+            if (entityType === EntityTypes.district || entityType === EntityTypes.fundSource || entityType === EntityTypes.region || entityType === EntityTypes.category) {
+                styles.width = `${1/6.0*100}%`
             }
         }
         else {
-            if (entityType === EntityTypes.contractor) {
-                styles.width = `${2/7.0*100}%`
+            if (entityType === EntityTypes.contractor) {                
+                styles.width = `${2/9.0*100}%`
+            }
+            if (entityType === EntityTypes.district || entityType === EntityTypes.fundSource || entityType === EntityTypes.region || entityType === EntityTypes.category) {
+                styles.width = `${1/6.0*100}%`
             }
         }
 
@@ -267,7 +302,7 @@ export const prepareBody = (table, entityType) => {
     const prepareCells = (row) => {
         let retCells = row.getVisibleCells().map(cell => {
             const cellColId = cell.column.id;
-            if (cellColId === 'CostBar' || cellColId === 'CostBarYear') {
+            if (cellColId === 'CostBar' || cellColId === 'CostBarYear' || cellColId === 'CostBarStatus') {
                 return prepareCostBarCell(cell, row)
             }
             if (cellColId === 'sts') {
@@ -321,8 +356,11 @@ export const prepareHeader = (table, entityType) => {
             let thClassNames = 'thTable';
             if (isSortable) {
                 thClassNames += ' thSortable'
-            }
-            let colSpan = colHeader === 'Cost' && entityType != EntityTypes.contractor ? 2 : 1;            
+            }            
+            const entitiesWithMultipleCostBars = [EntityTypes.contractor, EntityTypes.district, EntityTypes.region, EntityTypes.fundSource, EntityTypes.category];
+            let colSpan = colHeader === 'Cost' && 
+                                        (!entitiesWithMultipleCostBars.includes(entityType)) ? 
+                                        2 : 1;            
             headerColumns.push(<th key={header.id} className={thClassNames} 
                 onClick={ () => {
                     if (!isSortable) {
@@ -353,6 +391,56 @@ export const showGrandTotalDirectly = (grandTotal) => {
         <div className="grandTotalLabel">SUBTOTAL:</div>
         <div className="grandTotalValue">{formatMoney(grandTotal)}</div>
     </div>;
+}
+
+const showStretchCheckbox = (checkboxState) => {
+    return <label className="chkboxGrandTotalSetting">
+    <input 
+        type="checkbox"
+        value="chkStretch"
+        checked={checkboxState.checkedStretch}
+        onChange={checkboxState.handleCheckboxChange}/>
+        <span>Stretch All Bar Charts to Full Width</span>
+    </label>
+}
+
+export const showGrandTotalDirectlyWithSettings = (grandTotal, checkboxState) => {
+    return <div className="grandTotalSettingsContainer">
+        {showStretchCheckbox(checkboxState)}  
+        <div className="grandTotalSettings-fieldItemContainer">
+            <div className="grandTotalLabel">SUBTOTAL:</div>
+            <div className="grandTotalValue">{formatMoney(grandTotal)}</div>
+        </div>
+    </div>;
+}
+
+export const showGrandTotalDirectlyWithSelector = (grandTotal, secGrpState) => {
+return <div className="grandTotalSettingsContainer">
+        {showSecondaryGroupingSelector(secGrpState)}  
+        <div className="grandTotalSettings-fieldItemContainer">
+            <div className="grandTotalLabel">SUBTOTAL:</div>
+            <div className="grandTotalValue">{formatMoney(grandTotal)}</div>
+        </div>
+    </div>;
+}
+
+const showSecondaryGroupingSelector = (secGrpState) => {
+    return <div className="secondaryGroupingContainer">
+        <span className="secondaryGroupingLabel">Secondary Grouping:</span>
+        <select
+            className='pageSizeSelector'
+            value={secGrpState.secondaryGroupingState}
+            onChange={e => {
+                secGrpState.setSecondaryGroupingState(e.target.value)
+            }}
+            >
+            {['Year', 'Status'].map(secondaryGrouping => (
+                <option key={secondaryGrouping} value={secondaryGrouping}>
+                {secondaryGrouping}
+                </option>
+            ))}
+        </select>
+    </div>
 }
 
 export const preparePagninator = (table) => {

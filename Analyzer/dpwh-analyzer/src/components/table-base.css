@@ -190,6 +190,7 @@
     background: white;
     display: flex;
     align-items: center;
+    background-color: aliceblue;
 }
 
 .legendsGrid-group-title {
@@ -292,4 +293,14 @@
     padding-right: 5px;
     justify-content: center;
     
+}
+
+.secondaryGroupingContainer {
+    padding: 5px;
+}
+
+.secondaryGroupingLabel {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-right: 5px;
 }

@@ -8,7 +8,7 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
-import {prepareBody, prepareHeader, preparePagninator, showGrandTotalDirectly} from './table-base';
+import {prepareBody, prepareHeader, preparePagninator, showGrandTotalDirectly, showStatusLegends} from './table-base';
 import {formatMoney} from '../util';
 import {BarChart} from '../controls/barchart';
 import {EntityTypes} from '../enums';
@@ -50,11 +50,7 @@ export const TableByYear = (props) => {
         },
         {
             accessorKey: "CostBar",
-            header: "CostBar",
-            cell: ({ getValue, row, column, table }) => {
-                let {minCost, maxCost} = table.getState();
-                return <BarChart cost={row.getValue('subtotal')} minCost={minCost} maxCost={maxCost}/>;
-            },
+            header: "CostBar"
         },
     ];
 
@@ -75,6 +71,7 @@ export const TableByYear = (props) => {
             columnFilters: columnFilters,
             maxCost: dataState.FilteredData.overallYearMaxCost,
             minCost: dataState.FilteredData.overallYearMinCost,
+            entityGroups: dataState.FilteredData.yearGroups,
         },
         onColumnFiltersChange: setColumnFilters,
         filterFns: {
@@ -105,6 +102,7 @@ export const TableByYear = (props) => {
 
     return <div className="tableContainer">
         {showGrandTotalDirectly(dataState.FilteredData.grandTotal)}
+        {showStatusLegends()}
         {preparePagninator(table)}
         <table className="tableBase">
             <thead>
