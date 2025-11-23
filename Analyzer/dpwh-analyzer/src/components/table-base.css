@@ -223,6 +223,7 @@
     border-top: 2px solid lightgray;
     border-left: 2px solid lightgray;
     border-right: 2px solid lightgray;
+    background-color: aliceblue;
 }
 
 .legendsGrid-group-item-container {

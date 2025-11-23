@@ -8,7 +8,7 @@ import {
     getSortedRowModel,
     useReactTable,
   } from "@tanstack/react-table";
-import {prepareBody, prepareHeader, preparePagninator, showYearLegends, showYearAndCategoryLegends, showGrandTotalDirectly} from './table-base';
+import {prepareBody, prepareHeader, preparePagninator, showStatusLegends, showYearAndCategoryLegends, showGrandTotalDirectly} from './table-base';
 import {formatMoney, getMasterDataValue} from '../util';
 import {EntityTypes} from '../enums';
 import {getShortCategoryTooltipMessage, getContractorCostTooltipMessage, getContractorFilterTooltipMessage} from '../controls/controlUtils';
@@ -160,6 +160,7 @@ export const TableByContractor = (props) => {
     return <div className="tableContainer">
         {showGrandTotalDirectlyWithSettings(dataState.FilteredData.grandTotal, {checkedStretch, handleCheckboxChange})}
         {showYearAndCategoryLegends(categoryMaster)}
+        {showStatusLegends()}
         {preparePagninator(table)}
         <table className="tableBase">
             <thead>
