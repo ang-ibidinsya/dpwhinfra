@@ -1,5 +1,5 @@
 import './App.css';
-import JSZip from 'jszip';
+import { unzipSync } from 'fflate';
 import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector} from 'react-redux';
 import { setInitialData } from './state/data/dataSlice';
@@ -19,7 +19,7 @@ function App() {
     useEffect(() => {
     console.log('useEffect...');
     const fetchAndLoadData = async () => {
-        console.log('fetchAndLoadData start');
+        console.log('fetchAndLoadData start');        
         const fetchResponse = await fetch('./AllContractsCategorized.json.zip');
         if (!fetchResponse.ok) {
             console.error('Unable to fetch contracts data!');
@@ -28,12 +28,30 @@ function App() {
         const contractsZip = await fetchResponse.arrayBuffer();
         const zip = new JSZip();
         try {
-            const unzippedFiles = await zip.loadAsync(contractsZip);
-            const contractsFile = unzippedFiles.files['AllContractsCategorized.json'];
-            const constractsJson = JSON.parse(await contractsFile.async('string'));
-            console.log('Contracts Length', constractsJson.length);
-            const masterDataFile = unzippedFiles.files['MasterDataCategorized.json'];
-            const masterDataJson = JSON.parse(await masterDataFile.async('string'));
+            const startTime = performance.now();
+            let unzippedFiles = null, contractsFile = null, masterDataFile = null, constractsJson = null, masterDataJson = null;
+            if (true) { // fflate approach; takes about 600ms to finish; replace JSZip with this
+                const compressed = new Uint8Array(contractsZip);
+                const decompressed = unzipSync(compressed);                
+                contractsFile = decompressed['AllContractsCategorized.json'];
+                masterDataFile = decompressed['MasterDataCategorized.json'];
+                const textDecoder = new TextDecoder();
+                masterDataJson = JSON.parse(textDecoder.decode(masterDataFile));
+                constractsJson = JSON.parse(textDecoder.decode(contractsFile));
+                console.log(`finished loading zip file: ${performance.now() - startTime}ms`);
+            }
+            /* JSZip approach; takes about 1000ms to finish; removed it
+            else {
+                const unzippedFiles = await zip.loadAsync(contractsZip);
+                contractsFile = unzippedFiles.files['AllContractsCategorized.json'];
+                masterDataFile = unzippedFiles.files['MasterDataCategorized.json'];
+                constractsJson = JSON.parse(await contractsFile.async('string'));
+                masterDataJson = JSON.parse(await masterDataFile.async('string'));
+                console.log(`finished loading zip file: ${performance.now() - startTime}ms`);
+            }
+            */
+                                     
+            console.log('Contracts Length', constractsJson.length);                        
             dispatch(setInitialData({constractsJson, masterDataJson}));
         }
         catch(ex) {

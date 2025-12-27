@@ -389,7 +389,7 @@ const dataSlice = createSlice({
         })
         .addCase(setSettingsAsync.pending, (state) => {
             console.log('setSettingsAsync.pending');                        
-            //state.FilterLoadingMsg = 'Applying Filter...'; // Uncomment to show spinner (we hide it now because filtering seems very fast done asynchronously)
+            state.FilterLoadingMsg = 'Applying Filter...'; // Uncomment to show spinner (we hide it now because filtering seems very fast done asynchronously)
             // TODO: Overall, it becomes slow if there is column sorting applied. This async function finishes fast, so spinner is gone quickly.
             // But the table rendering is slow because it still needs to sort data. Need to move the spinner to somewhere else.
         })
@@ -398,7 +398,7 @@ const dataSlice = createSlice({
             state.Filters = action.payload.Filters;
             state.FilteredData = action.payload.FilteredData;
             state.Grouping = action.payload.Grouping;
-            //state.FilterLoadingMsg = null;// Uncomment to show spinner (we hide it now because filtering seems very fast done asynchronously)
+            state.FilterLoadingMsg = null;// Uncomment to show spinner (we hide it now because filtering seems very fast done asynchronously)
         })
     }
 });
@@ -417,6 +417,10 @@ export const setSettingsAsync = createAsyncThunk(
     'data/setSettingsAsync',
     async(payload, thunkAPI) => {
         console.log('[setSettingsAsync] payload', payload);
+        // CRITICAL: Give the browser time to paint the loading state
+        // before starting the heavy computation
+        await new Promise(resolve => setTimeout(resolve, 50));
+
         let origState = thunkAPI.getState();
         const updatedState = await new Promise((resolve => {
             const updatedFilteredData = mapAndFilterData(origState.dataReducer.AllData, payload.Filters);

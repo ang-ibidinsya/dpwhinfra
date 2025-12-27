@@ -13,7 +13,7 @@ public class DpwhInfraParser
         allContracts.Clear();
         if (!Directory.Exists(pathDir))
         {
-            Console.WriteLine("Path does not exist");
+            Console.WriteLine("Path does not exist" + Path.Combine(Environment.CurrentDirectory, pathDir));
             return;
         }
         string[] files = Directory.GetFiles(pathDir);
