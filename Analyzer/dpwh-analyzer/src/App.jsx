@@ -25,8 +25,7 @@ function App() {
             console.error('Unable to fetch contracts data!');
             return;
         }
-        const contractsZip = await fetchResponse.arrayBuffer();
-        const zip = new JSZip();
+        const contractsZip = await fetchResponse.arrayBuffer();        
         try {
             const startTime = performance.now();
             let unzippedFiles = null, contractsFile = null, masterDataFile = null, constractsJson = null, masterDataJson = null;
@@ -42,6 +41,7 @@ function App() {
             }
             /* JSZip approach; takes about 1000ms to finish; removed it
             else {
+                const zip = new JSZip();
                 const unzippedFiles = await zip.loadAsync(contractsZip);
                 contractsFile = unzippedFiles.files['AllContractsCategorized.json'];
                 masterDataFile = unzippedFiles.files['MasterDataCategorized.json'];
