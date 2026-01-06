@@ -5,8 +5,8 @@ export const AppHeader = () => {
     return <div className="appHeader">
         <div className="titleLine topLine">
             <img src="./icon.svg"  className="appIcon"/>
-            <span className="mainTitle">List of 198,480 DPWH Infrastructure Projects</span>
-            <div className="subtitle">From 2016 to Nov 30, 2025</div>
+            <span className="mainTitle">List of 198,721 DPWH Infrastructure Projects</span>
+            <div className="subtitle">From 2016 to Dec 31, 2025</div>
             <div className="subtitle">&nbsp;&nbsp;
                 <span data-tooltip-id='generic-tooltip'
                 data-tooltip-content={getDpwhTooltipMessage()}

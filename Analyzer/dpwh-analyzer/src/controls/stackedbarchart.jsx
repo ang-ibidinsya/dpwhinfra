@@ -43,9 +43,9 @@ export const mapYearColors = {
 // Hardcode for now
 export const mapStatusColors = {
     0: {statusName: 'Completed', color: 'green'},
-    1: {statusName: 'Terminated', color: 'red'}, // Terminated
-    2: {statusName: 'Ongoing', color: 'gold'}, // Ongoing
-    3: {statusName: 'Not Yet Started', color: 'lightgray'}, // Not Yet Started
+    1: {statusName: 'Ongoing', color: 'gold'}, // Terminated
+    2: {statusName: 'Not Yet Started', color: 'lightgray'}, // Not Yet Started
+    3: {statusName: 'Terminated', color: 'red'}, // Ongoing
 }
 
 export const getCategoryColor = (cat) => {

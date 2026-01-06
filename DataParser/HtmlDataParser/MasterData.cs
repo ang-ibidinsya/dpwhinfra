@@ -4,7 +4,13 @@ public class MasterData
 {
     public Dictionary<string, ushort> RegionMap = new Dictionary<string, ushort>();
     public Dictionary<string, ushort> DistrictMap = new Dictionary<string, ushort>();
-    public Dictionary<string, ushort> StatusMap = new Dictionary<string, ushort>();
+    public Dictionary<string, ushort> StatusMap = new Dictionary<string, ushort>() {
+        // Initialize known statuses to maintain this order until front end
+        {"Completed", 0},
+        {"On-Going", 1},
+        {"Not Yet Started", 2},
+        {"Terminated", 3}
+    };
 
     public Dictionary<string, uint> ContractorMap = new Dictionary<string, uint>();
     public Dictionary<string, ushort> SourceMap = new Dictionary<string, ushort>();
